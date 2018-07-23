@@ -4,14 +4,14 @@ about: High level Product Requirement
 
 ---
 
-**Description**
+**ID**
 
 **Break down**
 
-**Action**
-
 **Notes**
 
-**To be done before or during the event*
+**Actions**
+
+**To be done before or during the event**
 - [ ] before
 - [ ] during
