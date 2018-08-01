@@ -23,12 +23,15 @@
 #include <AppDebug.h>
 #include <ProductDebug.h>
 #include <RamUtils.h>
+#include <Battery.h>
+#include <MyBatteryAdapter.h>
 
 #ifndef BUILTIN_LED
 #define BUILTIN_LED 13
 #endif
 
 SerialCommand* sCmd = 0;
+Battery* battery = 0;
 
 void setup()
 {
@@ -36,6 +39,15 @@ void setup()
   digitalWrite(BUILTIN_LED, 0);
 
   setupProdDebugEnv();
+  //-----------------------------------------------------------------------------
+  // Battery Voltage Surveillance
+  //-----------------------------------------------------------------------------
+  BatteryThresholdConfig battCfg = { 3.6, // BATT_WARN_THRSHD [V]
+                                     3.4, // BATT_STOP_THRSHD [V]
+                                     3.2, // BATT_SHUT_THRSHD [V]
+                                     0.1  // BATT_HYST        [V]
+                                    };
+  battery = new Battery(new MyBatteryAdapter(), battCfg);
 }
 
 void loop()
