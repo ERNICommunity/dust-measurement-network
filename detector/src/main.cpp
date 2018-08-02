@@ -8,8 +8,11 @@
 #include <Arduino.h>
 
 // PlatformIO libraries
-#include <SerialCommand.h>  // pio lib install 173, lib details see https://github.com/kroimon/Arduino-SerialCommand
-#include <Timer.h>          // pio lib install 1699, lib details see https://github.com/dniklaus/wiring-timer
+#include <SerialCommand.h>    // pio lib install 173, lib details see https://github.com/kroimon/Arduino-SerialCommand
+#include <Timer.h>            // pio lib install 1699, lib details see https://github.com/dniklaus/wiring-timer
+#include <Adafruit_Sensor.h>  // pio lib 19, 31, lib details see https://github.com/adafruit/DHT-sensor-library
+#include <DHT.h>
+#include <DHT_U.h>
 
 // private libraries
 #include <DbgCliNode.h>
@@ -25,12 +28,18 @@
 #include <RamUtils.h>
 #include <Battery.h>
 #include <MyBatteryAdapter.h>
+#include <PM_Process.h>
+#include <MyPM_ProcessAdapter.h>
+#include <DHT_Process.h>
+#include <MyDHT_ProcessAdapter.h>
 
 #ifndef BUILTIN_LED
 #define BUILTIN_LED 13
 #endif
 
 SerialCommand* sCmd = 0;
+PM_Process* pmProcess = 0;
+DHT_Process* dhtProcess = 0;
 Battery* battery = 0;
 
 void setup()
@@ -48,13 +57,17 @@ void setup()
                                      0.1  // BATT_HYST        [V]
                                     };
   battery = new Battery(new MyBatteryAdapter(), battCfg);
+  pmProcess = new PM_Process(&Serial1, new MyPM_ProcessAdapter());
+  pmProcess->init(9600);
+  dhtProcess = new DHT_Process(new MyDHT_ProcessAdapter());
 }
 
 void loop()
 {
   if (0 != sCmd)
   {
-    sCmd->readSerial();     // process serial commands
+    sCmd->readSerial();         // process serial commands
   }
-  yield();                  // process Timers
+  pmProcess->pollSerialData();
+  yield();                      // process Timers
 }
