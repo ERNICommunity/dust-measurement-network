@@ -1,31 +1,27 @@
-# wiring-skeleton
+# Dust Measurement Network - detector firmware
 Wiring / Arduino based Skeleton Embedded Application, powered by [PlatformIO](http://platformio.org "Cross-platform build system")
 
-The project has initially been created for and tested on an Arduino Mega 2560 controller module.
+This project is created for an [Adafruit Feather M0 w/ RFM95 LoRa Radio - 868/915MHz](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module) controller module.
 
 ## Purpose
-This project builds up an Arduino Framework based application skeleton and it comprises of several components helping with debugging and integrating embedded applications on [Arduino](http://arduino.cc) based contoller modules.
-
-This skeleton application can help you to build up your own Arduino Framework based applications. 
+This project builds up an Arduino Framework based application and comprises of several components helping with debugging and integrating embedded applications on [Arduino](http://arduino.cc) based contoller modules.
 
 This project integrates the following **components**:
 
-* ***Timer***: configurable recurring or non-recurring timer to schedule events without having to use Arduino delay() function; helps to improve your application's architecture by encapsulating the timers into your components and thus make them active
-* ***Ramutils***: helps to determine the free Ram that is currently available
-* ***DbgTrace***: debug trace log environment with configurable log levels
-* ***DbgCLI***: interactive console environment with command tree that can be built up decentralized (from any different location in your application code and within any component)
-* ***App-Dbg***: boilerplate code setting up all the debug environment such as CLI and Tracing and free RAM info printer
+* ***[Timer](https://github.com/dniklaus/wiring-timer)***: configurable recurring or non-recurring timer to schedule events without having to use Arduino delay() function; helps to improve your application's architecture by encapsulating the timers into your components and thus make them active
+* ***[Ramutils](https://github.com/dniklaus/arduino-utils-mem)***: helps to determine the free Ram that is currently available
+* ***[DbgTrace](https://github.com/ERNICommunity/dbg-trace)***: debug trace log environment with configurable log levels
+* ***[DbgCLI](https://github.com/ERNICommunity/debug-cli)***: interactive console environment with command tree that can be built up decentralized (from any different location in your application code and within any component)
+* ***[App-Dbg](https://github.com/dniklaus/wiring-app-debug)***: boilerplate code setting up all the debug environment such as CLI and Tracing and free RAM info printer
+
 The **command line interface** provides the following **functionality**:  
 
-* set the trace level of the free heap monitoring printer
+* set the trace level of the 
+    * free heap monitoring printer
+    * battery voltage monitoring printer
+    * PM (Particulate Matter) sensor readings printer
+    * DHT (Digital Humidity and Temperature) sensor readings printer
 
-This skeleton application demonstrates how to integrate libraries provided by the PlatformIO ecosystem and also how to use your own libraries and can help you to build up your own Arduino Framework based applications with focus on IoT. 
-
-The following components are in focus:
-
-* [Timer](https://github.com/dniklaus/wiring-timer)
-* [Debug-Cli](https://github.com/ERNICommunity/debug-cli)
-* [Dbg-Trace](https://github.com/ERNICommunity/dbg-trace)
 
 ## Toolchain
 [PlatformIO](http://platformio.org "Cross-platform build system") is the ideal foundation when developing IoT devices. It supports cross-platform development for many different controller boards widely used in the maker field and also for industrial applications.
@@ -54,17 +50,15 @@ Install PlatformIO using the Python Package Manager
  
 
 ## How to build for Eclipse CDT
-  1. Create a directory where your Eclipse Workspace will be stored and where this project shall be cloned into. E.g. `C:\git\pio-prj`
-  2. Clone this repository recursively into the folder you created before, `git clone --recursive git@github.com:dniklaus/wiring-skeleton.git`
-  3. Open a command shell in the just cloned project folder, i.e in `C:\git\pio-prj\wiring-skeleton`
+  1. Create a directory where your Eclipse Workspace will be stored and where this project shall be cloned into. E.g. `C:\git`
+  2. Clone the repository - [dust-measurement-network](https://github.com/ERNICommunity/dust-measurement-network) - into the folder you created before, `git clone git@github.com/ERNICommunity/dust-measurement-network.git`
+  3. Open a command shell in the just cloned project folder and dive into `detector` (one level down), i.e in `C:\git\dust-measurement-network\detector`
   4. Run the command `pio init --ide eclipse`, this prepares the project to be edited using Eclipse CDT
   5. Run the command `pio run`, this starts the project build 
 
-Note: Print a list of all available boards with the command: `pio boards`
-
 ## Open project in Eclipse CDT
-  1. Open Eclipse CDT, choose the folder you created before as workspace, i.e `C:\git\pio-prj`
-  2. Import the project with File->Import->General->Existing Projects into Workspace, choose the `wiring-skeleton` (i.e `C:\git\pio-prj\wiring-skeleton`)
+  1. Open Eclipse CDT, choose the project/ repository folder you created before as workspace, i.e `C:\git\dust-measurement-network`
+  2. Import the project with File->Import->General->Existing Projects into Workspace, choose the `detector` (i.e `C:\git\dust-measurement-network\detector`)
 
 ## Connect Terminal Emulation
 In order to test and run the CLI commands, a terminal emulation program shall be used. The one giving you the best experience will be the [HTerm](http://www.der-hammer.info/terminal/). 
