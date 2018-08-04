@@ -14,7 +14,7 @@ class MyBatteryAdapter: public BatteryAdapter
 {
 public:
   MyBatteryAdapter();
-	virtual ~MyBatteryAdapter();
+  virtual ~MyBatteryAdapter();
 
   unsigned int readRawBattSenseValue();
 
