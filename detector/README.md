@@ -8,11 +8,11 @@ This project builds up an Arduino Framework based application and comprises of s
 
 This project integrates the following **components**:
 
-* ***[Timer](https://github.com/dniklaus/wiring-timer)***: configurable recurring or non-recurring timer to schedule events without having to use Arduino delay() function; helps to improve your application's architecture by encapsulating the timers into your components and thus make them active
-* ***[Ramutils](https://github.com/dniklaus/arduino-utils-mem)***: helps to determine the free Ram that is currently available
-* ***[DbgTrace](https://github.com/ERNICommunity/dbg-trace)***: debug trace log environment with configurable log levels
-* ***[DbgCLI](https://github.com/ERNICommunity/debug-cli)***: interactive console environment with command tree that can be built up decentralized (from any different location in your application code and within any component)
-* ***[App-Dbg](https://github.com/dniklaus/wiring-app-debug)***: boilerplate code setting up all the debug environment such as CLI and Tracing and free RAM info printer
+* *[Timer](https://github.com/dniklaus/wiring-timer)*: configurable recurring or non-recurring timer to schedule events without having to use Arduino delay() function; helps to improve your application's architecture by encapsulating the timers into your components and thus make them active
+* *[Ramutils](https://github.com/dniklaus/arduino-utils-mem)*: helps to determine the free Ram that is currently available
+* *[DbgTrace](https://github.com/ERNICommunity/dbg-trace)*: debug trace log environment with configurable log levels
+* *[DbgCLI](https://github.com/ERNICommunity/debug-cli)*: interactive console environment with command tree that can be built up decentralized (from any different location in your application code and within any component)
+* *[App-Dbg](https://github.com/dniklaus/wiring-app-debug)*: boilerplate code setting up all the debug environment such as CLI and Tracing and free RAM info printer
 
 The **command line interface** provides the following **functionality**:  
 
@@ -51,7 +51,7 @@ Install PlatformIO using the Python Package Manager
 
 ## How to build for Eclipse CDT
   1. Create a directory where your Eclipse Workspace will be stored and where this project shall be cloned into. E.g. `C:\git`
-  2. Clone the repository - [dust-measurement-network](https://github.com/ERNICommunity/dust-measurement-network) - into the folder you created before, `git clone git@github.com/ERNICommunity/dust-measurement-network.git`
+  2. Clone the repository - [dust-measurement-network](https://github.com/ERNICommunity/dust-measurement-network) - into the folder you created before, `git clone git@github.com:ERNICommunity/dust-measurement-network.git`
   3. Open a command shell in the just cloned project folder and dive into `detector` (one level down), i.e in `C:\git\dust-measurement-network\detector`
   4. Run the command `pio init --ide eclipse`, this prepares the project to be edited using Eclipse CDT
   5. Run the command `pio run`, this starts the project build 
