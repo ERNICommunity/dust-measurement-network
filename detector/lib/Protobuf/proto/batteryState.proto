@@ -1,0 +1,8 @@
+// A very simple protocol definition, consisting of only
+// one message.
+
+syntax = "proto2";
+
+message batteryState{
+    required float voltage  = 1;
+}

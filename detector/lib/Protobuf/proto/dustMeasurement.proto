@@ -1,0 +1,11 @@
+// A very simple protocol definition, consisting of only
+// one message.
+
+syntax = "proto2";
+
+message dustSensorMeasurement {
+    required float particularMatter2_5um  = 1;
+    required float particularMatter10um   = 2;
+    required float temperature            = 3;
+    required float humidity               = 4;
+}

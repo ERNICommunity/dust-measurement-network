@@ -6,6 +6,8 @@
  */
 
 #include <Arduino.h>
+#undef max
+#undef min
 
 // PlatformIO libraries
 #include <SerialCommand.h>    // pio lib install 173, lib details see https://github.com/kroimon/Arduino-SerialCommand
@@ -32,6 +34,21 @@
 #include <MyPM_ProcessAdapter.h>
 #include <DHT_Process.h>
 #include <MyDHT_ProcessAdapter.h>
+#include <LoraWanAbp.hpp>
+#include <LoraWanAdapter.hpp>
+#include <LoraWanPriorityQueue.hpp>
+#include <MeasurementFacade.hpp>
+#include <SystemStatusFacade.hpp>
+#include <pb_encode.h>
+#include <pb_decode.h>
+#include <SerialCommand.h>
+
+/* This is the buffer where we will store our message. */
+bool setMessageOnce = true;
+LoraWanAdapter* m_LoraWanInterface;
+LoraWanPriorityQueue* m_LoraWanPriorityQueue;
+MeasurementFacade* m_MeasurementFacade;
+SystemStatusFacade* m_SystemStatusFacade;
 
 #ifndef BUILTIN_LED
 #define BUILTIN_LED 13
@@ -60,6 +77,15 @@ void setup()
   pmProcess = new PM_Process(&Serial1, new MyPM_ProcessAdapter());
   pmProcess->init(9600);
   dhtProcess = new DHT_Process(new MyDHT_ProcessAdapter());
+
+  m_LoraWanInterface = new LoraWanAbp();
+  m_LoraWanPriorityQueue = new LoraWanPriorityQueue(m_LoraWanInterface);
+  m_MeasurementFacade = new MeasurementFacade(m_LoraWanPriorityQueue);
+  m_MeasurementFacade->setNewMeasurementData(0.1f,10.1f,27.0f,80.0f);
+  m_SystemStatusFacade = new SystemStatusFacade(m_LoraWanPriorityQueue);
+  m_SystemStatusFacade->setBatteryStatus(18.4f);
+  m_LoraWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
+  m_LoraWanPriorityQueue->start();
 }
 
 void loop()
@@ -70,4 +96,6 @@ void loop()
   }
   pmProcess->pollSerialData();
   yield();                      // process Timers
+  m_LoraWanInterface->loopOnce();
+  m_LoraWanPriorityQueue->update();
 }
