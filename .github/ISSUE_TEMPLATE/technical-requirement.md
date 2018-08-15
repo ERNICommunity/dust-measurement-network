@@ -1,12 +1,11 @@
 ---
 name: Technical Requirement
-about: Technical Requirement (System / SW / HW)
+about: Technical Requirement
 
 ---
 
-**ID**: _TR-xy_
+**TechREQ**
 
-**TR Type**: { System | SW | HW }
 
 **Description**
 
