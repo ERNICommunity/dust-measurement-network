@@ -1,0 +1,22 @@
+// A very simple protocol definition, consisting of only
+// one message.
+syntax = "proto2";
+import "dustMeasurement.proto";
+import "applicationInformation.proto";
+import "batteryState.proto";
+
+
+message NodeMessage {
+    enum InformationType{
+        UNDEFINED_MESSAGE = 0;
+		APPLICATION_INFO = 1;
+		BATTERY_STATE = 2;
+		DUST_MEASUREMENT = 3;
+    }
+    required InformationType information = 1 [default = UNDEFINED_MESSAGE];
+    oneof msg {
+	    firmwareVersion appInfoData = 2;
+        dustSensorMeasurement dustMeasurementData = 3;
+		batteryState batteryStateData = 4;
+    }   
+}

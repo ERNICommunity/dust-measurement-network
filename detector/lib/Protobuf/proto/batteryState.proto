@@ -1,0 +1,17 @@
+// A very simple protocol definition, consisting of only
+// one message.
+
+syntax = "proto2";
+
+message batteryState{
+   enum StateType{
+        UNDEFINED = 0;
+		OK = 1;
+		WARNING = 2;
+		STOP = 3;
+		SHUTDOWN = 4;
+    }
+	
+    required StateType  state = 1 [default = UNDEFINED];
+    required float voltage  = 2;
+}
