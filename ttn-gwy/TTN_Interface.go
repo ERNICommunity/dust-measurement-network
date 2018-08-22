@@ -73,13 +73,7 @@ func main() {
 	token := client.SubscribeAppUplink("erni-hello-world", func(client mqtt.Client, appID string, devID string, req types.UplinkMessage) {
 		fmt.Println("Received - UPLINK")
 		fmt.Println(devID)
-		//length := binary.Size(req.PayloadRaw)
-		//for i := 0; i < length; i++ {
-		//	fmt.Println(req.PayloadRaw[i])
-		//}
-
 		go decodeNodeState(req)
-
 	})
 	token.Wait()
 
