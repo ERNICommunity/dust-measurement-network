@@ -83,7 +83,7 @@ void setup()
   m_MeasurementFacade = new MeasurementFacade(m_LoraWanPriorityQueue);
   m_MeasurementFacade->setNewMeasurementData(0.1f,10.1f,27.0f,80.0f);
   m_SystemStatusFacade = new SystemStatusFacade(m_LoraWanPriorityQueue);
-  m_SystemStatusFacade->setBatteryStatus(18.4f);
+  m_SystemStatusFacade->setBatteryStatus(SystemStatusFacade::State::e_OK,18.4f);
   m_LoraWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
   m_LoraWanPriorityQueue->start();
 }
