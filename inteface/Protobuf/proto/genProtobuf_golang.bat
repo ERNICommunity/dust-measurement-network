@@ -1,6 +1,8 @@
-rmdir %cd%\..\golang
-mkdir %cd%\..\golang
-protoc --go_out=%cd%\..\golang dustMeasurement.proto
-protoc --go_out=%cd%\..\golang applicationInformation.proto
-protoc --go_out=%cd%\..\golang batteryState.proto
-protoc --go_out=%cd%\..\golang nodeStatus.proto
+SET OUTPUT_DIRECTORY=%cd%\..\..\..\ttn-gwy\protobuf
+
+mkdir %OUTPUT_DIRECTORY%
+
+protoc --go_out=%OUTPUT_DIRECTORY% dustMeasurement.proto
+protoc --go_out=%OUTPUT_DIRECTORY% applicationInformation.proto
+protoc --go_out=%OUTPUT_DIRECTORY% batteryState.proto
+protoc --go_out=%OUTPUT_DIRECTORY% nodeStatus.proto

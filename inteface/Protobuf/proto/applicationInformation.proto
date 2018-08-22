@@ -2,12 +2,13 @@
 // one message.
 
 syntax = "proto2";
+package protobuf;
 
 message requestSoftwareInformation {
-    enum InformationType{
+    enum RequestInformationType{
         FIRMWARE_VERSION = 1;
     }
-    required InformationType information = 1 [default = FIRMWARE_VERSION];
+    required RequestInformationType information = 1 [default = FIRMWARE_VERSION];
 }
 
 message firmwareVersion {

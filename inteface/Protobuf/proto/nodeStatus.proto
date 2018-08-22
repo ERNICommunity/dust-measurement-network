@@ -1,10 +1,11 @@
 // A very simple protocol definition, consisting of only
 // one message.
 syntax = "proto2";
+package protobuf;
+//option go_package = "..\applicationInformation";
 import "dustMeasurement.proto";
 import "applicationInformation.proto";
 import "batteryState.proto";
-
 
 message NodeMessage {
     enum InformationType{

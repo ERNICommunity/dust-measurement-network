@@ -2,7 +2,7 @@
 // one message.
 
 syntax = "proto2";
-
+package protobuf;
 message batteryState{
    enum StateType{
         UNDEFINED = 0;
