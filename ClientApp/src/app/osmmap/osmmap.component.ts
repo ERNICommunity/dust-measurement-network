@@ -8,9 +8,10 @@ import VectorLayer from 'ol/layer/Vector';
 // import XYZ from 'ol/source/XYZ';
 import OSMSource from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
-import { fromLonLat, transform } from 'ol/proj';
+import { fromLonLat } from 'ol/proj';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
+import { Circle, Fill, Stroke, Style } from 'ol/style';
 
 @Component({
   selector: 'app-osmmap',
@@ -34,7 +35,22 @@ export class OsmMapComponent implements OnInit {
           // })
         }),
         new VectorLayer({
-          source: this.vectorSource
+          source: this.vectorSource,
+          style: new Style({
+            fill: new Fill({
+              color: 'rgba(255, 255, 255, 0.2)'
+            }),
+            stroke: new Stroke({
+              color: '#ffffff',
+              width: 2
+            }),
+            image: new Circle({
+              radius: 7,
+              fill: new Fill({
+                color: '#ffcc33'
+              })
+            })
+          })
         })
       ],
       view: new View({
@@ -51,10 +67,10 @@ export class OsmMapComponent implements OnInit {
     this.vectorSource.clear();
     for (let i = 0; i < markers.length; i++) {
       const iconFeature = new Feature({
-        geometry: new Point(transform([markers[i].Lon, markers[i].Lat], 'EPSG:4326', 'EPSG:3857')),
+        geometry: new Point(fromLonLat([markers[i].lon, markers[i].lat])),
         name: 'Point' + i,
-        timestamp: markers[i].Timestamp,
-        size: markers[i].Size
+        timestamp: markers[i].timestamp,
+        size: markers[i].size
       });
       this.vectorSource.addFeature(iconFeature);
     }
@@ -62,8 +78,8 @@ export class OsmMapComponent implements OnInit {
 }
 
 interface Marker {
-  Lat: number;
-  Lon: number;
-  Size: number;
-  Timestamp: Date;
+  lat: number;
+  lon: number;
+  size: number;
+  timestamp: Date;
 }
