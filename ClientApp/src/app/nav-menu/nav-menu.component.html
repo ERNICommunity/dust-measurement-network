@@ -7,7 +7,7 @@
                 <span class='icon-bar'></span>
                 <span class='icon-bar'></span>
             </button>
-            <a class='navbar-brand' [routerLink]='["/"]'>H&amp;H FrontEnd</a>
+            <a class='navbar-brand' [routerLink]='["/"]'>H&amp;H Frontend</a>
         </div>
         <div class='clearfix'></div>
         <div class='navbar-collapse collapse' [ngClass]='{ "in": isExpanded }'>
@@ -18,15 +18,15 @@
                     </a>
                 </li>
                 <li [routerLinkActive]='["link-active"]'>
-                    <a [routerLink]='["/fetch-data"]' (click)='collapse()'>
-                        <span class='glyphicon glyphicon-th-list'></span> Fetch data
-                    </a>
-                </li>
-                <li [routerLinkActive]='["link-active"]'>
-                  <a [routerLink]='["/map"]' (click)='collapse()'>
-                      <span class='glyphicon glyphicon-globe'></span> Map
+                  <a [routerLink]='["/gmap"]' (click)='collapse()'>
+                      <span class='glyphicon glyphicon-globe'></span> Google Map
                   </a>
               </li>
+              <li [routerLinkActive]='["link-active"]'>
+                <a [routerLink]='["/osmmap"]' (click)='collapse()'>
+                    <span class='glyphicon glyphicon-globe'></span> OSM Map
+                </a>
+            </li>
             </ul>
         </div>
     </div>
