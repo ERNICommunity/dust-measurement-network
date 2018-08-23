@@ -51,8 +51,7 @@ export class OsmMapComponent implements OnInit {
     this.vectorSource.clear();
     for (let i = 0; i < markers.length; i++) {
       const iconFeature = new Feature({
-        // geometry: new Point(transform([markers[i].Lon, markers[i].Lat], 'EPSG:4326', 'EPSG:3857')),
-        geometry: new Point([i / 10, i / 10]),
+        geometry: new Point(transform([markers[i].Lon, markers[i].Lat], 'EPSG:4326', 'EPSG:3857')),
         name: 'Point' + i,
         timestamp: markers[i].Timestamp,
         size: markers[i].Size
