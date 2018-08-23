@@ -9,13 +9,15 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { GMapComponent } from './gmap/gmap.component';
 import { AgmCoreModule, GoogleMapsAPIWrapper } from '@agm/core';
+import { OsmMapComponent } from './osmmap/osmmap.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    GMapComponent
+    GMapComponent,
+    OsmMapComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -25,6 +27,7 @@ import { AgmCoreModule, GoogleMapsAPIWrapper } from '@agm/core';
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'gmap', component: GMapComponent },
+      { path: 'osmmap', component: OsmMapComponent }
     ])
   ],
   providers: [

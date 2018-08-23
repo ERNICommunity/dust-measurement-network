@@ -11,8 +11,8 @@ export class GMapComponent implements OnInit {
   @ViewChild(AgmMap) map: AgmMap;
   points: Point[];
   public location = {
-    lat: 51.678418,
-    lng: 7.809007,
+    lat: 48.144677,
+    lng: 17.109717,
     zoom: 5
   };
 

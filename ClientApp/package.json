@@ -29,6 +29,7 @@
     "bootstrap": "^3.3.7",
     "core-js": "^2.5.7",
     "npm": "^6.4.0",
+    "ol": "^5.1.3",
     "rxjs": "^6.2.2",
     "zone.js": "~0.8.26"
   },
@@ -40,6 +41,7 @@
     "@types/jasmine": "^2.8.8",
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "^6.0.116",
+    "@types/ol": "^4.6.2",
     "codelyzer": "^4.4.4",
     "jasmine-core": "~2.8.0",
     "jasmine-spec-reporter": "~4.2.1",
