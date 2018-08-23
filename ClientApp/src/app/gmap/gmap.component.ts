@@ -30,7 +30,8 @@ export class GMapComponent implements OnInit {
 }
 
 interface Point {
-  lat: number;
-  lng: number;
-  size: number;
+  Lat: number;
+  Lon: number;
+  Size: number;
+  Timestamp: Date;
 }

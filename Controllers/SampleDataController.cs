@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace hh_fe.Controllers
 {
     [Route("api/[controller]")]
-    public class SampleDataController : Controller
+    public partial class SampleDataController : Controller
     {
         private static string[] Summaries = new[]
         {
@@ -15,30 +15,16 @@ namespace hh_fe.Controllers
         };
 
         [HttpGet("[action]")]
-        public IEnumerable<WeatherForecast> WeatherForecasts()
+        public IEnumerable<Marker> Points()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                DateFormatted = DateTime.Now.AddDays(index).ToString("d"),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            });
-        }
-
-        public class WeatherForecast
-        {
-            public string DateFormatted { get; set; }
-            public int TemperatureC { get; set; }
-            public string Summary { get; set; }
-
-            public int TemperatureF
-            {
-                get
-                {
-                    return 32 + (int)(TemperatureC / 0.5556);
-                }
-            }
+            return new[] {
+                new Marker(48.142402, 17.108669, 5, new DateTimeOffset(new DateTime(2018, 8, 20, 12, 0, 0), TimeSpan.FromHours(2))),
+                new Marker(47.008323, 8.486309, 2, new DateTimeOffset(new DateTime(2018, 7, 15, 1, 0, 0), TimeSpan.FromHours(1))),
+                new Marker(14.598882, 120.971040, 10, new DateTimeOffset(new DateTime(2018, 5, 1, 22, 30, 0), TimeSpan.FromHours(8))),
+                new Marker(47.370677, 8.540103, 6, new DateTimeOffset(new DateTime(2018, 8, 22, 15, 30, 0), TimeSpan.FromHours(1))),
+                new Marker(41.392659, 2.185504, 7, new DateTimeOffset(new DateTime(2018, 8, 17, 10, 45, 0), TimeSpan.FromHours(2))),
+                new Marker(46.769364, 23.589673, 3, new DateTimeOffset(new DateTime(2018, 1, 1, 8, 45, 0), TimeSpan.FromHours(3)))
+            };
         }
     }
 }

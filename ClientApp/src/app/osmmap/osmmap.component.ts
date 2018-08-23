@@ -1,11 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
+import VectorLayer from 'ol/layer/Vector';
 // import XYZ from 'ol/source/XYZ';
-import OSM from 'ol/source/OSM';
-import { fromLonLat } from 'ol/proj';
+import OSMSource from 'ol/source/OSM';
+import VectorSource from 'ol/source/Vector';
+import { fromLonLat, transform } from 'ol/proj';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
 
 @Component({
   selector: 'app-osmmap',
@@ -13,19 +18,23 @@ import { fromLonLat } from 'ol/proj';
   styleUrls: ['./osmmap.component.css']
 })
 export class OsmMapComponent implements OnInit {
-  map: Map;
+  private map: Map;
+  private vectorSource = new VectorSource();
 
-  constructor() { }
+  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) { }
 
   ngOnInit() {
     this.map = new Map({
       target: 'osmmap',
       layers: [
         new TileLayer({
-          source: new OSM()
+          source: new OSMSource()
           // source: new XYZ({
           //   url: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png'
           // })
+        }),
+        new VectorLayer({
+          source: this.vectorSource
         })
       ],
       view: new View({
@@ -33,6 +42,29 @@ export class OsmMapComponent implements OnInit {
         zoom: 5
       })
     });
+    this.http.get<Marker[]>(this.baseUrl + 'api/SampleData/Points').subscribe(
+      result => this.render(result),
+      error => console.error(error));
   }
 
+  private render(markers: Marker[]) {
+    this.vectorSource.clear();
+    for (let i = 0; i < markers.length; i++) {
+      const iconFeature = new Feature({
+        // geometry: new Point(transform([markers[i].Lon, markers[i].Lat], 'EPSG:4326', 'EPSG:3857')),
+        geometry: new Point([i / 10, i / 10]),
+        name: 'Point' + i,
+        timestamp: markers[i].Timestamp,
+        size: markers[i].Size
+      });
+      this.vectorSource.addFeature(iconFeature);
+    }
+  }
+}
+
+interface Marker {
+  Lat: number;
+  Lon: number;
+  Size: number;
+  Timestamp: Date;
 }
