@@ -2,9 +2,9 @@ using System;
 
 namespace hh_fe.Controllers
 {
-    public class DataPoint
+    public class DataPointDto
     {
-        public DataPoint(DateTimeOffset timestamp, double dust1, double dust2)
+        public DataPointDto(DateTimeOffset timestamp, double dust1, double dust2)
         {
             Timestamp = timestamp;
             Dust1 = dust1;
