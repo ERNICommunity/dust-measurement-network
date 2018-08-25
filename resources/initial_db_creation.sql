@@ -23,9 +23,9 @@ CREATE TABLE "SensorData" (
 	"particulatematter25" FLOAT NOT NULL,
 	"particulatematter100" FLOAT NOT NULL,
 	"airtemperature" FLOAT NOT NULL,
-	"relativehumidity" FLOAT NOT NULL,
+	"relativehumidity" FLOAT NOT NULL,	
 	"sensorid" integer NOT NULL,
-	"enhancementid" integer NOT NULL,
+	"enhancementid" integer,
 	CONSTRAINT SensorData_pk PRIMARY KEY ("dataid")
 ) WITH (
   OIDS=FALSE
@@ -33,7 +33,7 @@ CREATE TABLE "SensorData" (
 
 CREATE TABLE "SensorDataEnhancement" (
 	"enhancementid" serial NOT NULL,
-	"winddirection" FLOAT NOT NULL,
+	"winddirection" FLOAT,
 	"windspeed" FLOAT NOT NULL,
 	"rainamount" FLOAT NOT NULL,
 	CONSTRAINT SensorDataEnhancement_pk PRIMARY KEY ("enhancementid")
