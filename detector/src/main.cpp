@@ -81,11 +81,13 @@ void setup()
   m_LoraWanInterface = new LoraWanAbp();
   m_LoraWanPriorityQueue = new LoraWanPriorityQueue(m_LoraWanInterface);
   m_MeasurementFacade = new MeasurementFacade(m_LoraWanPriorityQueue);
-  m_MeasurementFacade->setNewMeasurementData(0.1f,10.1f,27.0f,80.0f);
   m_SystemStatusFacade = new SystemStatusFacade(m_LoraWanPriorityQueue);
-  m_SystemStatusFacade->setBatteryStatus(SystemStatusFacade::State::e_OK,18.4f);
   m_LoraWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
   m_LoraWanPriorityQueue->start();
+}
+
+SystemStatusFacade::State mapBatteryState(const char* state){
+  return SystemStatusFacade::State::e_OK;
 }
 
 void loop()
@@ -96,9 +98,15 @@ void loop()
   }
   pmProcess->pollSerialData();
   yield();                      // process Timers
+  float pm10 = pmProcess->getPm10Average();
+  float pm25 = pmProcess->getPm25Average();
+  float humidity = dhtProcess->getRelHumidity();
+  float temperature = dhtProcess->getTemperature();
+  const char * state = battery->getCurrentStateName();
   float batteryVoltage = battery->getBatteryVoltage();
- 
-  m_SystemStatusFacade->setBatteryStatus(SystemStatusFacade::State::e_OK,batteryVoltage);
+
+  m_SystemStatusFacade->setBatteryStatus(mapBatteryState(state), batteryVoltage);
+  m_MeasurementFacade->setNewMeasurementData(pm25, pm10, temperature, humidity);
   m_LoraWanInterface->loopOnce();
   m_LoraWanPriorityQueue->update();
 }
