@@ -86,8 +86,20 @@ void setup()
   m_LoraWanPriorityQueue->start();
 }
 
-SystemStatusFacade::State mapBatteryState(const char* state){
-  return SystemStatusFacade::State::e_OK;
+SystemStatusFacade::State getBatteryState(){
+  if (battery->isBattVoltageOk()){
+    return SystemStatusFacade::State::e_OK;
+  }
+  if (battery->isBattVoltageBelowWarnThreshold()){
+    return SystemStatusFacade::State::e_WARNING;
+  }
+  if (battery->isBattVoltageBelowStopThreshold()){
+    return SystemStatusFacade::State::e_STOP;
+  }
+  if (battery->isBattVoltageBelowShutdownThreshold()){
+    return SystemStatusFacade::State::e_SHUTDOWN;
+  }
+  return SystemStatusFacade::State::e_UNDEFINED;
 }
 
 void loop()
@@ -102,10 +114,9 @@ void loop()
   float pm25 = pmProcess->getPm25Average();
   float humidity = dhtProcess->getRelHumidity();
   float temperature = dhtProcess->getTemperature();
-  const char * state = battery->getCurrentStateName();
   float batteryVoltage = battery->getBatteryVoltage();
 
-  m_SystemStatusFacade->setBatteryStatus(mapBatteryState(state), batteryVoltage);
+  m_SystemStatusFacade->setBatteryStatus(getBatteryState(), batteryVoltage);
   m_MeasurementFacade->setNewMeasurementData(pm25, pm10, temperature, humidity);
   m_LoraWanInterface->loopOnce();
   m_LoraWanPriorityQueue->update();
