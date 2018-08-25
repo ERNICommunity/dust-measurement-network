@@ -20,6 +20,8 @@ import { Circle, Fill, Stroke, Style } from 'ol/style';
 })
 export class OsmMapComponent implements OnInit {
   private map: Map;
+  private defaultLatitude: number = 47.3769;
+  private defaultLongitude: number = 8.5417;
   private vectorSource = new VectorSource();
 
   constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) { }
@@ -30,37 +32,35 @@ export class OsmMapComponent implements OnInit {
       layers: [
         new TileLayer({
           source: new OSMSource()
-          // source: new XYZ({
-          //   url: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-          // })
         }),
         new VectorLayer({
           source: this.vectorSource,
           style: new Style({
             fill: new Fill({
-              color: 'rgba(255, 255, 255, 0.2)'
+              color: '#000000'
             }),
             stroke: new Stroke({
               color: '#ffffff',
               width: 2
             }),
             image: new Circle({
-              radius: 7,
+              radius: 20,
               fill: new Fill({
-                color: '#ffcc33'
+                color: '#000000'
               })
             })
           })
         })
       ],
       view: new View({
-        center: fromLonLat([17.109717, 48.144677]),
-        zoom: 5
+        center: fromLonLat([this.defaultLongitude, this.defaultLatitude]),
+        zoom: 13
       })
     });
-    this.http.get<Marker[]>(this.baseUrl + 'api/SampleData/Points').subscribe(
+    this.http.get<Marker[]>(this.baseUrl + 'api/sensors').subscribe(
       result => this.render(result),
       error => console.error(error));
+    this.trackPosition();
   }
 
   private render(markers: Marker[]) {
@@ -69,10 +69,19 @@ export class OsmMapComponent implements OnInit {
       const iconFeature = new Feature({
         geometry: new Point(fromLonLat([markers[i].lon, markers[i].lat])),
         name: 'Point' + i,
-        timestamp: markers[i].timestamp,
-        size: markers[i].size
+        timestamp: markers[i].timestamp
       });
       this.vectorSource.addFeature(iconFeature);
+    }
+  }
+
+  private trackPosition() {
+    if(navigator.geolocation) {
+      var view = this.map.getView();
+      navigator.geolocation.getCurrentPosition((position) => {
+        view.setCenter(fromLonLat([position.coords.longitude, position.coords.latitude]));
+        view.setZoom(13);
+      });
     }
   }
 }
