@@ -41,7 +41,7 @@
 #include <SystemStatusFacade.hpp>
 #include <pb_encode.h>
 #include <pb_decode.h>
-#include <SerialCommand.h>
+#include <Assets.h>
 
 /* This is the buffer where we will store our message. */
 bool setMessageOnce = true;
@@ -58,11 +58,14 @@ SerialCommand* sCmd = 0;
 PM_Process* pmProcess = 0;
 DHT_Process* dhtProcess = 0;
 Battery* battery = 0;
+Assets* assets = 0;
 
 void setup()
 {
   pinMode(BUILTIN_LED, OUTPUT);
   digitalWrite(BUILTIN_LED, 0);
+
+  assets = new Assets();
 
   setupProdDebugEnv();
   //-----------------------------------------------------------------------------
