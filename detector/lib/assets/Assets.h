@@ -15,7 +15,7 @@ class DbgTrace_Port;
 class Assets
 {
 public:
-  Assets();
+  Assets(Adafruit_FRAM_I2C* fram);
   virtual ~Assets();
 
   static const int MAX_ID_LENGTH = 64;
@@ -30,6 +30,7 @@ private:
 private: // forbidden default functions
   Assets& operator = (const Assets& src); // assignment operator
   Assets(const Assets& src);              // copy constructor
+  Assets();                               // default constructor
 };
 
 #endif /* SRC_ASSETS_H_ */

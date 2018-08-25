@@ -11,16 +11,19 @@
 #include <DbgTracePort.h>
 #include <DbgTraceLevel.h>
 
-Assets::Assets()
-: m_fram(new Adafruit_FRAM_I2C()),
+Assets::Assets(Adafruit_FRAM_I2C* fram)
+: m_fram(fram),
   m_trPort(new DbgTrace_Port("fram", DbgTrace_Level::info))
 {
   memset(m_id, 0, MAX_ID_LENGTH + 1); // one more to ensure we have termination!
+  if (m_fram == 0)
+  {
+    return;
+  }
   bool state = m_fram->begin();
   if (!state)
   {
     TR_PRINT_STR(m_trPort, DbgTrace_Level::error, "FRAM is not available!");
-    delete m_fram;
     m_fram = 0;
     return;
   }
@@ -37,10 +40,7 @@ Assets::Assets()
 }
 
 Assets::~Assets()
-{
-  delete m_fram;
-  m_fram = 0;
-}
+{ }
 
 void Assets::setDeviceId(const char* id){
   strncpy(m_id, id, MAX_ID_LENGTH);
