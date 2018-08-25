@@ -38,8 +38,21 @@ func decodeBatteryState(devId string,
 	fmt.Println("sensor_state,sensor_id=" + devId + " voltage=" + strconv.FormatFloat(float64(*voltage), 'f', 6, 32) + ",health_state=" + strconv.FormatFloat(float64(*data.State), 'f', 1, 32) + " ")
 }
 
-func decodeDustMeasurement() {
-
+func decodeDustMeasurement(devId string,
+	latitude float32,
+	longitude float32,
+	altitude int32,
+	time types.JSONTime,
+	data *protobuf.DustSensorMeasurement) {
+	fmt.Println("dust_measurement,sensor_id=" + devId +
+		" pm10=" + strconv.FormatFloat(float64(*data.ParticularMatter10Um), 'f', 6, 32) +
+		",pm25=" + strconv.FormatFloat(float64(*data.ParticularMatter2_5Um), 'f', 1, 32) +
+		",temp=" + strconv.FormatFloat(float64(*data.Temperature), 'f', 1, 32) +
+		",humidity=" + strconv.FormatFloat(float64(*data.Humidity), 'f', 1, 32) +
+		",latitude=" + strconv.FormatFloat(float64(latitude), 'f', 1, 32) +
+		",longtitude=" + strconv.FormatFloat(float64(longitude), 'f', 1, 32) +
+		",altitude=" + strconv.FormatFloat(float64(altitude), 'f', 1, 32) +
+		" ")
 }
 
 func decodeNodeState(appID string, devID string, req types.UplinkMessage) {
@@ -70,15 +83,11 @@ func decodeNodeState(appID string, devID string, req types.UplinkMessage) {
 		/*amountOfString, err := f.WriteString("writes\n")
 
 		f.Sync()*/
-		switch *protodata.Information {
-		case protobuf.NodeMessage_BATTERY_STATE:
-			switch u := protodata.Msg.(type) {
-			case *protobuf.NodeMessage_BatteryStateData:
-				decodeBatteryState(devID, req.Metadata.Latitude, req.Metadata.Longitude, req.Metadata.Altitude, req.Metadata.Time, u.BatteryStateData)
-			}
-
-		case protobuf.NodeMessage_DUST_MEASUREMENT:
-			fmt.Println("BATTERY STATE")
+		switch u := protodata.Msg.(type) {
+		case *protobuf.NodeMessage_BatteryStateData:
+			decodeBatteryState(devID, req.Metadata.Latitude, req.Metadata.Longitude, req.Metadata.Altitude, req.Metadata.Time, u.BatteryStateData)
+		case *protobuf.NodeMessage_DustMeasurementData:
+			decodeDustMeasurement(devID, req.Metadata.Latitude, req.Metadata.Longitude, req.Metadata.Altitude, req.Metadata.Time, u.DustMeasurementData)
 		}
 
 		fmt.Println(protodata)
