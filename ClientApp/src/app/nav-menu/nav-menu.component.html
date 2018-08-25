@@ -17,11 +17,16 @@
                         <span class='glyphicon glyphicon-home'></span> Home
                     </a>
                 </li>
-              <li [routerLinkActive]='["link-active"]'>
-                <a [routerLink]='["/osmmap"]' (click)='collapse()'>
-                    <span class='glyphicon glyphicon-globe'></span> OSM Map
-                </a>
-            </li>
+                <li [routerLinkActive]='["link-active"]'>
+                    <a [routerLink]='["/osmmap"]' (click)='collapse()'>
+                        <span class='glyphicon glyphicon-globe'></span> OSM Map
+                    </a>
+                </li>
+                <li [routerLinkActive]='["link-active"]'>
+                    <a [routerLink]='["/chart"]' (click)='collapse()'>
+                        <span class='glyphicon glyphicon-stats'></span> Chart
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
