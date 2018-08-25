@@ -17,6 +17,7 @@ export class ChartComponent implements OnInit {
   dustPrediction: DustData[] = [];
   id: number = 0;
   idRange: number[] = [0,1,2,3,4,5,6,7,8,9];
+  selectedId: number = 0;
   historyLoaded: boolean = false;
   predictionLoaded: boolean = false;
 
@@ -25,7 +26,10 @@ export class ChartComponent implements OnInit {
 }
 
   ngOnInit() {
+    this.updateDustData();
+  }
 
+  updateDustData() {
     this.dustService.getDustHistory(this.id, (dustData: DustData[]) =>{
       this.dustHistory = dustData;
       this.historyLoaded = true;
@@ -41,7 +45,6 @@ export class ChartComponent implements OnInit {
         this.showChart();
       }
     })
-
   }
 
   showChart() {
@@ -84,9 +87,11 @@ export class ChartComponent implements OnInit {
     });
   }
 
-  onIdSelected(id: number){
-    if (this.id != id) {
-      this.router.navigate(['chart/' + id]);
+  onIdSelected(){
+    if (this.id != this.selectedId) {
+      this.id = this.selectedId;
+      this.updateDustData();
+      this.router.navigate(['chart/' + this.selectedId]);
     }
    }
  
