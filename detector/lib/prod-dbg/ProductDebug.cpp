@@ -35,6 +35,7 @@ extern "C"
 //-----------------------------------------------------------------------------
 extern Assets* assets;
 
+
 class DbgCli_Cmd_AssetId : public DbgCli_Command
 {
 private:
@@ -48,21 +49,35 @@ public:
   void execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
   {
     Serial.println();
-    if (0 == m_assets)
-    {
-      Serial.println("ERROR! No assets object available!");
-    }
     if (argc - idxToFirstArgToHandle == 0)
     {
       Serial.print("Assets - Read Device Id: ");
-      Serial.println(m_assets->getDeviceId());
+      if (0 == m_assets)
+      {
+        Serial.println("ERROR! No assets object available!");
+      }
+      else
+      {
+        Serial.println(m_assets->getDeviceId());
+      }
     }
     else if (argc - idxToFirstArgToHandle == 1)
     {
       // write the given value
       Serial.print("Assets - Writing Device Id: ");
       Serial.print(args[idxToFirstArgToHandle]);
-      m_assets->setDeviceId(args[idxToFirstArgToHandle]);
+      if (0 == m_assets)
+      {
+        Serial.println("ERROR! No assets object available!");
+      }
+      else
+      {
+        m_assets->setDeviceId(args[idxToFirstArgToHandle]);
+      }
+    }
+    else
+    {
+      printUsage();
     }
     Serial.println();
   }
@@ -85,7 +100,6 @@ void setupProdDebugEnv()
   //-----------------------------------------------------------------------------
   DbgCli_Topic* assetTopic = new DbgCli_Topic(DbgCli_Node::RootNode(), "asst", "Assets debug commands");
   new DbgCli_Cmd_AssetId(assetTopic, assets);
-
 
   Serial.println();
   Serial.println("-----------------------------------------------------------------");
