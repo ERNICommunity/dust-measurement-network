@@ -26,7 +26,7 @@ import { DustService } from './dust.service';
     RouterModule.forRoot([
       { path: '', component: OsmMapComponent, pathMatch: 'full' },
       { path: 'about', component: AboutComponent},
-      { path: 'chart', component: ChartComponent }
+      { path: 'chart/:id', component: ChartComponent }
     ])
   ],
   providers: [DustService],
