@@ -28,7 +28,7 @@ namespace Model
             modelBuilder.Entity<Sensor>().HasData(
                 new Sensor { Id = 1, Latitude = 48.142402, Longitude = 17.108669, Altitude = 500 },
                 new Sensor { Id = 2, Latitude = 47.008323, Longitude = 8.486309, Altitude = 350 },
-                new Sensor { Id = 3, Latitude = 14.598882, Longitude = 120.971040, Altitude = 220 },
+                new Sensor { Id = 3, Latitude = 41.393955, Longitude = 2.176578, Altitude = 220 },
                 new Sensor { Id = 4, Latitude = 47.370677,Longitude = 8.540103, Altitude = 110 },
                 new Sensor { Id = 5, Latitude = 46.769364, Longitude = 23.589673, Altitude = 30 }
             );
