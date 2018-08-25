@@ -8,8 +8,6 @@
 #ifndef SRC_ASSETS_H_
 #define SRC_ASSETS_H_
 
-#define MAX_DEVICE_ID_LENGTH 64
-
 class Adafruit_FRAM_I2C;
 class DbgTrace_Port;
 
@@ -21,9 +19,10 @@ public:
   virtual ~Assets();
   void setDeviceId(const char* id);
   const char* getDeviceId();
+  static const int MAX_ID_LENGTH;
 
 private:
-  char m_id[MAX_DEVICE_ID_LENGTH + 1]; // one more to ensure we have termination!
+  char* m_id;
   Adafruit_FRAM_I2C* m_fram;
   DbgTrace_Port* m_trPort;
 
