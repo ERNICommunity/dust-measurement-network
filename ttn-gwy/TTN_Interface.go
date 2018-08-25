@@ -6,6 +6,7 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"time"
 
 	"./protobuf"
 	"github.com/TheThingsNetwork/go-utils/log"
@@ -14,6 +15,10 @@ import (
 	"github.com/TheThingsNetwork/ttn/mqtt"
 	"github.com/gogo/protobuf/proto"
 )
+
+/*var {
+	fileData *os.File
+}*/
 
 type MqttConfiguration struct {
 	ApplicationId  string
@@ -32,19 +37,34 @@ func decodeBatteryState(devId string,
 	latitude float32,
 	longitude float32,
 	altitude int32,
-	time types.JSONTime,
-	data *protobuf.BatteryState) {
+	timestamp types.JSONTime,
+	data *protobuf.BatteryState, file *os.File) {
 	voltage := data.Voltage
-	fmt.Println("sensor_state,sensor_id=" + devId + " voltage=" + strconv.FormatFloat(float64(*voltage), 'f', 6, 32) + ",health_state=" + strconv.FormatFloat(float64(*data.State), 'f', 1, 32) + " ")
+	stringTime, err := timestamp.MarshalText()
+	checkError(err)
+	t, err := time.Parse(time.RFC3339, string(stringTime[:]))
+	checkError(err)
+	file.WriteString("sensor_state,sensor_id=" + devId +
+		" voltage=" + strconv.FormatFloat(float64(*voltage), 'f', 6, 32) +
+		",health_state=" + strconv.FormatFloat(float64(*data.State), 'f', 1, 32) +
+		",latitude=" + strconv.FormatFloat(float64(latitude), 'f', 1, 32) +
+		",longtitude=" + strconv.FormatFloat(float64(longitude), 'f', 1, 32) +
+		",altitude=" + strconv.FormatFloat(float64(altitude), 'f', 1, 32) +
+		" " + strconv.FormatInt(t.UTC().UnixNano(), 10) +
+		" \n")
 }
 
 func decodeDustMeasurement(devId string,
 	latitude float32,
 	longitude float32,
 	altitude int32,
-	time types.JSONTime,
-	data *protobuf.DustSensorMeasurement) {
-	fmt.Println("dust_measurement,sensor_id=" + devId +
+	timestamp types.JSONTime,
+	data *protobuf.DustSensorMeasurement, file *os.File) {
+	stringTime, err := timestamp.MarshalText()
+	checkError(err)
+	t, err := time.Parse(time.RFC3339, string(stringTime[:]))
+	checkError(err)
+	file.WriteString("dust_measurement,sensor_id=" + devId +
 		" pm10=" + strconv.FormatFloat(float64(*data.ParticularMatter10Um), 'f', 6, 32) +
 		",pm25=" + strconv.FormatFloat(float64(*data.ParticularMatter2_5Um), 'f', 1, 32) +
 		",temp=" + strconv.FormatFloat(float64(*data.Temperature), 'f', 1, 32) +
@@ -52,10 +72,11 @@ func decodeDustMeasurement(devId string,
 		",latitude=" + strconv.FormatFloat(float64(latitude), 'f', 1, 32) +
 		",longtitude=" + strconv.FormatFloat(float64(longitude), 'f', 1, 32) +
 		",altitude=" + strconv.FormatFloat(float64(altitude), 'f', 1, 32) +
-		" ")
+		" " + strconv.FormatInt(t.UTC().UnixNano(), 10) +
+		"\n")
 }
 
-func decodeNodeState(appID string, devID string, req types.UplinkMessage) {
+func decodeNodeState(appID string, devID string, req types.UplinkMessage, file *os.File) {
 	length := binary.Size(req.PayloadRaw)
 	fmt.Println("Decoding NodeStatus Protobuf message")
 	//Create an struct pointer of type ProtobufTest.TestMessage struct
@@ -74,7 +95,8 @@ func decodeNodeState(appID string, devID string, req types.UplinkMessage) {
 		fmt.Print("META DATA TIME: ")
 		data, err := req.Metadata.Time.MarshalText()
 		if err != nil {
-			panic(err)
+			//panic(err)
+			fmt.Println("error")
 		}
 		fmt.Printf("%s", data)
 		fmt.Println("")
@@ -85,11 +107,11 @@ func decodeNodeState(appID string, devID string, req types.UplinkMessage) {
 		f.Sync()*/
 		switch u := protodata.Msg.(type) {
 		case *protobuf.NodeMessage_BatteryStateData:
-			decodeBatteryState(devID, req.Metadata.Latitude, req.Metadata.Longitude, req.Metadata.Altitude, req.Metadata.Time, u.BatteryStateData)
+			decodeBatteryState(devID, req.Metadata.Latitude, req.Metadata.Longitude, req.Metadata.Altitude, req.Metadata.Time, u.BatteryStateData, file)
 		case *protobuf.NodeMessage_DustMeasurementData:
-			decodeDustMeasurement(devID, req.Metadata.Latitude, req.Metadata.Longitude, req.Metadata.Altitude, req.Metadata.Time, u.DustMeasurementData)
+			decodeDustMeasurement(devID, req.Metadata.Latitude, req.Metadata.Longitude, req.Metadata.Altitude, req.Metadata.Time, u.DustMeasurementData, file)
 		}
-
+		file.Sync()
 		fmt.Println(protodata)
 	}
 }
@@ -103,13 +125,13 @@ func main() {
 		ctx.WithError(err).Fatal("Could not connect")
 	}
 
-	/*f, err := os.Create("output.txt")
-	check(err)*/
-	//defer f.Close()
+	file, err := os.Create("output.txt")
+	checkError(err)
+	//defer file.Close()
 
 	token := client.SubscribeAppUplink("erni-hello-world", func(client mqtt.Client, appID string, devID string, req types.UplinkMessage) {
 		fmt.Println("------Received - UPLINK ------")
-		go decodeNodeState(appID, devID, req)
+		go decodeNodeState(appID, devID, req, file)
 	})
 	token.Wait()
 
