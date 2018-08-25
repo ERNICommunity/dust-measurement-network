@@ -18,13 +18,7 @@ Assets::Assets(Adafruit_FRAM_I2C* fram)
   memset(m_id, 0, MAX_ID_LENGTH + 1); // one more to ensure we have termination!
   if (m_fram == 0)
   {
-    return;
-  }
-  bool state = m_fram->begin();
-  if (!state)
-  {
-    TR_PRINT_STR(m_trPort, DbgTrace_Level::error, "FRAM is not available!");
-    m_fram = 0;
+    TR_PRINT_STR(m_trPort, DbgTrace_Level::error, "FRAM is NULL -> no FRAM available!");
     return;
   }
   char nibble;
