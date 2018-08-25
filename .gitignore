@@ -9,3 +9,5 @@ detector/\.vscode/launch\.json
 /.metadata/
 /detector/.metadata
 >>>>>>> ttn-gwy-dev
+
+ttn-gwy/output\.txt
