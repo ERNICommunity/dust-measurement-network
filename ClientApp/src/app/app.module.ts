@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { HomeComponent } from './home/home.component';
+import { AboutComponent } from './about/about.component';
 import { OsmMapComponent } from './osmmap/osmmap.component';
 import { ChartComponent } from './chart/chart.component';
 
@@ -14,7 +14,7 @@ import { ChartComponent } from './chart/chart.component';
   declarations: [
     AppComponent,
     NavMenuComponent,
-    HomeComponent,
+    AboutComponent,
     OsmMapComponent,
     ChartComponent
   ],
@@ -23,8 +23,8 @@ import { ChartComponent } from './chart/chart.component';
     HttpClientModule,
     FormsModule,
     RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'osmmap', component: OsmMapComponent },
+      { path: '', component: OsmMapComponent, pathMatch: 'full' },
+      { path: 'about', component: AboutComponent},
       { path: 'chart', component: ChartComponent }
     ])
   ],

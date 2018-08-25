@@ -14,17 +14,17 @@
             <ul class='nav navbar-nav'>
                 <li [routerLinkActive]='["link-active"]' [routerLinkActiveOptions]='{ exact: true }'>
                     <a [routerLink]='["/"]' (click)='collapse()'>
-                        <span class='glyphicon glyphicon-home'></span> Home
-                    </a>
-                </li>
-                <li [routerLinkActive]='["link-active"]'>
-                    <a [routerLink]='["/osmmap"]' (click)='collapse()'>
                         <span class='glyphicon glyphicon-globe'></span> OSM Map
                     </a>
                 </li>
                 <li [routerLinkActive]='["link-active"]'>
                     <a [routerLink]='["/chart"]' (click)='collapse()'>
                         <span class='glyphicon glyphicon-stats'></span> Chart
+                    </a>
+                </li>
+                <li [routerLinkActive]='["link-active"]'>
+                    <a [routerLink]='["/about"]' (click)='collapse()'>
+                        <span class='glyphicon glyphicon-info-sign'></span> About
                     </a>
                 </li>
             </ul>

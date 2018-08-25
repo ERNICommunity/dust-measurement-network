@@ -14,7 +14,7 @@ namespace hh_fe.Controllers
         public IEnumerable<Sensor> Index()
         {
             return new[] {
-                new Sensor(1, 48.142402, 17.108669, 5.5, 6.2, new DateTimeOffset(new DateTime(2018, 8, 20, 12, 0, 0), TimeSpan.FromHours(2))),
+                new Sensor(1, 47.0027524, 8.4939782, 5.5, 6.2, new DateTimeOffset(new DateTime(2018, 8, 20, 12, 0, 0), TimeSpan.FromHours(2))),
                 new Sensor(2, 47.008323, 8.486309, 2.4, 7.3, new DateTimeOffset(new DateTime(2018, 7, 15, 1, 0, 0), TimeSpan.FromHours(1))),
                 new Sensor(3, 14.598882, 120.971040, 10.2, 1.4, new DateTimeOffset(new DateTime(2018, 5, 1, 22, 30, 0), TimeSpan.FromHours(8))),
                 new Sensor(4, 47.370677, 8.540103, 4.4, 60.5, new DateTimeOffset(new DateTime(2018, 8, 22, 15, 30, 0), TimeSpan.FromHours(1))),
