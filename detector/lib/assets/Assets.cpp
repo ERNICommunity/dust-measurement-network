@@ -38,10 +38,6 @@ Assets::Assets()
 
 Assets::~Assets()
 {
-  if (m_fram == 0)
-  {
-    return;
-  }
   delete m_fram;
   m_fram = 0;
 }
