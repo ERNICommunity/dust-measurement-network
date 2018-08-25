@@ -21,8 +21,9 @@ Assets::Assets()
     m_fram = 0;
     return;
   }
+  char nibble;
   int index = 0;
-  while ((char nibble = m_fram->read8(index++)) != '\0' && index < MAX_ID_LENGTH)
+  while ((nibble = m_fram->read8(index++)) != '\0' && index < MAX_ID_LENGTH)
   {
     m_id[index] = nibble;
   }
@@ -46,13 +47,14 @@ void Assets::setDeviceId(const char* id){
     // ToDo: Add error trace!
     return;
   }
+  char nibble;
   int index = 0;
-  while ((char nibble = &id++) != '\0' && index++ < MAX_ID_LENGTH)
+  while ((nibble = id[index++]) != '\0' && index < MAX_ID_LENGTH)
   {
     m_fram->write8(index, nibble);
   }
   // ToDo: emmit eror when index == MAX_ID_LENGTH!
-  m_fram->write8(index, (uint8_t)'\0')); // and always terminate!
+  m_fram->write8(index, (uint8_t)'\0'); // and always terminate!
 }
 
 const char* Assets::getDeviceId()
