@@ -27,7 +27,7 @@ func checkError(err error) {
 	}
 }
 
-func decodeNodeState(req types.UplinkMessage) {
+func decodeNodeState(appID string, devID string, req types.UplinkMessage) {
 	length := binary.Size(req.PayloadRaw)
 	fmt.Println("Decoding NodeStatus Protobuf message")
 	//Create an struct pointer of type ProtobufTest.TestMessage struct
@@ -35,7 +35,20 @@ func decodeNodeState(req types.UplinkMessage) {
 	//Convert all the data retrieved into the ProtobufTest.TestMessage struct type
 	err := proto.Unmarshal(req.PayloadRaw[0:length], protodata)
 	if err == nil {
-		fmt.Print("Data Node State: ")
+		fmt.Println("DEVICE ID ")
+		fmt.Println(devID)
+		fmt.Println("META DATA PLACE: ")
+		fmt.Println(req.Metadata.Latitude)
+		fmt.Println(req.Metadata.Longitude)
+		fmt.Println(req.Metadata.Altitude)
+		fmt.Print("META DATA TIME: ")
+		data, err := req.Metadata.Time.MarshalText()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("%s", data)
+		fmt.Println("")
+		fmt.Println("Data Node State: ")
 		fmt.Println(protodata)
 	}
 }
@@ -51,9 +64,8 @@ func main() {
 	fmt.Println("HELLO WORLD")
 
 	token := client.SubscribeAppUplink("erni-hello-world", func(client mqtt.Client, appID string, devID string, req types.UplinkMessage) {
-		fmt.Println("Received - UPLINK")
-		fmt.Println(devID)
-		go decodeNodeState(req)
+		fmt.Println("------Received - UPLINK ------")
+		go decodeNodeState(appID, devID, req)
 	})
 	token.Wait()
 
