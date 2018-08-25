@@ -3,3 +3,8 @@
 .text {
     margin: 2em;
 }
+
+img {
+    width: 80%;
+    height: auto;
+}

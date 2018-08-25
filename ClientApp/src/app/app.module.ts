@@ -9,6 +9,7 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { AboutComponent } from './about/about.component';
 import { OsmMapComponent } from './osmmap/osmmap.component';
 import { ChartComponent } from './chart/chart.component';
+import { DustService } from './dust.service';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,7 @@ import { ChartComponent } from './chart/chart.component';
       { path: 'chart', component: ChartComponent }
     ])
   ],
-  providers: [],
+  providers: [DustService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

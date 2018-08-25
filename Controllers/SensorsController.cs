@@ -40,19 +40,23 @@ namespace hh_fe.Controllers
         [Route("{id:int}/history")]
         public IEnumerable<DataPointDto> History(int id)
         {
-            return Enumerable.Range(1, 10).Select(index => new DataPointDto(
-                DateTimeOffset.UtcNow.AddMinutes(-index),
-                 _rand.NextDouble()*100,
-                 _rand.NextDouble()*100));
+            return _ctx.SensorDatas.Where(x => x.SensorId == id).Select(x => new DataPointDto
+             { 
+                 Timestamp = x.Timestamp,
+                 ParticulateMatter25 = x.ParticulateMatter25,
+                 ParticulateMatter100 = x.ParticulateMatter100
+             });
         }
 
         [Route("{id:int}/prediction")]
         public IEnumerable<DataPointDto> Prediction(int id)
         {
-            return Enumerable.Range(1, 5).Select(index => new DataPointDto(
-                DateTimeOffset.UtcNow.AddDays(index+1),
-                 _rand.NextDouble()*100,
-                 _rand.NextDouble()*100));
+            return Enumerable.Range(1, 5).Select(index => new DataPointDto
+             {
+                Timestamp = DateTimeOffset.UtcNow.AddDays(index+1),
+                ParticulateMatter25 = _rand.NextDouble()*100,
+                ParticulateMatter100 = _rand.NextDouble()*100
+            });
         }
     }
 }
