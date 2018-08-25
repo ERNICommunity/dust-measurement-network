@@ -4,7 +4,7 @@ about: High level Product Requirement
 
 ---
 
-**ID**
+**ID:** ProdREQ-00
 
 **Break down**
 
@@ -13,5 +13,5 @@ about: High level Product Requirement
 **Actions**
 
 **To be done before or during the event**
-- [ ] before
-- [ ] during
+- before
+- during
