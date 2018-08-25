@@ -1,71 +1,45 @@
--- ****************** SqlDBM: Microsoft SQL Server ******************
--- ******************************************************************
+-- Postgres Script
 
-DROP TABLE [SensorData];
-GO
-  
+ALTER TABLE "SensorData" DROP CONSTRAINT IF EXISTS "SensorData_fk0";
+ALTER TABLE "SensorData" DROP CONSTRAINT IF EXISTS "SensorData_fk1";
 
-DROP TABLE [SensorDataEnhancement];
-GO
+DROP TABLE IF EXISTS "Sensor";
+DROP TABLE IF EXISTS "SensorData";
+DROP TABLE IF EXISTS "SensorDataEnhancement";
 
-
-DROP TABLE [Sensor];
-GO
-
---************************************** [SensorDataEnhancement]
-
-CREATE TABLE [SensorDataEnhancement]
-(
- [EnhancementId] BIGINT NOT NULL ,
- [windspeed]     FLOAT NOT NULL ,
- [winddirection] SMALLINT NOT NULL ,
- [rainamount]    SMALLINT NOT NULL ,
-
- CONSTRAINT [PK_SensorDataEnhancement] PRIMARY KEY CLUSTERED ([EnhancementId] ASC)
+CREATE TABLE "Sensor" (
+	"sensorid" serial NOT NULL,
+	"longitude" FLOAT NOT NULL,
+	"latitude" FLOAT NOT NULL,
+	"altitude" FLOAT NOT NULL,
+	CONSTRAINT Sensor_pk PRIMARY KEY ("sensorid")
+) WITH (
+  OIDS=FALSE
 );
-GO
 
-
-
---************************************** [Sensor]
-
-CREATE TABLE [Sensor]
-(
- [SensorId]  INT NOT NULL ,
- [longitude] FLOAT NOT NULL ,
- [latitude]  FLOAT NOT NULL ,
- [altitude]  FLOAT NOT NULL ,
-
- CONSTRAINT [PK_Sensor] PRIMARY KEY CLUSTERED ([SensorId] ASC)
+CREATE TABLE "SensorData" (
+	"dataid" serial NOT NULL,
+	"timestamp" TIMESTAMP NOT NULL,
+	"particulatematter25" FLOAT NOT NULL,
+	"particulatematter100" FLOAT NOT NULL,
+	"airtemperature" FLOAT NOT NULL,
+	"relativehumidity" FLOAT NOT NULL,
+	"sensorid" integer NOT NULL,
+	"enhancementid" integer NOT NULL,
+	CONSTRAINT SensorData_pk PRIMARY KEY ("dataid")
+) WITH (
+  OIDS=FALSE
 );
-GO
 
-
-
---************************************** [SensorData]
-
-CREATE TABLE [SensorData]
-(
- [DataId]               BIGINT NOT NULL ,
- [SensorId]             INT NOT NULL ,
- [EnhancementId]        BIGINT NOT NULL ,
- [timestamp]            DATETIME NOT NULL ,
- [particulatematter25]  FLOAT NOT NULL ,
- [particulatematter100] FLOAT NOT NULL ,
- [airtemperature]       FLOAT NOT NULL ,
- [relativehumidity]     FLOAT NOT NULL ,
-
- CONSTRAINT [PK_InfluxData] PRIMARY KEY CLUSTERED ([DataId] ASC, [SensorId] ASC, [EnhancementId] ASC),
- CONSTRAINT [FK_39] FOREIGN KEY ([SensorId])
-  REFERENCES [Sensor]([SensorId]),
- CONSTRAINT [FK_43] FOREIGN KEY ([EnhancementId])
-  REFERENCES [SensorDataEnhancement]([EnhancementId])
+CREATE TABLE "SensorDataEnhancement" (
+	"enhancementid" serial NOT NULL,
+	"winddirection" FLOAT NOT NULL,
+	"windspeed" FLOAT NOT NULL,
+	"rainamount" FLOAT NOT NULL,
+	CONSTRAINT SensorDataEnhancement_pk PRIMARY KEY ("enhancementid")
+) WITH (
+  OIDS=FALSE
 );
-GO
 
-
---SKIP Index: [fkIdx_39]
-
---SKIP Index: [fkIdx_43]
-
-
+ALTER TABLE "SensorData" ADD CONSTRAINT "SensorData_fk0" FOREIGN KEY ("sensorid") REFERENCES "Sensor"("sensorid");
+ALTER TABLE "SensorData" ADD CONSTRAINT "SensorData_fk1" FOREIGN KEY ("enhancementid") REFERENCES "SensorDataEnhancement"("enhancementid");
