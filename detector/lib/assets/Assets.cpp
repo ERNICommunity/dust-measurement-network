@@ -23,9 +23,9 @@ Assets::Assets()
   }
   char nibble;
   int index = 0;
-  while ((nibble = m_fram->read8(index++)) != '\0' && index < MAX_ID_LENGTH)
+  while (index < MAX_ID_LENGTH && (nibble = m_fram->read8(index)) != '\0')
   {
-    m_id[index] = nibble;
+    m_id[index++] = nibble;
   }
   // ToDo: We have to deal with un-initialized data! and warn appropriately
 }
@@ -49,9 +49,9 @@ void Assets::setDeviceId(const char* id){
   }
   char nibble;
   int index = 0;
-  while ((nibble = id[index++]) != '\0' && index < MAX_ID_LENGTH)
+  while (index < MAX_ID_LENGTH && (nibble = id[index]) != '\0')
   {
-    m_fram->write8(index, nibble);
+    m_fram->write8(index++, nibble);
   }
   // ToDo: emmit eror when index == MAX_ID_LENGTH!
   m_fram->write8(index, (uint8_t)'\0'); // and always terminate!
