@@ -17,3 +17,5 @@ detector/\.vscode/c_cpp_properties\.json
 detector/\.vscode/launch\.json
 
 ttn-gwy/TTN_Interface\.exe
+
+ttn-gwy/output\.txt
