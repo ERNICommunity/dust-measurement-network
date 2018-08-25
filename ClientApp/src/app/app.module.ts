@@ -10,6 +10,7 @@ import { AboutComponent } from './about/about.component';
 import { OsmMapComponent } from './osmmap/osmmap.component';
 import { ChartComponent } from './chart/chart.component';
 import { DustService } from './dust.service';
+import { PopupInfoComponent } from './popup-info/popup-info.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { DustService } from './dust.service';
     NavMenuComponent,
     AboutComponent,
     OsmMapComponent,
-    ChartComponent
+    ChartComponent,
+    PopupInfoComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

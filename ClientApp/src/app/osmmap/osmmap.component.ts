@@ -1,6 +1,6 @@
 import { Component, AfterViewInit, OnInit, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -28,7 +28,7 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
   isLoaded: boolean;
   private overlay: Overlay;
 
-  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {
+  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string, private router: Router) {
     this.isLoaded = false;
    }
 
@@ -44,12 +44,8 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit() {
-    /**
-     * Elements that make up the popup.
-     */
-    var container = document.getElementById('popup');
     this.overlay = new Overlay({
-      element: container,
+      element: document.getElementById('popup'),
       autoPan: true,
       autoPanAnimation: {
         duration: 250
@@ -97,13 +93,7 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
           var geometry = f.getGeometry();
           var coord = geometry.getCoordinates();
           
-          document.getElementById('popup-content').innerHTML = 
-          `<p>
-          <strong>ID:</strong> ${f.get('name')}<br>
-          <strong>PM2.5:</strong> ${new DecimalPipe('en-US').transform(f.get('particulateMatter25'))} µg/m<sup>3</sup><br>
-          <strong>PM10:</strong> ${new DecimalPipe('en-US').transform(f.get('particulateMatter100'))} µg/m<sup>3</sup><br>
-          <strong>Last measurement:</strong> ${this.formatTimestamp(f.get('timestamp'))}
-          </p>`;
+          // TODO add component to popup dynamically, because its needs to be able to route
           this.overlay.setPosition(coord);
       }
     });
@@ -138,11 +128,6 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
     } else {
       this.isLoaded = true;
     }
-  }
-
-  private formatTimestamp(stamp: Date) {
-    const datePipe = new DatePipe('en-US');
-    return datePipe.transform(stamp, 'long');
   }
 }
 

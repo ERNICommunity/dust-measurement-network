@@ -1,0 +1,7 @@
+<p>
+  <strong>ID:</strong> {{id}}<br>
+  <strong>PM2.5:</strong> {{particulateMatter25 | number}} µg/m<sup>3</sup><br>
+  <strong>PM10:</strong> {{particulateMatter100 | number}} µg/m<sup>3</sup><br>
+  <strong>Last measurement:</strong> {{formatTimestamp(timestamp)}}<br>
+  <a class='pull-right' (click)='openChart(id)' href='#'>...details</a>
+</p>
