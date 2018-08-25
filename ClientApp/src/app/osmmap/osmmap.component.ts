@@ -1,5 +1,6 @@
 import { Component, AfterViewInit, OnInit, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { DatePipe, DecimalPipe } from '@angular/common';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -11,6 +12,7 @@ import VectorSource from 'ol/source/Vector';
 import { fromLonLat } from 'ol/proj';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
+import Overlay from 'ol/Overlay';
 import { Circle, Fill, Stroke, Style } from 'ol/style';
 
 @Component({
@@ -24,6 +26,7 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
   private defaultLongitude: number = 8.5417;
   private vectorSource = new VectorSource();
   isLoaded: boolean;
+  private overlay: Overlay;
 
   constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {
     this.isLoaded = false;
@@ -31,11 +34,31 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit() {
     this.trackPosition();
+
+    var closer = document.getElementById('popup-closer');
+    closer.onclick = function() {
+      this.overlay.setPosition(undefined);
+      closer.blur();
+      return false;
+    }.bind(this);
   }
 
   ngOnInit() {
+    /**
+     * Elements that make up the popup.
+     */
+    var container = document.getElementById('popup');
+    this.overlay = new Overlay({
+      element: container,
+      autoPan: true,
+      autoPanAnimation: {
+        duration: 250
+      }
+    });
+
     this.map = new Map({
       target: 'osmmap',
+      overlays: [this.overlay],
       layers: [
         new TileLayer({
           source: new OSMSource()
@@ -51,7 +74,7 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
               width: 2
             }),
             image: new Circle({
-              radius: 20,
+              radius: 5,
               fill: new Fill({
                 color: '#000000'
               })
@@ -64,6 +87,27 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
         zoom: 13
       })
     });
+
+    this.map.on('click', (evt) => {
+      var f = this.map.forEachFeatureAtPixel(
+          evt.pixel,
+          function(ft, layer){return ft;}
+      );
+      if (f) {
+          var geometry = f.getGeometry();
+          var coord = geometry.getCoordinates();
+          
+          document.getElementById('popup-content').innerHTML = 
+          `<p>
+          <strong>ID:</strong> ${f.get('name')}<br>
+          <strong>PM2.5:</strong> ${new DecimalPipe('en-US').transform(f.get('particulateMatter25'))} µg/m<sup>3</sup><br>
+          <strong>PM10:</strong> ${new DecimalPipe('en-US').transform(f.get('particulateMatter100'))} µg/m<sup>3</sup><br>
+          <strong>Last measurement:</strong> ${this.formatTimestamp(f.get('timestamp'))}
+          </p>`;
+          this.overlay.setPosition(coord);
+      }
+    });
+
     this.http.get<Marker[]>(this.baseUrl + 'api/sensors').subscribe(
       result => this.render(result),
       error => console.error(error));
@@ -76,8 +120,8 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
         geometry: new Point(fromLonLat([markers[i].lon, markers[i].lat])),
         name: markers[i].id,
         timestamp: markers[i].timestamp,
-        dust1: markers[i].dust1,
-        dust2: markers[i].dust2
+        particulateMatter25: markers[i].particulateMatter25,
+        particulateMatter100: markers[i].particulateMatter100
       });
       this.vectorSource.addFeature(iconFeature);
     }
@@ -95,6 +139,11 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
       this.isLoaded = true;
     }
   }
+
+  private formatTimestamp(stamp: Date) {
+    const datePipe = new DatePipe('en-US');
+    return datePipe.transform(stamp, 'long');
+  }
 }
 
 interface Marker {
@@ -102,6 +151,6 @@ interface Marker {
   lat: number;
   lon: number;
   timestamp: Date;
-  dust1: number;
-  dust2: number;
+  particulateMatter25: number;
+  particulateMatter100: number;
 }
