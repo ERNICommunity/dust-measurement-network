@@ -8,13 +8,15 @@ import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { OsmMapComponent } from './osmmap/osmmap.component';
+import { ChartComponent } from './chart/chart.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    OsmMapComponent
+    OsmMapComponent,
+    ChartComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -22,7 +24,8 @@ import { OsmMapComponent } from './osmmap/osmmap.component';
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'osmmap', component: OsmMapComponent }
+      { path: 'osmmap', component: OsmMapComponent },
+      { path: 'chart', component: ChartComponent }
     ])
   ],
   providers: [],
