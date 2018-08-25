@@ -9,6 +9,8 @@
 #define SRC_ASSETS_H_
 
 class Adafruit_FRAM_I2C;
+class DbgTrace_Port;
+
 
 class Assets
 {
@@ -23,6 +25,7 @@ public:
 private:
   char m_id[MAX_ID_LENGTH + 1]; // one more to ensure we have termination!
   Adafruit_FRAM_I2C* m_fram;
+  DbgTrace_Port* m_trPort;
 
 private: // forbidden default functions
   Assets& operator = (const Assets& src); // assignment operator
