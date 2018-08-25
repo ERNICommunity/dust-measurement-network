@@ -14,36 +14,16 @@ import (
 	"github.com/gogo/protobuf/proto"
 )
 
+type MqttConfiguration struct {
+	ApplicationId  string
+	ApplicationKey string
+	broker         string
+}
+
 func checkError(err error) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Fatal error: %s", err.Error())
 		//os.Exit(1)
-	}
-}
-
-func decodeDustMeasurement(req types.UplinkMessage) {
-	length := binary.Size(req.PayloadRaw)
-	fmt.Println("Decoding DustMeasurement Protobuf message")
-	//Create an struct pointer of type ProtobufTest.TestMessage struct
-	protodata := new(protobuf.DustSensorMeasurement)
-	//Convert all the data retrieved into the ProtobufTest.TestMessage struct type
-	err := proto.Unmarshal(req.PayloadRaw[0:length], protodata)
-	if err == nil {
-		fmt.Print("Data Dust Measurement: ")
-		fmt.Println(protodata)
-	}
-}
-
-func decodeBatteryState(req types.UplinkMessage) {
-	length := binary.Size(req.PayloadRaw)
-	fmt.Println("Decoding BatteryState Protobuf message")
-	//Create an struct pointer of type ProtobufTest.TestMessage struct
-	protodata := new(protobuf.BatteryState)
-	//Convert all the data retrieved into the ProtobufTest.TestMessage struct type
-	err := proto.Unmarshal(req.PayloadRaw[0:length], protodata)
-	if err == nil {
-		fmt.Print("Data Battery State: ")
-		fmt.Println(protodata)
 	}
 }
 

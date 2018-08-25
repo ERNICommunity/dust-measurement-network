@@ -96,6 +96,9 @@ void loop()
   }
   pmProcess->pollSerialData();
   yield();                      // process Timers
+  float batteryVoltage = battery->getBatteryVoltage();
+ 
+  m_SystemStatusFacade->setBatteryStatus(SystemStatusFacade::State::e_OK,batteryVoltage);
   m_LoraWanInterface->loopOnce();
   m_LoraWanPriorityQueue->update();
 }

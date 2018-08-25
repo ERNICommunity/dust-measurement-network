@@ -62,7 +62,6 @@ void do_send(osjob_t* j)
         {
         // Prepare upstream data transmission at the next possible time.
         LMIC_setTxData2(1, (xref2u1_t)m_DataToSend, sizeof(uint8_t)*(m_DataToSendSize), 0);
-        Serial.println(F("Packet queued"));
         }
     }
     // Next TX is scheduled after TX_COMPLETE event.
