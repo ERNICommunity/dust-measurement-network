@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Model;
 
 namespace hh_fe
 {
@@ -22,6 +24,7 @@ namespace hh_fe
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddCors();
+            services.AddDbContext<DustContext>(opt => opt.UseInMemoryDatabase("DustDatabase"));
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
