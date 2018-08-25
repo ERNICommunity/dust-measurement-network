@@ -9,6 +9,7 @@
 
 #include <Arduino.h>
 #include <Timer.h>
+#include <Assets.h>
 #include <SerialCommand.h>
 #include <DbgCliNode.h>
 #include <DbgCliTopic.h>
@@ -20,7 +21,6 @@
 #include <DbgTraceOut.h>
 #include <AppDebug.h>
 
-
 #ifdef ESP8266
 extern "C"
 {
@@ -29,6 +29,44 @@ extern "C"
 #else
 #include <RamUtils.h>
 #endif
+
+//-----------------------------------------------------------------------------
+// Asset Commands
+//-----------------------------------------------------------------------------
+class DbgCli_Cmd_AssetReadId : public DbgCli_Command
+{
+private:
+  Assets* m_assets;
+public:
+  DbgCli_Cmd_AssetIdRead(DbgCli_Topic* assetIdTopic, Assets* assets)
+  : DbgCli_Command(assetTopic, "rd", "Assets - Read Device Id.")
+  , m_assets(assets)
+  { }
+
+  void execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
+  {
+    Serial.println();
+    if (argc - idxToFirstArgToHandle > 0)
+    {
+      printUsage();
+    }
+    else
+    {
+      Serial.println();
+      Serial.print("Assets - Device Id: ");
+      if (0 != m_assets)
+      {
+        Serial.println(m_assets->getDeviceId());
+      }
+      else
+      {
+        Serial.println("NONE");
+      }
+      Serial.println();
+    }
+    Serial.println();
+  }
+};
 
 //-----------------------------------------------------------------------------
 
