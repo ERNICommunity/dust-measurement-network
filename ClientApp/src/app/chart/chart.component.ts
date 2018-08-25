@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from "@angular/router";
+import { DatePipe } from "@angular/common";
 import { Chart } from 'chart.js';
 import { DustService } from "../dust.service";
 import { DustData } from "../definitions/DustData";
@@ -23,6 +24,7 @@ export class ChartComponent implements OnInit {
 
   constructor(private dustService: DustService, private activatedRoute: ActivatedRoute, private router: Router) {
     this.id = activatedRoute.snapshot.params['id'];
+    this.selectedId = this.id;
 }
 
   ngOnInit() {
@@ -48,11 +50,13 @@ export class ChartComponent implements OnInit {
   }
 
   showChart() {
+    let pipe = new DatePipe('en-us');
     this.ctx = document.getElementById('canvas');
     this.chart = new Chart(this.ctx.getContext('2d'), {
       type: 'line',
       data: {
-        labels: (this.dustHistory.map(dustdata => dustdata.timestamp.toString())).concat(this.dustPrediction.map(dustdata => dustdata.timestamp.toString())),
+        labels: this.dustHistory.map(dustdata => pipe.transform(dustdata.timestamp,'medium')).concat(
+                  this.dustPrediction.map(dustdata => pipe.transform(dustdata.timestamp,'medium')) ),
         datasets: [
           {
             label: "Dust 2.5",
