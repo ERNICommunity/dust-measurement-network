@@ -165,12 +165,6 @@ void onEvent(ev_t ev)
 
 void configuration()
 {
-       // pinMode(13, OUTPUT);
-    while (!Serial); // wait for Serial to be initialized
-    Serial.begin(115200);
-    delay(1000); // per sample code on RF_95 test
-    Serial.println(F("Starting"));
-
 #ifdef VCC_ENABLE
     // For Pinoccio Scout boards
     pinMode(VCC_ENABLE, OUTPUT);
