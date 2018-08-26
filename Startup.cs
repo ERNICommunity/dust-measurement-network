@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace hh_fe
 {
@@ -24,7 +25,7 @@ namespace hh_fe
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddCors();
-            services.AddDbContext<DustContext>(opt => opt.UseInMemoryDatabase("DustDatabase"));
+            services.AddDbContext<DustContext>(opt => opt.UseNpgsql("Server=51.144.114.5;Database=DustDatabase;User Id=DustBackend;Password=dusty100!"));
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
