@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"os"
 	"runtime"
@@ -14,11 +15,18 @@ import (
 	"github.com/TheThingsNetwork/ttn/core/types"
 	"github.com/TheThingsNetwork/ttn/mqtt"
 	"github.com/gogo/protobuf/proto"
+	"github.com/influxdata/influxdb/client/v2"
 )
 
-/*var {
-	fileData *os.File
-}*/
+const (
+	MyDB     = "square_holes"
+	username = "bubba"
+	password = "bumblebeetuna"
+)
+
+var (
+	influxClient *client.Client
+)
 
 type MqttConfiguration struct {
 	ApplicationId  string
@@ -29,7 +37,7 @@ type MqttConfiguration struct {
 func checkError(err error) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Fatal error: %s", err.Error())
-		//os.Exit(1)
+		runtime.Goexit()
 	}
 }
 
@@ -38,7 +46,8 @@ func decodeBatteryState(devId string,
 	longitude float32,
 	altitude int32,
 	timestamp types.JSONTime,
-	data *protobuf.BatteryState, file *os.File) {
+	data *protobuf.BatteryState, file *os.File,
+	influxClient *client.Client) {
 	voltage := data.Voltage
 	stringTime, err := timestamp.MarshalText()
 	checkError(err)
@@ -52,6 +61,111 @@ func decodeBatteryState(devId string,
 		",altitude=" + strconv.FormatFloat(float64(altitude), 'f', 1, 32) +
 		" " + strconv.FormatInt(t.UTC().UnixNano(), 10) +
 		" \n")
+	writeToInfluxDbBatteryData(influxClient, devId, *voltage, float32(*data.State), latitude, longitude, float32(altitude), t)
+}
+
+func initializeInfluxConnection() (*client.Client, error) {
+	// Create a new HTTPClient
+	c, err := client.NewHTTPClient(client.HTTPConfig{
+		Addr:     "http://104.40.196.109:8086",
+		Username: "admin",
+		Password: "hnh2018",
+	})
+	if err != nil {
+		fmt.Println(err)
+		return nil, errors.New("Client not connected")
+	}
+	return &c, nil
+}
+
+func writeToInfluxDbBatteryData(influxClient *client.Client,
+	devId string,
+	voltage float32,
+	health float32,
+	lat float32,
+	long float32,
+	alt float32,
+	timestamp time.Time,
+) error {
+	// Create a new point batch
+	bp, err := client.NewBatchPoints(client.BatchPointsConfig{
+		Database:  "dmn",
+		Precision: "s",
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Create a point and add to batch
+	tags := map[string]string{"sensor_id": devId}
+	fields := map[string]interface{}{
+		"voltage":      voltage, //*protobuf.ParticularMatter10um,
+		"health_state": health,
+		"latitude":     lat,
+		"longitude":    long,
+		"altitude":     alt,
+	}
+
+	pt, err := client.NewPoint("sensor_state", tags, fields, timestamp)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	bp.AddPoint(pt)
+
+	// Write the batch
+	fmt.Println(influxClient)
+	if err := (*influxClient).Write(bp); err != nil {
+		fmt.Println(err)
+	}
+	return nil
+}
+
+func writeToInfluxDbDustData(influxClient *client.Client,
+	devId string,
+	pm10 float32,
+	pm25 float32,
+	temp float32,
+	humidity float32,
+	lat float32,
+	long float32,
+	alt float32,
+	timestamp time.Time,
+) error {
+	// Create a new point batch
+	bp, err := client.NewBatchPoints(client.BatchPointsConfig{
+		Database:  "dmn",
+		Precision: "s",
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Create a point and add to batch
+	tags := map[string]string{"sensor_id": devId}
+	fields := map[string]interface{}{
+		"pm10":      pm10, //*protobuf.ParticularMatter10um,
+		"pm25":      pm25,
+		"temp":      temp,
+		"humidity":  humidity,
+		"latitude":  lat,
+		"longitude": long,
+		"altitude":  alt,
+	}
+
+	pt, err := client.NewPoint("dust_measurement", tags, fields, timestamp)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	bp.AddPoint(pt)
+
+	// Write the batch
+	fmt.Println(influxClient)
+	if err := (*influxClient).Write(bp); err != nil {
+		fmt.Println(err)
+	}
+	return nil
 }
 
 func decodeDustMeasurement(devId string,
@@ -59,7 +173,8 @@ func decodeDustMeasurement(devId string,
 	longitude float32,
 	altitude int32,
 	timestamp types.JSONTime,
-	data *protobuf.DustSensorMeasurement, file *os.File) {
+	data *protobuf.DustSensorMeasurement, file *os.File,
+	influxClient *client.Client) {
 	stringTime, err := timestamp.MarshalText()
 	checkError(err)
 	t, err := time.Parse(time.RFC3339, string(stringTime[:]))
@@ -74,9 +189,26 @@ func decodeDustMeasurement(devId string,
 		",altitude=" + strconv.FormatFloat(float64(altitude), 'f', 1, 32) +
 		" " + strconv.FormatInt(t.UTC().UnixNano(), 10) +
 		"\n")
+
+	if err := writeToInfluxDbDustData(influxClient,
+		devId,
+		*data.ParticularMatter10Um,
+		*data.ParticularMatter2_5Um,
+		*data.Temperature,
+		*data.Humidity,
+		latitude,
+		longitude,
+		float32(altitude),
+		t); err != nil {
+		fmt.Println(err)
+	}
 }
 
-func decodeNodeState(appID string, devID string, req types.UplinkMessage, file *os.File) {
+func decodeNodeState(appID string,
+	devID string,
+	req types.UplinkMessage,
+	file *os.File,
+	influxClient *client.Client) {
 	length := binary.Size(req.PayloadRaw)
 	fmt.Println("Decoding NodeStatus Protobuf message")
 	//Create an struct pointer of type ProtobufTest.TestMessage struct
@@ -86,30 +218,11 @@ func decodeNodeState(appID string, devID string, req types.UplinkMessage, file *
 	fmt.Println(protodata.Information)
 
 	if err == nil {
-		fmt.Println("DEVICE ID ")
-		fmt.Println(devID)
-		fmt.Println("META DATA PLACE: ")
-		fmt.Println(req.Metadata.Latitude)
-		fmt.Println(req.Metadata.Longitude)
-		fmt.Println(req.Metadata.Altitude)
-		fmt.Print("META DATA TIME: ")
-		data, err := req.Metadata.Time.MarshalText()
-		if err != nil {
-			//panic(err)
-			fmt.Println("error")
-		}
-		fmt.Printf("%s", data)
-		fmt.Println("")
-		fmt.Println("Data Node State: ")
-		fmt.Println()
-		/*amountOfString, err := f.WriteString("writes\n")
-
-		f.Sync()*/
 		switch u := protodata.Msg.(type) {
 		case *protobuf.NodeMessage_BatteryStateData:
-			decodeBatteryState(devID, req.Metadata.Latitude, req.Metadata.Longitude, req.Metadata.Altitude, req.Metadata.Time, u.BatteryStateData, file)
+			decodeBatteryState(devID, req.Metadata.Latitude, req.Metadata.Longitude, req.Metadata.Altitude, req.Metadata.Time, u.BatteryStateData, file, influxClient)
 		case *protobuf.NodeMessage_DustMeasurementData:
-			decodeDustMeasurement(devID, req.Metadata.Latitude, req.Metadata.Longitude, req.Metadata.Altitude, req.Metadata.Time, u.DustMeasurementData, file)
+			decodeDustMeasurement(devID, req.Metadata.Latitude, req.Metadata.Longitude, req.Metadata.Altitude, req.Metadata.Time, u.DustMeasurementData, file, influxClient)
 		}
 		file.Sync()
 		fmt.Println(protodata)
@@ -125,19 +238,23 @@ func main() {
 		ctx.WithError(err).Fatal("Could not connect")
 	}
 
+	influxClient, err := initializeInfluxConnection()
+
 	file, err := os.Create("output.txt")
 	checkError(err)
 	//defer file.Close()
 
 	token := client.SubscribeAppUplink("erni-hello-world", func(client mqtt.Client, appID string, devID string, req types.UplinkMessage) {
 		fmt.Println("------Received - UPLINK ------")
-		go decodeNodeState(appID, devID, req, file)
+		go decodeNodeState(appID, devID, req, file,
+			influxClient)
 	})
 	token.Wait()
 
 	if err := token.Error(); err != nil {
 		ctx.WithError(err).Fatal("Could not subscribe")
 	}
+
 	runtime.Goexit()
 
 }
