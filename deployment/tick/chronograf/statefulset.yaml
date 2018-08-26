@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: default
+  name: chronograf
+spec:
+  replicas: 1
+  serviceName: chronograf-ss
+  selector:
+    matchLabels:
+      app: chronograf
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: default
+      resources:
+        requests:
+          storage: 10Gi
+  template:
+    metadata:
+      labels:
+        app: chronograf
+    spec:
+      containers:
+      - name: chronograf
+        image: chronograf:1.5.0-alpine
+        command: ["chronograf"]
+        args: ["--influxdb-url=http://influxdb:8086", "--kapacitor-url=http://kapacitor:9092"]
+        ports:
+        - name: api
+          containerPort: 8888
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: api
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: api
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/chronograf

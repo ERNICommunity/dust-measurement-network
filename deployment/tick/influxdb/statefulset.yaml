@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: default
+  name: influxdb
+data:
+  influxdb.conf: |+
+    [meta]
+      dir = "/var/lib/influxdb/meta"
+      retention-autocreate = false
+    [data]
+      dir = "/var/lib/influxdb/data"
+      engine = "tsm1"
+      wal-dir = "/var/lib/influxdb/wal"    
+  init.iql: |+
+    CREATE DATABASE "telegraf" WITH DURATION 90d REPLICATION 1 SHARD DURATION 1h NAME "rp_90d;"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: default
+  name: influxdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  serviceName: influxdb
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: managed-premium
+      resources:
+        requests:
+          storage: 10Gi
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      volumes:
+      - name: config
+        configMap:
+          name: influxdb
+          items:
+            - key: influxdb.conf
+              path: influxdb.conf
+      - name: init-iql
+        configMap:
+          name: influxdb
+          items:
+            - key: init.iql
+              path: init.iql
+      containers:
+      - name: influxdb
+        image: influxdb:1.5.4-alpine
+        env:
+        - name: INFLUXDB_DB
+          value: dmn
+        - name: INFLUXDB_HTTP_AUTH_ENABLED
+          value: "true"
+        - name: INFLUXDB_ADMIN_USER
+          value: admin
+        - name: INFLUXDB_ADMIN_PASSWORD
+          value: hnh2018
+        ports:
+        - name: api
+          containerPort: 8086        
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/influxdb
+        - name: config
+          mountPath: /etc/telegraf
+        - name: init-iql
+          mountPath: /docker-entrypoint-initdb.d
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: api
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
