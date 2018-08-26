@@ -31,6 +31,7 @@ import { PopupInfoComponent } from './popup-info/popup-info.component';
       { path: 'chart/:id', component: ChartComponent }
     ])
   ],
+  entryComponents: [PopupInfoComponent],
   providers: [DustService],
   bootstrap: [AppComponent]
 })

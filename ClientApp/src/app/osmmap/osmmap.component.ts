@@ -1,6 +1,6 @@
-import { Component, AfterViewInit, OnInit, Inject } from '@angular/core';
+import { Component, AfterViewInit, OnInit, Inject, ApplicationRef, ComponentFactoryResolver, Injector, EmbeddedViewRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { PopupInfoComponent } from '../popup-info/popup-info.component';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -28,9 +28,15 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
   isLoaded: boolean;
   private overlay: Overlay;
 
-  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string, private router: Router) {
+  constructor(
+    private http: HttpClient, 
+    @Inject('BASE_URL') private baseUrl: string, 
+    private appRef: ApplicationRef,
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private injector: Injector
+  ) {
     this.isLoaded = false;
-   }
+  }
 
   ngAfterViewInit() {
     this.trackPosition();
@@ -92,8 +98,7 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
       if (f) {
           var geometry = f.getGeometry();
           var coord = geometry.getCoordinates();
-          
-          // TODO add component to popup dynamically, because its needs to be able to route
+          this.appendPopup(f);
           this.overlay.setPosition(coord);
       }
     });
@@ -128,6 +133,29 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
     } else {
       this.isLoaded = true;
     }
+  }
+
+  private appendPopup(sensorData: any) {
+    const popupContent = document.getElementById('popup-content');
+    popupContent.childNodes.forEach((node) => node.remove());
+
+    const componentRef = 
+      this.componentFactoryResolver
+      .resolveComponentFactory(PopupInfoComponent)
+      .create(this.injector);
+
+    this.appRef.attachView(componentRef.hostView);
+
+    const domElem = (componentRef.hostView as EmbeddedViewRef<any>)
+      .rootNodes[0] as HTMLElement;
+    (<PopupInfoComponent>componentRef.instance).data = {
+      id: sensorData.get('name'),
+      particulateMatter25: sensorData.get('particulateMatter25'),
+      particulateMatter100: sensorData.get('particulateMatter100'),
+      timestamp: sensorData.get('timestamp')
+    }
+
+    popupContent.appendChild(domElem);
   }
 }
 
