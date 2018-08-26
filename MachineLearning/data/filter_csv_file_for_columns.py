@@ -54,7 +54,7 @@ with open('Zurich_weather_historic_2018.csv') as input_file:
         filtered_data['P1'] = p1_av[0:31*24] 
         filtered_data['P2'] = p2_av[0:31*24] 
         
-        with open('dust_measurement_data_zurich_january_2018.csv', 'w') as output:
+        with open('aggregated_dust_measurement_data_zurich_january_2018.csv', 'w') as output:
             filtered_data.to_csv(output)
 #with open('2018-01_sds011.csv') as dust_input:
 #    writer = open('node_574_dust_Zurich_January_2018.csv', 'w')
