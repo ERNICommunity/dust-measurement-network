@@ -62,13 +62,13 @@ export class ChartComponent implements OnInit {
             label: "Dust 2.5",
             //backgroundColor: 'rgb(18, 99, 132)',
             borderColor: 'rgb(18, 99, 32)',
-            data: (this.dustHistory.map(dustdata => dustdata.dust1)).concat(this.dustPrediction.map(dustdata => dustdata.dust1)),
+            data: (this.dustHistory.map(dustdata => dustdata.particulateMatter25)).concat(this.dustPrediction.map(dustdata => dustdata.particulateMatter25)),
           },
           {
             label: "Dust 10.0",
             //backgroundColor: 'rgb(18, 3, 132)',
             borderColor: 'rgb(18, 3, 32)',
-            data: (this.dustHistory.map(dustdata => dustdata.dust2)).concat(this.dustPrediction.map(dustdata => dustdata.dust2)),
+            data: (this.dustHistory.map(dustdata => dustdata.particulateMatter100)).concat(this.dustPrediction.map(dustdata => dustdata.particulateMatter100)),
           }]
       },
       options: {
