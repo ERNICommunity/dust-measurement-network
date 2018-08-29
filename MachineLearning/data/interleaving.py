@@ -7,17 +7,22 @@ Created on Sun Aug 26 09:43:46 2018
 
 import pandas as pd
 import numpy as np
+import transforming
 
-with open('aggregated_dust_measurement_data_zurich_january_2018.csv') as input_file:
-    data = pd.read_csv(input_file)
-    print(data.keys())
-    
-    #minus_one_nan = data[['pressure', 'humidity', 'wind_speed',
-    #   'wind_deg', 'node_id', 'P1', 'P2']][:1]
-    #minus_one_nan.replace()
-    
+def bin_in_wind_deg(data, bin_width=10):
+    # get the column with the bins
+    wind_deg = np.array(data[['wind_deg']])
+    min_deg = np.min(wind_deg)
+    wind_deg_bins = (wind_deg-min_deg)//bin_width
+    data['wind_deg_bin'] = pd.DataFrame(wind_deg_bins)
+    return data
+    # determine number of bins
+    # put numbers in bins
+
+
+def interleave(data):    
     list_of_columns = ['pressure', 'humidity', 'wind_speed',
-       'wind_deg', 'P1', 'P2']
+        'wind_deg_bin', 'P1', 'P2']
     nan_data = {}
     for key in list_of_columns:
         nan_data[key] = np.nan
@@ -33,36 +38,21 @@ with open('aggregated_dust_measurement_data_zurich_january_2018.csv') as input_f
         data[[key+'_minus_'+str(i) for key in minus_one.keys()]] = minus_one
         data_frame_cache = minus_one
     
-    """
-    minus_two = minus_one[['pressure', 'humidity', 'wind_speed',
-       'wind_deg', 'node_id', 'P1', 'P2']][:-1]
-    
-    new_data_minus_two = []
-    new_data_minus_two.insert(0, nan_data)
-    minus_two = pd.concat([pd.DataFrame(new_data_minus_two), minus_two], ignore_index=True)
-    
-    minus_three = minus_two[['pressure', 'humidity', 'wind_speed',
-       'wind_deg', 'node_id', 'P1', 'P2']][:-1]
-    
-    new_data_minus_three = []
-    new_data_minus_three.insert(0, nan_data)
-    minus_three = pd.concat([pd.DataFrame(new_data_minus_three), minus_three], ignore_index=True)
-    
-    minus_four = minus_three[['pressure', 'humidity', 'wind_speed',
-       'wind_deg', 'node_id', 'P1', 'P2']][:-1]
-    
-    new_data_minus_four = []
-    new_data_minus_four.insert(0, nan_data)
-    minus_four = pd.concat([pd.DataFrame(new_data_minus_four), minus_four], ignore_index=True)
-    
-    data[[key+'_minus_1' for key in minus_one.keys()]] = minus_one
-    data[[key+'_minus_2' for key in minus_two.keys()]] = minus_two
-    data[[key+'_minus_3' for key in minus_three.keys()]] = minus_three
-    data[[key+'_minus_4' for key in minus_four.keys()]] = minus_four
-    """
     data = data.dropna()
+    return data
+
+
+if __name__=='__main__':
+    with open('aggregated_dust_measurement_data_zurich_january_2018.csv') as input_file:
+        data = pd.read_csv(input_file)
+
+    data = bin_in_wind_deg(data)  
+    data = interleave(data)
+    data = transforming.transform(data)
     
-    with open('interleved_dust_measurement_zurich_jan_2018.csv', 'w') as output:
+    with open('data_to_use/transformed_dust_measurement_zurich_jan_2018.csv', 'w') as output:
         data.to_csv(output)
+
+    #with open('interleved_binned_dust_measurement_zurich_jan_2018.csv', 'w') as output:
+    #    data.to_csv(output)
     
-    print(data.head())
