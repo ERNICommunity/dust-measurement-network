@@ -9,3 +9,7 @@ detector/\.vscode/launch\.json
 /.metadata/
 /detector/.metadata
 >>>>>>> ttn-gwy-dev
+
+MachineLearning/data/\.vs/
+
+MachineLearning/data/\.vscode/
