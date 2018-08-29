@@ -7,17 +7,13 @@ Created on Sun Aug 26 09:43:46 2018
 
 import pandas as pd
 import numpy as np
-import transforming
 
 def bin_in_wind_deg(data, bin_width=10):
-    # get the column with the bins
     wind_deg = np.array(data[['wind_deg']])
     min_deg = np.min(wind_deg)
     wind_deg_bins = (wind_deg-min_deg)//bin_width
     data['wind_deg_bin'] = pd.DataFrame(wind_deg_bins)
     return data
-    # determine number of bins
-    # put numbers in bins
 
 
 def interleave(data):    
@@ -41,18 +37,7 @@ def interleave(data):
     data = data.dropna()
     return data
 
-
-if __name__=='__main__':
-    with open('aggregated_dust_measurement_data_zurich_january_2018.csv') as input_file:
+def load_data(input_file):
+    with open(input_file) as input_file:
         data = pd.read_csv(input_file)
-
-    data = bin_in_wind_deg(data)  
-    data = interleave(data)
-    data = transforming.transform(data)
-    
-    with open('data_to_use/transformed_dust_measurement_zurich_jan_2018.csv', 'w') as output:
-        data.to_csv(output)
-
-    #with open('interleved_binned_dust_measurement_zurich_jan_2018.csv', 'w') as output:
-    #    data.to_csv(output)
-    
+    return data
