@@ -1,15 +1,14 @@
-<<<<<<< HEAD
 
 detector/\.vscode/\.BROWSE\.C_CPP\.DB
 
 detector/\.vscode/c_cpp_properties\.json
 
 detector/\.vscode/launch\.json
-=======
 /.metadata/
 /detector/.metadata
->>>>>>> ttn-gwy-dev
 
-MachineLearning/data/\.vs/
+\.vs/
 
-MachineLearning/data/\.vscode/
+\.vscode/
+
+__pycache__/

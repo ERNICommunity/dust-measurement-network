@@ -18,7 +18,7 @@ labels = ['P1', 'P2']
 categoricals = [ 'weekday', 'hour', 'node_id', 'wind_deg_bin_minus_1', 'wind_deg_bin_minus_2', 'wind_deg_bin_minus_3', 'wind_deg_bin_minus_4', 'wind_deg_bin']
 # we might want to include day_in_year in categoricals WHEN we have at least a year of data, ideally two
 
-data = pd.read_csv('data_to_use/transformed_dust_measurement_zurich_jan_2018.csv')
+data = pd.read_csv('data_to_use/transformed_dust_measurement.csv')
 Y = data[labels].values
 
 data = data.drop(labels=labels, axis=1)
@@ -50,9 +50,11 @@ cp = ModelCheckpoint('models/best_model.h5', monitor='val_acc', verbose=0, save_
 
 # build and fit the multivariate multiple regressor model
 model = Sequential()
-model.add(Dense(75, input_dim=X.shape[1], kernel_initializer='glorot_normal', activation='relu'))
+model.add(Dense(1000, input_dim=X.shape[1], kernel_initializer='glorot_normal', activation='relu'))
+model.add(BatchNormalization())
+model.add(Dense(150, kernel_initializer='glorot_normal', activation='relu'))
 model.add(BatchNormalization())
 model.add(Dense(Y.shape[1], kernel_initializer='glorot_normal'))
 model.compile(loss='mean_squared_error', optimizer='adam',metrics=['mae', 'acc'])
 
-model.fit(X, Y, batch_size=8,epochs=100,validation_split=0.2, callbacks=[cp])
+model.fit(X, Y, batch_size=32,epochs=100,validation_split=0.2, callbacks=[cp])

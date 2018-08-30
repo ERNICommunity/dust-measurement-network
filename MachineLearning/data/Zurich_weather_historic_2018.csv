@@ -1,4 +1,4 @@
-﻿dt,dt_iso,city_id,city_name,lat,lon,temp,temp_min,temp_max,pressure,sea_level,grnd_level,humidity,wind_speed,wind_deg,rain_1h,rain_3h,rain_24h,rain_today,snow_1h,snow_3h,snow_24h,snow_today,clouds_all,weather_id,weather_main,weather_description,weather_icon
+dt,dt_iso,city_id,city_name,lat,lon,temp,temp_min,temp_max,pressure,sea_level,grnd_level,humidity,wind_speed,wind_deg,rain_1h,rain_3h,rain_24h,rain_today,snow_1h,snow_3h,snow_24h,snow_today,clouds_all,weather_id,weather_main,weather_description,weather_icon
 1483228800,2017-01-01 00:00:00 +0000 UTC,2657896,,,,270.15,270.15,270.15,1029,,,100,1,0,,,,,,,,,75,701,Mist,mist,50n
 1483232400,2017-01-01 01:00:00 +0000 UTC,2657896,,,,270.15,270.15,270.15,1029,,,92,2,250,,,,,,,,,75,701,Mist,mist,50n
 1483236000,2017-01-01 02:00:00 +0000 UTC,2657896,,,,269.15,269.15,269.15,1028,,,100,2,180,,,,,,,,,90,701,Mist,mist,50n
