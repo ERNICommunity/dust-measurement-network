@@ -46,7 +46,7 @@ X = np.concatenate((data.values, categories), axis=1)
 np.random.shuffle(X) # shuffle to get rid of the start oof month/end of month problem when selecting the validation set
 
 # this will allow us to store the best fitting model we see during training
-cp = ModelCheckpoint('models/best_model.h5', monitor='val_acc', verbose=0, save_best_only=True, save_weights_only=False)
+cp = ModelCheckpoint('models/best_model.h5', monitor='val_mean_absolute_error', verbose=0, save_best_only=True, save_weights_only=False)
 
 # build and fit the multivariate multiple regressor model
 model = Sequential()
