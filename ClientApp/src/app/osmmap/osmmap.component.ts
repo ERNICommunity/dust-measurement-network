@@ -22,15 +22,15 @@ import { Circle, Fill, Stroke, Style } from 'ol/style';
 })
 export class OsmMapComponent implements AfterViewInit, OnInit {
   private map: Map;
-  private defaultLatitude: number = 47.3769;
-  private defaultLongitude: number = 8.5417;
+  private defaultLatitude = 47.3769;
+  private defaultLongitude = 8.5417;
   private vectorSource = new VectorSource();
   isLoaded: boolean;
   private overlay: Overlay;
 
   constructor(
-    private http: HttpClient, 
-    @Inject('BASE_URL') private baseUrl: string, 
+    private http: HttpClient,
+    @Inject('BASE_URL') private baseUrl: string,
     private appRef: ApplicationRef,
     private componentFactoryResolver: ComponentFactoryResolver,
     private injector: Injector
@@ -41,7 +41,7 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     this.trackPosition();
 
-    var closer = document.getElementById('popup-closer');
+    const closer = document.getElementById('popup-closer');
     closer.onclick = function() {
       this.overlay.setPosition(undefined);
       closer.blur();
@@ -91,13 +91,13 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
     });
 
     this.map.on('click', (evt) => {
-      var f = this.map.forEachFeatureAtPixel(
+      const f = this.map.forEachFeatureAtPixel(
           evt.pixel,
-          function(ft, layer){return ft;}
+          function(ft, layer) {return ft; }
       );
       if (f) {
-          var geometry = f.getGeometry();
-          var coord = geometry.getCoordinates();
+          const geometry = f.getGeometry();
+          const coord = geometry.getCoordinates();
           this.appendPopup(f);
           this.overlay.setPosition(coord);
       }
@@ -123,8 +123,8 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
   }
 
   private trackPosition() {
-    if(navigator.geolocation) {
-      var view = this.map.getView();
+    if (navigator.geolocation) {
+      const view = this.map.getView();
       navigator.geolocation.getCurrentPosition((position) => {
         view.setCenter(fromLonLat([position.coords.longitude, position.coords.latitude]));
         view.setZoom(13);
@@ -137,9 +137,12 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
 
   private appendPopup(sensorData: any) {
     const popupContent = document.getElementById('popup-content');
-    popupContent.childNodes.forEach((node) => node.remove());
+    const nodeList = popupContent.childNodes;
+    for (let i = 0; i < nodeList.length; i++) {
+      nodeList[i].remove();
+    }
 
-    const componentRef = 
+    const componentRef =
       this.componentFactoryResolver
       .resolveComponentFactory(PopupInfoComponent)
       .create(this.injector);
@@ -153,7 +156,7 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
       particulateMatter25: sensorData.get('particulateMatter25'),
       particulateMatter100: sensorData.get('particulateMatter100'),
       timestamp: sensorData.get('timestamp')
-    }
+    };
 
     popupContent.appendChild(domElem);
   }

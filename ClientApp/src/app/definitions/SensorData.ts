@@ -1,5 +1,4 @@
 export class SensorData {
-
     public id: number;
     public lat: number;
     public lon: number;

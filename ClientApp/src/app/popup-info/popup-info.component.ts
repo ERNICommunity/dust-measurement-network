@@ -7,7 +7,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
   styleUrls: ['./popup-info.component.css']
 })
 export class PopupInfoComponent implements OnInit {
-  @Input() data: PopupData
+  @Input() data: PopupData;
 
   constructor() { }
 
