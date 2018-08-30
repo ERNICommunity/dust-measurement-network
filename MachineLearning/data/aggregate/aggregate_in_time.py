@@ -47,7 +47,7 @@ def aggregate(input_file_dust, input_file_weather):
         time_string = timestamps.at[i, 'timestamp']
         time = pd.to_datetime(time_string, infer_datetime_format=True, utc=True)
 
-        if (current_time is not None) and (time.hour > current_time.hour):
+        if (current_time is not None) and (time.hour != current_time.hour):
             # flush the accumulators
             flush_accumulators( current_time, \
                                 filtered_data, \
