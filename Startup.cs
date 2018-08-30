@@ -24,7 +24,7 @@ namespace hh_fe
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddCors();
-            services.AddDbContext<DustContext>(opt => opt.UseNpgsql("Server=51.144.114.5;Database=DustDatabase;User Id=DustBackend;Password=dusty100!"));
+            services.AddDbContext<DustContext>(opt => opt.UseInMemoryDatabase("DustDatabase"));
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
