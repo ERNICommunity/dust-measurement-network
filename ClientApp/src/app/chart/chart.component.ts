@@ -4,6 +4,7 @@ import { DatePipe } from '@angular/common';
 import { Chart } from 'chart.js';
 import { DustService } from '../dust.service';
 import { DustData } from '../definitions/DustData';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-chart',
@@ -19,8 +20,6 @@ export class ChartComponent implements OnInit {
   id = 0;
   idRange: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   selectedId = 0;
-  historyLoaded = false;
-  predictionLoaded = false;
 
   constructor(private dustService: DustService, private activatedRoute: ActivatedRoute, private router: Router) {
     this.id = activatedRoute.snapshot.params['id'];
@@ -32,21 +31,16 @@ export class ChartComponent implements OnInit {
   }
 
   updateDustData() {
-    this.dustService.getDustHistory(this.id, (dustData: DustData[]) => {
-      this.dustHistory = dustData;
-      this.historyLoaded = true;
-      if (this.predictionLoaded) {
+    const historyObservable = this.dustService.getDustHistory(this.id,  new Date(2010, 1, 1), new Date());
+    const predictionObservable = this.dustService.getDustPrediction(this.id);
+    forkJoin(historyObservable, predictionObservable).subscribe(
+      result => {
+        this.dustHistory = result[0];
+        this.dustPrediction = result[1];
         this.showChart();
-      }
-    });
-
-    this.dustService.getDustPrediction(this.id, (dustData: DustData[]) => {
-      this.dustPrediction = dustData;
-      this.predictionLoaded = true;
-      if (this.historyLoaded) {
-        this.showChart();
-      }
-    });
+      },
+      err => console.error(err)
+    );
   }
 
   showChart() {

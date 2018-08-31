@@ -38,9 +38,13 @@ namespace hh_fe.Controllers
         }
 
         [Route("{id:int}/history")]
-        public IEnumerable<DataPointDto> History(int id)
+        public IEnumerable<DataPointDto> History(int id, [FromQuery]long from, [FromQuery]long to)
         {
-            return _ctx.SensorDatas.Where(x => x.SensorId == id).Select(x => new DataPointDto
+            return _ctx.SensorDatas.Where(x => x.SensorId == id)
+            .Where(x => x.Timestamp >= DateTimeOffset.FromUnixTimeMilliseconds(from))
+            .Where(x => x.Timestamp < DateTimeOffset.FromUnixTimeMilliseconds(to))
+            .OrderBy(x => x.Timestamp)
+            .Select(x => new DataPointDto
              { 
                  Timestamp = x.Timestamp,
                  ParticulateMatter25 = x.ParticulateMatter25,

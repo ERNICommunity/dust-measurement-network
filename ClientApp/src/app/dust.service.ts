@@ -16,16 +16,12 @@ export class DustService {
         });
   }
 
-  public getDustHistory(id: number, callback: Function) {
-    this.httpClient.get<DustData[]>(this.baseUrl + 'api/sensors/' + id + '/history').subscribe(
-      result => callback(result),
-      error => console.error(error));
+  public getDustHistory(id: number, from: Date, to: Date) {
+    return this.httpClient.get<DustData[]>(`${this.baseUrl}api/sensors/${id}/history?from=${from.getTime()}&to=${to.getTime()}`);
   }
 
-  public getDustPrediction(id: number, callback: Function) {
-    this.httpClient.get<DustData[]>(this.baseUrl + 'api/sensors/' + id + '/prediction').subscribe(
-      result => callback(result),
-      error => console.error(error));
+  public getDustPrediction(id: number) {
+    return this.httpClient.get<DustData[]>(`${this.baseUrl}api/sensors/${id}/prediction`);
   }
 
 }
