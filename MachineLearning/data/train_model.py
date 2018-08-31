@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import scale, OneHotEncoder
 import pickle
+from sklearn.externals import joblib
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 # this will prevent TF from allocating the whole GPU
 from keras import backend as K
@@ -16,7 +17,7 @@ from keras.layers import Dense, BatchNormalization
 from keras.callbacks import ModelCheckpoint
 
 labels = ['P1', 'P2']
-categoricals = [ 'sensor_id', 'weekday', 'hour', 'node_id', 'wind_deg_bin_minus_1', 'wind_deg_bin_minus_2', 'wind_deg_bin_minus_3', 'wind_deg_bin_minus_4', 'wind_deg_bin']
+categoricals = [ 'sensor_id', 'weekday', 'hour', 'wind_deg_bin_minus_1', 'wind_deg_bin_minus_2', 'wind_deg_bin_minus_3', 'wind_deg_bin_minus_4', 'wind_deg_bin']
 # we might want to include day_in_year in categoricals WHEN we have at least a year of data, ideally two
 
 data = pd.read_csv('data_to_use/transformed_dust_measurement.csv')
@@ -26,12 +27,13 @@ data = data.drop(labels=labels, axis=1)
 data = data.drop(labels=['Unnamed: 0', 'Unnamed: 0.1', 'dt_iso', 'wind_deg', 'day_in_year'], axis = 1)
 
 # normalization for float data
-non_categoricals = [col for col in data.columns if not col in categoricals]
-for c in non_categoricals:
-    data[[c]] = scale(data[c])
+for c in [col for col in data.columns if not col in categoricals]:
+    scale = StandardScaler()
+    data[[c]] = scale.fit_transform(data[c].values.reshape((-1, 1)))
+    joblib.dump(scale, 'models/preparation/' + c + '.pkl')
 
 # here we use one-hot encoding for categorical features
-# # this greatly increases dimensionality of the feature vector
+# this greatly increases dimensionality of the feature vector
 categories = None
 
 for c in [col for col in data.columns if col in categoricals]:
@@ -42,10 +44,11 @@ for c in [col for col in data.columns if col in categoricals]:
     else:
         categories = np.concatenate((categories, dummies), axis=1)
     data = data.drop(c, axis=1)
+    joblib.dump(enc, 'models/preparation/' + c + '.pkl')
 
 # categories + non categories
 X = np.concatenate((data.values, categories), axis=1)
-np.random.shuffle(X) # shuffle to get rid of the start oof month/end of month problem when selecting the validation set
+np.random.shuffle(X) # shuffle to get rid of the start of month/end of month problem when selecting the validation set
 
 # this will allow us to store the best fitting model we see during training
 cp = ModelCheckpoint('models/best_model.h5', monitor='val_mean_absolute_error', verbose=0, save_best_only=True, save_weights_only=False)
