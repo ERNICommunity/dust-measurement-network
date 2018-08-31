@@ -1,0 +1,9 @@
+label_column_names = ['P1', 'P2']
+categorical_column_names = [ 'sensor_id', 'weekday', 'hour', 'wind_deg_bin_minus_1', 'wind_deg_bin_minus_2', 'wind_deg_bin_minus_3', 'wind_deg_bin_minus_4', 'wind_deg_bin' ]
+model_path = 'models/best_model.h5'
+history_path = 'models/history.bin'
+transformer_path = 'models/preparation/'
+transformer_extension = '.pkl'
+model_version_header_name = 'X-Model-Version'
+prediction_time_header_name = 'X-Prediction-Time'
+model_version = '1.0'
