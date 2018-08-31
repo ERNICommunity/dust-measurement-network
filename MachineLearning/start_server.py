@@ -7,23 +7,15 @@ from sklearn.externals import joblib
 from os import listdir
 from os.path import isfile, join
 
-from keras import backend as K
-import tensorflow as tf
-config = tf.ConfigProto()
-config.gpu_options.allow_growth=True
-sess = tf.Session(config=config)
-K.set_session(sess)
-import tensorflow as tf
-
-from keras.models import load_model
-
 app = Flask(__name__)
 
-model = None
 transformations = {}
 
 def __initialize_model():   
     files = [join('models/preparation', f) for f in listdir('models/preparation') if isfile(join('models/preparation', f))]
+
+    global model
+    model = None
 
     global transformations
     for f in files:
@@ -31,15 +23,11 @@ def __initialize_model():
         t = joblib.load(f)
         transformations[name] = t
 
-    global model
-    model = load_model('models/best_model.h5')
-    global graph
-    graph = tf.get_default_graph()
-
 __initialize_model()
 
 @app.route("/predict", methods=['POST'])
 def predict():
+    from keras.models import load_model
     p = request.get_json()
 
     categoricals = [ 'sensor_id', 'weekday', 'hour', 'wind_deg_bin_minus_1', 'wind_deg_bin_minus_2', 'wind_deg_bin_minus_3', 'wind_deg_bin_minus_4', 'wind_deg_bin']
@@ -62,7 +50,6 @@ def predict():
 
     # categoricals will be one hot encoded
     categories = None
-
     for k in categoricals:
         dummies = transformations[k].transform(np.array([p[k]]).reshape((1,-1))).toarray()
         if categories is None:
@@ -78,9 +65,17 @@ def predict():
 
     X = np.concatenate((X.reshape((1, 23)), categories), axis=1)
 
-    with graph.as_default():
-        p1, p2  = model.predict(X).T
-        return jsonify(p1 = np.float64(p1[0]), p2 = np.float64(p2[0]))
+    # this is a bad workaround for the fact that TensorFlow and Keras don't place nice with multithreading
+    # every worker thread will initialize its own 'model' object 
+    global model
+    if model is None:
+        model = load_model('models/best_model.h5')
+
+    p1, p2  = model.predict(X).T
+    resp = jsonify(p1 = np.float64(p1[0]), p2 = np.float64(p2[0]))
+    resp.headers['X-Model-Version'] = '1.0'
+
+    return resp
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', threaded=True, debug=False, port=5000)
+    app.run(host='0.0.0.0', threaded=False, debug=False, port=80)
