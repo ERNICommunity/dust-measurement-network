@@ -20,7 +20,7 @@ labels = ['P1', 'P2']
 categoricals = [ 'sensor_id', 'weekday', 'hour', 'wind_deg_bin_minus_1', 'wind_deg_bin_minus_2', 'wind_deg_bin_minus_3', 'wind_deg_bin_minus_4', 'wind_deg_bin']
 # we might want to include day_in_year in categoricals WHEN we have at least a year of data, ideally two
 
-data = pd.read_csv('data_to_use/transformed_dust_measurement.csv')
+data = pd.read_csv('data/data_to_use/transformed_dust_measurement.csv')
 Y = data[labels].values
 
 data = data.drop(labels=labels, axis=1)

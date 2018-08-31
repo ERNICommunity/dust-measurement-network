@@ -8,11 +8,11 @@ Created on Wed Aug 29 19:44:52 2018
 from data_filters import select_detector_node
 from aggregate import aggregate_in_time
 import augment.interleaving as il 
-import augment.transforming as trsfm
+import augment.transforming as trsfmd
 
 if __name__=='__main__':
-    weather_data_file = 'Zurich_weather_historic_2018.csv'
-    dust_file = '2018-01_sds011.csv'
+    weather_data_file = 'data/Zurich_weather_historic_2018.csv'
+    dust_file = 'data/2018-01_sds011.csv'
     file_with_node = select_detector_node.select_node('574', input_file=dust_file)
     aggregated_file = aggregate_in_time.aggregate(file_with_node, weather_data_file)
     
@@ -20,8 +20,8 @@ if __name__=='__main__':
 
     data = il.bin_in_wind_deg(data)  
     data = il.interleave(data)
-    data = trsfm.transform(data)
+    data = trsfmd.transform(data)
     
-    with open('data_to_use/transformed_dust_measurement.csv', 'w') as output:
+    with open('data/data_to_use/transformed_dust_measurement.csv', 'w') as output:
         data.to_csv(output)
     
