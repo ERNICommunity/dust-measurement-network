@@ -1,6 +1,4 @@
-import { Component, AfterViewInit, OnInit, Inject, ApplicationRef, ComponentFactoryResolver, Injector, EmbeddedViewRef } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { PopupInfoComponent } from '../popup-info/popup-info.component';
+import { Component, AfterViewInit, OnInit, OnDestroy, ApplicationRef, ComponentFactoryResolver, Injector, EmbeddedViewRef } from '@angular/core';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -12,7 +10,13 @@ import { fromLonLat, transformExtent } from 'ol/proj';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import Overlay from 'ol/Overlay';
+import MapEvent from 'ol/MapEvent';
 import { Circle, Fill, Stroke, Style } from 'ol/style';
+
+import { Subscription, fromEvent } from 'rxjs';
+import { debounceTime, map, switchMap } from 'rxjs/operators';
+
+import { PopupInfoComponent } from '../popup-info/popup-info.component';
 import { SensorDto } from '../service/SensorDto';
 import { DustService } from '../service/dust.service';
 
@@ -21,11 +25,12 @@ import { DustService } from '../service/dust.service';
   templateUrl: './osmmap.component.html',
   styleUrls: ['./osmmap.component.css']
 })
-export class OsmMapComponent implements AfterViewInit, OnInit {
+export class OsmMapComponent implements AfterViewInit, OnInit, OnDestroy {
   private map: Map;
   private defaultLatitude = 47.3769;
   private defaultLongitude = 8.5417;
   private vectorSource = new VectorSource();
+  private mapMoveSubscription: Subscription;
   isLoaded: boolean;
 
   constructor(
@@ -102,13 +107,18 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
       }
     });
 
-    this.map.on('moveend', e => {
-      const transformed = transformExtent(e.frameState.extent, 'EPSG:3857', 'EPSG:4326');
-      console.log('transformed extend', transformed);
-      this.dustService.getSensors(transformed[0], transformed[1], transformed[2], transformed[3]).subscribe(
+    this.mapMoveSubscription = fromEvent(this.map, 'moveend')
+      .pipe(debounceTime(1000))
+      .pipe(map((evt: MapEvent) => transformExtent(evt.frameState.extent, 'EPSG:3857', 'EPSG:4326')))
+      .pipe(switchMap(extent => this.dustService.getSensors(extent[0], extent[1], extent[2], extent[3])))
+      .subscribe(
         result => this.render(result),
-        error => console.error(error));
-    });
+        err => console.error(err)
+      );
+  }
+
+  ngOnDestroy(): void {
+   this.mapMoveSubscription.unsubscribe();
   }
 
   private render(markers: SensorDto[]) {
