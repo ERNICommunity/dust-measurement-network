@@ -10,7 +10,6 @@ namespace hh_fe.Controllers
     [Route("api/[controller]")]
     public class SensorsController : Controller
     {
-        private readonly Random _rand = new Random();
         private readonly DustContext _ctx;
 
         public SensorsController(DustContext ctx)
@@ -55,11 +54,12 @@ namespace hh_fe.Controllers
         [Route("{id:int}/prediction")]
         public IEnumerable<DataPointDto> Prediction(int id)
         {
+            var rand = new Random();
             return Enumerable.Range(1, 5).Select(index => new DataPointDto
              {
                 Timestamp = DateTimeOffset.UtcNow.AddDays(index+1),
-                ParticulateMatter25 = _rand.NextDouble()*100,
-                ParticulateMatter100 = _rand.NextDouble()*100
+                ParticulateMatter25 = rand.NextDouble()*500,
+                ParticulateMatter100 = rand.NextDouble()*500
             });
         }
     }
