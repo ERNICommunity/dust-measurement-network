@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { Chart } from 'chart.js';
-import { DustService } from '../dust.service';
-import { DustData } from '../definitions/DustData';
+import { DustService } from '../service/dust.service';
+import { DustDto } from '../service/DustDto';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -12,16 +12,16 @@ import { forkJoin } from 'rxjs';
   styleUrls: ['./chart.component.css']
 })
 export class ChartComponent implements OnInit {
-
-  chart: Chart;
-  ctx: any;
-  dustHistory: DustData[] = [];
-  dustPrediction: DustData[] = [];
-  id = 0;
-  idRange: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  private dustHistory: DustDto[] = [];
+  private dustPrediction: DustDto[] = [];
+  private id = 0;
+  availableIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   selectedId = 0;
 
-  constructor(private dustService: DustService, private activatedRoute: ActivatedRoute, private router: Router) {
+  constructor(
+    private dustService: DustService,
+    private router: Router,
+    activatedRoute: ActivatedRoute) {
     this.id = activatedRoute.snapshot.params['id'];
     this.selectedId = this.id;
 }
@@ -45,8 +45,8 @@ export class ChartComponent implements OnInit {
 
   showChart() {
     const pipe = new DatePipe('en-us');
-    this.ctx = document.getElementById('canvas');
-    this.chart = new Chart(this.ctx.getContext('2d'), {
+    const ctx = document.getElementById('canvas') as HTMLCanvasElement;
+    const chart = new Chart(ctx.getContext('2d'), {
       type: 'line',
       data: {
         labels: this.dustHistory.map(dustdata => pipe.transform(dustdata.timestamp, 'medium')).concat(

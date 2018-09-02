@@ -9,7 +9,7 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { AboutComponent } from './about/about.component';
 import { OsmMapComponent } from './osmmap/osmmap.component';
 import { ChartComponent } from './chart/chart.component';
-import { DustService } from './dust.service';
+import { DustService } from './service/dust.service';
 import { PopupInfoComponent } from './popup-info/popup-info.component';
 
 @NgModule({

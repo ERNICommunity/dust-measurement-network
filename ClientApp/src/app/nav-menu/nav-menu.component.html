@@ -1,6 +1,6 @@
 <nav class='navbar navbar-fixed-top navbar-inverse'>
     <div class="container-fluid">
-        <a class='navbar-brand' [routerLink]='["/"]'>Dust Measurement System</a>
+      <a class='navbar-brand' [routerLink]='["/"]'>Dust Measurement System</a>
         <div class='navbar-header'>
             <button type='button' class='navbar-toggle' data-toggle='collapse' data-target='.navbar-collapse' [attr.aria-expanded]='isExpanded' (click)='toggle()'>
                 <span class='sr-only'>Toggle navigation</span>
@@ -11,18 +11,18 @@
         </div>
         <div class='navbar-collapse collapse' [ngClass]='{ "in": isExpanded }'>
             <ul class='nav navbar-nav'>
-                <li [routerLinkActive]='["link-active"]' [routerLinkActiveOptions]='{ exact: true }'>
-                    <a [routerLink]='["/"]' (click)='collapse()'>
+                <li routerLinkActive='active' [routerLinkActiveOptions]='{ exact: true }'>
+                    <a routerLink='/' (click)='collapse()'>
                         <span class='glyphicon glyphicon-globe'></span> OSM Map
                     </a>
                 </li>
-                <li [routerLinkActive]='["link-active"]'>
-                    <a [routerLink]='["/chart/0"]' (click)='collapse()'>
+                <li routerLinkActive='active'>
+                    <a routerLink='/chart/0' (click)='collapse()'>
                         <span class='glyphicon glyphicon-stats'></span> Chart
                     </a>
                 </li>
-                <li [routerLinkActive]='["link-active"]'>
-                    <a [routerLink]='["/about"]' (click)='collapse()'>
+                <li routerLinkActive='active'>
+                    <a routerLink='/about' (click)='collapse()'>
                         <span class='glyphicon glyphicon-info-sign'></span> About
                     </a>
                 </li>

@@ -6,7 +6,6 @@ import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
-// import XYZ from 'ol/source/XYZ';
 import OSMSource from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
 import { fromLonLat } from 'ol/proj';
@@ -14,6 +13,8 @@ import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import Overlay from 'ol/Overlay';
 import { Circle, Fill, Stroke, Style } from 'ol/style';
+import { SensorDto } from '../service/SensorDto';
+import { DustService } from '../service/dust.service';
 
 @Component({
   selector: 'app-osmmap',
@@ -26,11 +27,9 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
   private defaultLongitude = 8.5417;
   private vectorSource = new VectorSource();
   isLoaded: boolean;
-  private overlay: Overlay;
 
   constructor(
-    private http: HttpClient,
-    @Inject('BASE_URL') private baseUrl: string,
+    private dustService: DustService,
     private appRef: ApplicationRef,
     private componentFactoryResolver: ComponentFactoryResolver,
     private injector: Injector
@@ -50,7 +49,7 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit() {
-    this.overlay = new Overlay({
+    const overlay = new Overlay({
       element: document.getElementById('popup'),
       autoPan: true,
       autoPanAnimation: {
@@ -60,7 +59,7 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
 
     this.map = new Map({
       target: 'osmmap',
-      overlays: [this.overlay],
+      overlays: [overlay],
       layers: [
         new TileLayer({
           source: new OSMSource()
@@ -99,16 +98,16 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
           const geometry = f.getGeometry();
           const coord = geometry.getCoordinates();
           this.appendPopup(f);
-          this.overlay.setPosition(coord);
+          overlay.setPosition(coord);
       }
     });
 
-    this.http.get<Marker[]>(this.baseUrl + 'api/sensors').subscribe(
+    this.dustService.getSensors().subscribe(
       result => this.render(result),
       error => console.error(error));
   }
 
-  private render(markers: Marker[]) {
+  private render(markers: SensorDto[]) {
     this.vectorSource.clear();
     for (let i = 0; i < markers.length; i++) {
       const iconFeature = new Feature({
@@ -125,7 +124,7 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
   private trackPosition() {
     if (navigator.geolocation) {
       const view = this.map.getView();
-      navigator.geolocation.getCurrentPosition((position) => {
+      navigator.geolocation.getCurrentPosition(position => {
         view.setCenter(fromLonLat([position.coords.longitude, position.coords.latitude]));
         view.setZoom(13);
         this.isLoaded = true;
@@ -160,13 +159,4 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
 
     popupContent.appendChild(domElem);
   }
-}
-
-interface Marker {
-  id: number;
-  lat: number;
-  lon: number;
-  timestamp: Date;
-  particulateMatter25: number;
-  particulateMatter100: number;
 }

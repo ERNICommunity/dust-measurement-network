@@ -1,12 +1,12 @@
-<h1 align="center">Dust measurement data from sensor:{{id}}</h1>
+<h1 align="center">Dust measurement data from sensor:{{selectedId}}</h1>
 <br>
 <div>
-  <canvas id="canvas">{{ chart }}</canvas>
+  <canvas id="canvas"></canvas>
 </div>
 <br>
 <div align="center">
-  <label>Id: </label>
-  <select class='selectedId' [(ngModel)]='selectedId' (ngModelChange)='onIdSelected()'>
-      <option *ngFor='let idOption of idRange' [value]="idOption">{{idOption}}</option>
+  <label>Sensor Id: </label>
+  <select [(ngModel)]='selectedId' (ngModelChange)='onIdSelected()'>
+      <option *ngFor='let i of availableIds' [value]="i">{{i}}</option>
   </select>
 </div>
