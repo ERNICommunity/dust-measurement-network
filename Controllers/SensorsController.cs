@@ -22,9 +22,11 @@ namespace hh_fe.Controllers
             _ctx = ctx;
         }
 
-        public IEnumerable<SensorDto> Index()
+        public IEnumerable<SensorDto> Index([FromQuery]double minLon, [FromQuery]double minLat, [FromQuery]double maxLon, [FromQuery]double maxLat)
         {
             return from s in _ctx.Sensors
+            where s.Longitude >= minLon && s.Longitude <= maxLon 
+            where s.Latitude >= minLat && s.Latitude <= maxLat 
             let lastData = s.SensorDatas.OrderByDescending(x => x.Timestamp).FirstOrDefault()
             select new SensorDto {
                 Id = s.Id,

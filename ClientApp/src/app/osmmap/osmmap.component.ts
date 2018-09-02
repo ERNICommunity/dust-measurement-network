@@ -8,7 +8,7 @@ import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import OSMSource from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
-import { fromLonLat } from 'ol/proj';
+import { fromLonLat, transformExtent } from 'ol/proj';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import Overlay from 'ol/Overlay';
@@ -102,9 +102,13 @@ export class OsmMapComponent implements AfterViewInit, OnInit {
       }
     });
 
-    this.dustService.getSensors().subscribe(
-      result => this.render(result),
-      error => console.error(error));
+    this.map.on('moveend', e => {
+      const transformed = transformExtent(e.frameState.extent, 'EPSG:3857', 'EPSG:4326');
+      console.log('transformed extend', transformed);
+      this.dustService.getSensors(transformed[0], transformed[1], transformed[2], transformed[3]).subscribe(
+        result => this.render(result),
+        error => console.error(error));
+    });
   }
 
   private render(markers: SensorDto[]) {

@@ -8,8 +8,8 @@ export class DustService {
 
   constructor(private httpClient: HttpClient, @Inject('BASE_URL') private baseUrl: string) { }
 
-  public getSensors() {
-    return this.httpClient.get<SensorDto[]>(`${this.baseUrl}api/sensors`);
+  public getSensors(minLon: number, minLat: number , maxLon: number, maxLat: number) {
+    return this.httpClient.get<SensorDto[]>(`${this.baseUrl}api/sensors?minLon=${minLon}&minLat=${minLat}&maxLon=${maxLon}&maxLat=${maxLat}`);
   }
 
   public getDustHistory(id: number, from: Date, to: Date) {
