@@ -31,20 +31,15 @@ export class OsmMapComponent implements AfterViewInit, OnInit, OnDestroy {
   private defaultLongitude = 8.5417;
   private vectorSource = new VectorSource();
   private mapMoveSubscription: Subscription;
-  isLoaded: boolean;
 
   constructor(
     private dustService: DustService,
     private appRef: ApplicationRef,
     private componentFactoryResolver: ComponentFactoryResolver,
     private injector: Injector
-  ) {
-    this.isLoaded = false;
-  }
+  ) {}
 
   ngAfterViewInit() {
-    this.trackPosition();
-
     const closer = document.getElementById('popup-closer');
     closer.onclick = function() {
       this.overlay.setPosition(undefined);
@@ -107,14 +102,15 @@ export class OsmMapComponent implements AfterViewInit, OnInit, OnDestroy {
       }
     });
 
-    this.mapMoveSubscription = fromEvent(this.map, 'moveend')
-      .pipe(debounceTime(1000))
-      .pipe(map((evt: MapEvent) => transformExtent(evt.frameState.extent, 'EPSG:3857', 'EPSG:4326')))
-      .pipe(switchMap(extent => this.dustService.getSensors(extent[0], extent[1], extent[2], extent[3])))
-      .subscribe(
-        result => this.render(result),
-        err => console.error(err)
-      );
+    this.mapMoveSubscription = fromEvent(this.map, 'moveend').pipe(
+      debounceTime(1000),
+      map((evt: MapEvent) => transformExtent(evt.frameState.extent, 'EPSG:3857', 'EPSG:4326')),
+      switchMap(extent => this.dustService.getSensors(extent[0], extent[1], extent[2], extent[3]))
+    ).subscribe(
+      result => this.render(result),
+      err => console.error(err)
+    );
+    this.getPosition();
   }
 
   ngOnDestroy(): void {
@@ -135,16 +131,13 @@ export class OsmMapComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
-  private trackPosition() {
+  private getPosition() {
     if (navigator.geolocation) {
       const view = this.map.getView();
       navigator.geolocation.getCurrentPosition(position => {
         view.setCenter(fromLonLat([position.coords.longitude, position.coords.latitude]));
         view.setZoom(13);
-        this.isLoaded = true;
       });
-    } else {
-      this.isLoaded = true;
     }
   }
 

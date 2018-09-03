@@ -11,6 +11,7 @@ import { OsmMapComponent } from './osmmap/osmmap.component';
 import { ChartComponent } from './chart/chart.component';
 import { DustService } from './service/dust.service';
 import { PopupInfoComponent } from './popup-info/popup-info.component';
+import { RequestService } from './service/request.service';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,7 @@ import { PopupInfoComponent } from './popup-info/popup-info.component';
     ])
   ],
   entryComponents: [PopupInfoComponent],
-  providers: [DustService],
+  providers: [DustService, RequestService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
