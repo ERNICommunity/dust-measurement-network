@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable()
-export class RequestService {
+export class LoadingProgressService {
   requestCount = 0;
   constructor() { }
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RequestService } from './service/request.service';
+import { LoadingProgressService } from './service/loading-progress.service';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +11,6 @@ export class AppComponent {
   get isRequestRunning(): boolean {
     return this.requestService.requestCount > 0;
   }
-  constructor(private requestService: RequestService) {
+  constructor(private requestService: LoadingProgressService) {
   }
 }
