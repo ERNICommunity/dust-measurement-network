@@ -1,10 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
-.text {
-    margin: 2em;
-}
-
-img {
-    width: 80%;
-    height: auto;
+html, body {
+  width: 100%;
+  height: 100%;
 }
