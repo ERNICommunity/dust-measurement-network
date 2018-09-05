@@ -1,16 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { LoadingProgressService } from './service/loading-progress.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  title = 'app';
-  get isRequestRunning(): boolean {
-    return this.requestService.requestCount > 0;
+export class AppComponent implements OnInit, OnDestroy {
+  private requestWatcherSubscription: Subscription;
+
+  constructor(private requestService: LoadingProgressService) {}
+
+  ngOnInit(): void {
+    this.requestWatcherSubscription = this.requestService.watcher.subscribe(x => console.log('some requests running;', x));
   }
-  constructor(private requestService: LoadingProgressService) {
+  ngOnDestroy(): void {
+    this.requestWatcherSubscription.unsubscribe();
   }
 }
