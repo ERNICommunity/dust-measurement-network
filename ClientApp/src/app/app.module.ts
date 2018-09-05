@@ -5,6 +5,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { LoadingBarModule } from '@ngx-loading-bar/core';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -34,7 +35,8 @@ import { LoadingInterceptor } from './service/loading.interceptor';
       { path: 'about', component: AboutComponent},
       { path: 'chart/:id', component: ChartComponent }
     ]),
-    LoadingBarModule.forRoot()
+    LoadingBarModule.forRoot(),
+    NgbModule
   ],
   entryComponents: [PopupInfoComponent],
   providers: [

@@ -68,10 +68,10 @@ export class OsmMapComponent implements AfterViewInit, OnInit, OnDestroy {
             image: new Circle({
               radius: 8,
               fill: new Fill({
-                color: [34, 34, 34, 0.9]
+                color: [52, 58, 64, 0.9]
               }),
               stroke: new Stroke({
-                color: [157, 157, 157, 0.9],
+                color: [255, 255, 255, 0.9],
                 width: 1
               })
             })
