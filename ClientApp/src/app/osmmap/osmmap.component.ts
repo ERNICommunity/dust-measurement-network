@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit, OnDestroy, ApplicationRef, ComponentFactoryResolver, Injector, EmbeddedViewRef } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -16,7 +16,6 @@ import { Circle, Fill, Stroke, Style } from 'ol/style';
 import { Subscription, fromEvent } from 'rxjs';
 import { debounceTime, map, switchMap } from 'rxjs/operators';
 
-import { PopupInfoComponent } from '../popup-info/popup-info.component';
 import { SensorDto } from '../service/SensorDto';
 import { DustService } from '../service/dust.service';
 
@@ -25,39 +24,16 @@ import { DustService } from '../service/dust.service';
   templateUrl: './osmmap.component.html',
   styleUrls: ['./osmmap.component.css']
 })
-export class OsmMapComponent implements AfterViewInit, OnInit, OnDestroy {
+export class OsmMapComponent implements OnInit, OnDestroy {
   private map: Map;
   private vectorSource = new VectorSource();
   private mapMoveSubscription: Subscription;
 
-  constructor(
-    private dustService: DustService,
-    private appRef: ApplicationRef,
-    private componentFactoryResolver: ComponentFactoryResolver,
-    private injector: Injector
-  ) {}
-
-  ngAfterViewInit() {
-    const closer = document.getElementById('popup-closer');
-    closer.onclick = function() {
-      this.overlay.setPosition(undefined);
-      closer.blur();
-      return false;
-    }.bind(this);
-  }
+  constructor(private dustService: DustService) {}
 
   ngOnInit() {
-    const overlay = new Overlay({
-      element: document.getElementById('popup'),
-      autoPan: true,
-      autoPanAnimation: {
-        duration: 250
-      }
-    });
-
     this.map = new Map({
       target: 'osmmap',
-      overlays: [overlay],
       layers: [
         new TileLayer({
           source: new OSMSource()
@@ -85,18 +61,15 @@ export class OsmMapComponent implements AfterViewInit, OnInit, OnDestroy {
     });
 
     this.map.on('click', evt => {
-      const features = this.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
-      if (features) {
-          const geometry = features.getGeometry();
-          const coord = geometry.getCoordinates();
-          this.appendPopup(features);
-          overlay.setPosition(coord);
+      const feature = this.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
+      if (feature) {
+          this.schowPopup(feature.get('data'));
       }
     });
 
     this.mapMoveSubscription = fromEvent(this.map, 'moveend').pipe(
       debounceTime(1000),
-      map((evt: MapEvent) => transformExtent(evt.frameState.extent, 'EPSG:3857', 'EPSG:4326')),
+      map((evt: MapEvent) => transformExtent(evt.frameState.extent, this.map.getView().getProjection(), 'EPSG:4326')),
       switchMap(extent => this.dustService.getSensors(extent[0], extent[1], extent[2], extent[3]))
     ).subscribe(
       result => this.drawMarkers(result),
@@ -115,9 +88,7 @@ export class OsmMapComponent implements AfterViewInit, OnInit, OnDestroy {
       const iconFeature = new Feature({
         geometry: new Point(fromLonLat([markers[i].lon, markers[i].lat])),
         name: markers[i].id,
-        timestamp: markers[i].timestamp,
-        particulateMatter25: markers[i].particulateMatter25,
-        particulateMatter100: markers[i].particulateMatter100
+        data: markers[i]
       });
       this.vectorSource.addFeature(iconFeature);
     }
@@ -133,29 +104,7 @@ export class OsmMapComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
-  private appendPopup(sensorData: any) {
-    const popupContent = document.getElementById('popup-content');
-    const nodeList = popupContent.childNodes;
-    for (let i = 0; i < nodeList.length; i++) {
-      nodeList[i].remove();
-    }
-
-    const componentRef =
-      this.componentFactoryResolver
-      .resolveComponentFactory(PopupInfoComponent)
-      .create(this.injector);
-
-    this.appRef.attachView(componentRef.hostView);
-
-    const domElem = (componentRef.hostView as EmbeddedViewRef<any>)
-      .rootNodes[0] as HTMLElement;
-    (<PopupInfoComponent>componentRef.instance).data = {
-      id: sensorData.get('name'),
-      particulateMatter25: sensorData.get('particulateMatter25'),
-      particulateMatter100: sensorData.get('particulateMatter100'),
-      timestamp: sensorData.get('timestamp')
-    };
-
-    popupContent.appendChild(domElem);
+  private schowPopup(sensorData: SensorDto) {
+    console.log('popup', sensorData);
   }
 }

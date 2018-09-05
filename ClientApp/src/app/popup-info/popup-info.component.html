@@ -1,7 +1,0 @@
-<p>
-  <strong>Name:</strong> {{data.id}}<br>
-  <strong>PM2.5:</strong> {{data.particulateMatter25 | number}} µg/m<sup>3</sup><br>
-  <strong>PM10:</strong> {{data.particulateMatter100 | number}} µg/m<sup>3</sup><br>
-  <strong>Measured at:</strong> {{data.timestamp | date:'long' }}<br>
-  <a class='pull-right' routerLink='chart/{{data.id}}'>...details</a>
-</p>

@@ -13,7 +13,6 @@ import { AboutComponent } from './about/about.component';
 import { OsmMapComponent } from './osmmap/osmmap.component';
 import { ChartComponent } from './chart/chart.component';
 import { DustService } from './service/dust.service';
-import { PopupInfoComponent } from './popup-info/popup-info.component';
 import { LoadingProgressService } from './service/loading-progress.service';
 import { LoadingInterceptor } from './service/loading.interceptor';
 
@@ -23,8 +22,7 @@ import { LoadingInterceptor } from './service/loading.interceptor';
     NavMenuComponent,
     AboutComponent,
     OsmMapComponent,
-    ChartComponent,
-    PopupInfoComponent
+    ChartComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -38,7 +36,6 @@ import { LoadingInterceptor } from './service/loading.interceptor';
     LoadingBarModule.forRoot(),
     NgbModule
   ],
-  entryComponents: [PopupInfoComponent],
   providers: [
     DustService,
     LoadingProgressService, {
