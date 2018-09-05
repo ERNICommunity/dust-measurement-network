@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
+import { LoadingBarModule } from '@ngx-loading-bar/core';
+
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { AboutComponent } from './about/about.component';
@@ -31,13 +33,13 @@ import { LoadingInterceptor } from './service/loading.interceptor';
       { path: '', component: OsmMapComponent, pathMatch: 'full' },
       { path: 'about', component: AboutComponent},
       { path: 'chart/:id', component: ChartComponent }
-    ])
+    ]),
+    LoadingBarModule.forRoot()
   ],
   entryComponents: [PopupInfoComponent],
   providers: [
     DustService,
-    LoadingProgressService,
-    {
+    LoadingProgressService, {
       provide: HTTP_INTERCEPTORS,
       useClass: LoadingInterceptor,
       multi: true
