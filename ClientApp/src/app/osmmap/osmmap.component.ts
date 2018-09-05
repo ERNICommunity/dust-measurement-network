@@ -27,8 +27,6 @@ import { DustService } from '../service/dust.service';
 })
 export class OsmMapComponent implements AfterViewInit, OnInit, OnDestroy {
   private map: Map;
-  private defaultLatitude = 47.3769;
-  private defaultLongitude = 8.5417;
   private vectorSource = new VectorSource();
   private mapMoveSubscription: Subscription;
 
@@ -67,37 +65,31 @@ export class OsmMapComponent implements AfterViewInit, OnInit, OnDestroy {
         new VectorLayer({
           source: this.vectorSource,
           style: new Style({
-            fill: new Fill({
-              color: '#000000'
-            }),
-            stroke: new Stroke({
-              color: '#ffffff',
-              width: 2
-            }),
             image: new Circle({
-              radius: 5,
+              radius: 8,
               fill: new Fill({
-                color: '#000000'
+                color: [34, 34, 34, 0.9]
+              }),
+              stroke: new Stroke({
+                color: [157, 157, 157, 0.9],
+                width: 1
               })
             })
           })
         })
       ],
       view: new View({
-        center: fromLonLat([this.defaultLongitude, this.defaultLatitude]),
+        center: [0, 0],
         zoom: 13
       })
     });
 
-    this.map.on('click', (evt) => {
-      const f = this.map.forEachFeatureAtPixel(
-          evt.pixel,
-          function(ft, layer) {return ft; }
-      );
-      if (f) {
-          const geometry = f.getGeometry();
+    this.map.on('click', evt => {
+      const features = this.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
+      if (features) {
+          const geometry = features.getGeometry();
           const coord = geometry.getCoordinates();
-          this.appendPopup(f);
+          this.appendPopup(features);
           overlay.setPosition(coord);
       }
     });
@@ -107,17 +99,17 @@ export class OsmMapComponent implements AfterViewInit, OnInit, OnDestroy {
       map((evt: MapEvent) => transformExtent(evt.frameState.extent, 'EPSG:3857', 'EPSG:4326')),
       switchMap(extent => this.dustService.getSensors(extent[0], extent[1], extent[2], extent[3]))
     ).subscribe(
-      result => this.render(result),
+      result => this.drawMarkers(result),
       err => console.error(err)
     );
-    this.getPosition();
+    this.getUserPosition();
   }
 
   ngOnDestroy(): void {
    this.mapMoveSubscription.unsubscribe();
   }
 
-  private render(markers: SensorDto[]) {
+  private drawMarkers(markers: SensorDto[]) {
     this.vectorSource.clear();
     for (let i = 0; i < markers.length; i++) {
       const iconFeature = new Feature({
@@ -131,7 +123,7 @@ export class OsmMapComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
-  private getPosition() {
+  private getUserPosition() {
     if (navigator.geolocation) {
       const view = this.map.getView();
       navigator.geolocation.getCurrentPosition(position => {
