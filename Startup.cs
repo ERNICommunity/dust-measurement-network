@@ -23,7 +23,6 @@ namespace hh_fe
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddCors();
             services.AddDbContext<DustContext>(opt => opt.UseInMemoryDatabase("DustDatabase"));
 
             // In production, the Angular files will be served from this directory
@@ -56,10 +55,6 @@ namespace hh_fe
                     name: "default",
                     template: "{controller}/{action=Index}/{id?}");
             });
-
-            app.UseCors(builder =>
-                builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
-                );
 
             app.UseSpa(spa =>
             {
