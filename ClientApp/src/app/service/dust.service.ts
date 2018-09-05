@@ -1,12 +1,16 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { SensorDto } from './SensorDto';
 import { DustDto } from './DustDto';
 
 @Injectable()
 export class DustService {
+  private reqCount = 0;
 
-  constructor(private httpClient: HttpClient, @Inject('BASE_URL') private baseUrl: string) { }
+  constructor(
+    private httpClient: HttpClient,
+    @Inject('BASE_URL') private baseUrl: string
+  ) { }
 
   public getSensors(minLon: number, minLat: number , maxLon: number, maxLat: number) {
     return this.httpClient.get<SensorDto[]>(`${this.baseUrl}api/sensors?minLon=${minLon}&minLat=${minLat}&maxLon=${maxLon}&maxLat=${maxLat}`);
@@ -19,5 +23,4 @@ export class DustService {
   public getDustPrediction(id: number) {
     return this.httpClient.get<DustDto[]>(`${this.baseUrl}api/sensors/${id}/prediction`);
   }
-
 }

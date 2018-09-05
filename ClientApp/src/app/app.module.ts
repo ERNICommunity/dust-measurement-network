@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
@@ -11,6 +11,8 @@ import { OsmMapComponent } from './osmmap/osmmap.component';
 import { ChartComponent } from './chart/chart.component';
 import { DustService } from './service/dust.service';
 import { PopupInfoComponent } from './popup-info/popup-info.component';
+import { LoadingProgressService } from './service/loading-progress.service';
+import { LoadingInterceptor } from './service/loading.interceptor';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,14 @@ import { PopupInfoComponent } from './popup-info/popup-info.component';
     ])
   ],
   entryComponents: [PopupInfoComponent],
-  providers: [DustService],
+  providers: [
+    DustService,
+    LoadingProgressService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptor,
+      multi: true
+    }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
