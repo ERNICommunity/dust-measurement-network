@@ -1,4 +1,4 @@
-# ERNI Hack&amp;Hike - Dust Measurement Network - FrontEnd (and its backend)
+# ERNI Hack&amp;Hike - Dust Measurement Network - Frontend (and its backend)
 
 This is Angular 6 application with .NET Core 2.1 backend.
 
