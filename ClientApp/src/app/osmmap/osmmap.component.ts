@@ -9,7 +9,6 @@ import VectorSource from 'ol/source/Vector';
 import { fromLonLat, transformExtent } from 'ol/proj';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import Overlay from 'ol/Overlay';
 import MapEvent from 'ol/MapEvent';
 import { Circle, Fill, Stroke, Style } from 'ol/style';
 
@@ -60,6 +59,8 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       })
     });
 
+    this.getUserPosition();
+
     this.map.on('click', evt => {
       const feature = this.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
       if (feature) {
@@ -75,7 +76,6 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       result => this.drawMarkers(result),
       err => console.error(err)
     );
-    this.getUserPosition();
   }
 
   ngOnDestroy(): void {
@@ -86,8 +86,8 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     this.vectorSource.clear();
     for (let i = 0; i < markers.length; i++) {
       const iconFeature = new Feature({
-        geometry: new Point(fromLonLat([markers[i].lon, markers[i].lat])),
-        name: markers[i].id,
+        geometry: new Point(fromLonLat([markers[i].longitude, markers[i].latitude])),
+        name: markers[i].name,
         data: markers[i]
       });
       this.vectorSource.addFeature(iconFeature);

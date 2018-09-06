@@ -30,8 +30,9 @@ namespace hh_fe.Controllers
             let lastData = s.SensorDatas.OrderByDescending(x => x.Timestamp).FirstOrDefault()
             select new SensorDto {
                 Id = s.Id,
-                Lat = s.Latitude,
-                Lon = s.Longitude,
+                Name = s.Name,
+                Latitude = s.Latitude,
+                Longitude = s.Longitude,
                 Timestamp = lastData == null ? (DateTimeOffset?)null : lastData.Timestamp,
                 ParticulateMatter25 = lastData == null ? (double?)null : lastData.ParticulateMatter25,
                 ParticulateMatter100 = lastData == null ? (double?)null : lastData.ParticulateMatter100
