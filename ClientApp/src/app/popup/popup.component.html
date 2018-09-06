@@ -4,9 +4,18 @@
     <small>{{latitude}}, {{longitude}}</small>
   </div>
   <div class="modal-body">
-    timestamp: {{timestamp | date}}<br>
-    particulateMatter25: {{particulateMatter25}}<br>
-    particulateMatter100: {{particulateMatter100}}<br>
+    <ngb-tabset>
+      <ngb-tab title="History">
+        <ng-template ngbTabContent>
+          <app-chart [id]="id"></app-chart>
+        </ng-template>
+      </ngb-tab>
+      <ngb-tab title="Prediction">
+        <ng-template ngbTabContent>
+          <p>Prediction visualization will come here...</p>
+        </ng-template>
+      </ngb-tab>
+    </ngb-tabset>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Close</button>
