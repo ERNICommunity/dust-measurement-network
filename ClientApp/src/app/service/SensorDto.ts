@@ -3,7 +3,7 @@ export interface SensorDto {
   name: string;
   latitude: number;
   longitude: number;
-  timestamp: Date;
+  timestamp: string;
   particulateMatter25: number;
   particulateMatter100: number;
 }

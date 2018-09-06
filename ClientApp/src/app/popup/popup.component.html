@@ -1,0 +1,14 @@
+<ng-template #content let-modal>
+  <div class="modal-header bg-dark text-white">
+    <h4 class="modal-title">[{{id}}] {{name}}</h4>
+    <small>{{latitude}}, {{longitude}}</small>
+  </div>
+  <div class="modal-body">
+    timestamp: {{timestamp | date}}<br>
+    particulateMatter25: {{particulateMatter25}}<br>
+    particulateMatter100: {{particulateMatter100}}<br>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>

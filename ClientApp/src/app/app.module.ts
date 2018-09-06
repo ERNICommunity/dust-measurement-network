@@ -15,6 +15,7 @@ import { ChartComponent } from './chart/chart.component';
 import { DustService } from './service/dust.service';
 import { LoadingProgressService } from './service/loading-progress.service';
 import { LoadingInterceptor } from './service/loading.interceptor';
+import { PopupComponent } from './popup/popup.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { LoadingInterceptor } from './service/loading.interceptor';
     NavMenuComponent,
     AboutComponent,
     OsmMapComponent,
-    ChartComponent
+    ChartComponent,
+    PopupComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

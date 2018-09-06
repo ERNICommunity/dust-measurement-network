@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -17,6 +17,7 @@ import { debounceTime, map, switchMap } from 'rxjs/operators';
 
 import { SensorDto } from '../service/SensorDto';
 import { DustService } from '../service/dust.service';
+import { PopupComponent } from '../popup/popup.component';
 
 @Component({
   selector: 'app-osmmap',
@@ -27,6 +28,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   private map: Map;
   private vectorSource = new VectorSource();
   private mapMoveSubscription: Subscription;
+  @ViewChild(PopupComponent) private popup: PopupComponent;
 
   constructor(private dustService: DustService) {}
 
@@ -105,6 +107,6 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   }
 
   private schowPopup(sensorData: SensorDto) {
-    console.log('popup', sensorData);
+    this.popup.open(sensorData);
   }
 }
