@@ -66,7 +66,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     this.map.on('click', evt => {
       const feature = this.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
       if (feature) {
-          this.schowPopup(feature.get('data'));
+        this.popup.open(feature.get('data'));
       }
     });
 
@@ -104,9 +104,5 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         view.setZoom(13);
       });
     }
-  }
-
-  private schowPopup(sensorData: SensorDto) {
-    this.popup.open(sensorData);
   }
 }
