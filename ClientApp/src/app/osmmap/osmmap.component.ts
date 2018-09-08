@@ -97,12 +97,9 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   }
 
   private getUserPosition() {
-    if (navigator.geolocation) {
-      const view = this.map.getView();
-      navigator.geolocation.getCurrentPosition(position => {
-        view.setCenter(fromLonLat([position.coords.longitude, position.coords.latitude]));
-        view.setZoom(13);
-      });
-    }
+    navigator.geolocation.getCurrentPosition(pos => {
+      const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
+      this.map.getView().animate({center: coords, zoom: 13});
+    });
   }
 }
