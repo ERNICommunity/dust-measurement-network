@@ -10,7 +10,7 @@ import { fromLonLat, transformExtent } from 'ol/proj';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import MapEvent from 'ol/MapEvent';
-import { Circle, Fill, Stroke, Style } from 'ol/style';
+import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
 
 import { Subscription, fromEvent } from 'rxjs';
 import { debounceTime, map, switchMap } from 'rxjs/operators';
@@ -41,18 +41,48 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         }),
         new VectorLayer({
           source: this.vectorSource,
-          style: new Style({
-            image: new Circle({
-              radius: 8,
-              fill: new Fill({
-                color: [52, 58, 64, 0.9]
-              }),
-              stroke: new Stroke({
-                color: [255, 255, 255, 0.9],
-                width: 1
-              })
-            })
-          })
+          style: (feature) => {
+            const matter25 = (feature.get('data') as SensorDto).particulateMatter25;
+            const matter100 = (feature.get('data') as SensorDto).particulateMatter100;
+            if(!matter100 && !matter25) {
+              return new Style({
+                image: new Circle({
+                  radius: 10,
+                  fill: new Fill({
+                    color: [0, 0, 0, 0.5]
+                  })
+                })
+              });
+            }
+            return [
+              matter25 ? new Style({
+                image: new Circle({
+                  radius: 25,
+                  stroke: new Stroke({
+                    color: this.getColor(matter25),
+                    width: 15
+                  })
+                }),
+                text: new Text({
+                  text: matter25 && matter25.toFixed(1),
+                  scale: 1.5,
+                  offsetY: 25
+                })
+              }) : new Style(),
+              matter100 ? new Style({
+                image: new Circle({
+                  radius: 15,
+                  fill: new Fill({
+                    color: this.getColor(matter100),
+                  })
+                }),
+                text: new Text({
+                  text: matter100 && matter100.toFixed(1),
+                  scale: 1.5
+                })
+              }) : new Style()
+            ]
+          }
         })
       ],
       view: new View({
@@ -101,5 +131,16 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
       this.map.getView().animate({center: coords, zoom: 13});
     });
+  }
+
+  private getColor(matterDensity: number) {
+    switch(true) {
+      case matterDensity < 25:
+        return [0, 255, 0, 0.5];
+      case matterDensity < 50:
+        return [255, 255, 0, 0.5];
+      case matterDensity >= 50:
+        return [255, 0, 0, 0.5];
+    }
   }
 }

@@ -28,6 +28,6 @@ export class PopupComponent {
     this.timestamp = data.timestamp;
     this.particulateMatter25 = data.particulateMatter25;
     this.particulateMatter100 = data.particulateMatter100;
-    this.modalService.open(this.modal);
+    this.modalService.open(this.modal, {size: 'lg'});
   }
 }
