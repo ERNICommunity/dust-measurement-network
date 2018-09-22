@@ -62,8 +62,7 @@ export class ChartComponent {
           yAxes: [{
             display: true,
             ticks: {
-              min: 0,
-              max: 200
+              min: 0
             }
           }],
         }
