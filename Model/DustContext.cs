@@ -54,7 +54,8 @@ namespace Model
                 new SensorData { Id = 11, SensorId = 4, Timestamp = DateTimeOffset.UtcNow.AddHours(-1), AirTemperature = -10 + rand.NextDouble()*50, RelativeHumidity = rand.NextDouble()*100, ParticulateMatter25 = rand.NextDouble()*200, ParticulateMatter100 = rand.NextDouble()*200 },
                 new SensorData { Id = 12, SensorId = 4, Timestamp = DateTimeOffset.UtcNow.AddHours(-2), AirTemperature = -10 + rand.NextDouble()*50, RelativeHumidity = rand.NextDouble()*100, ParticulateMatter25 = rand.NextDouble()*200, ParticulateMatter100 = rand.NextDouble()*200 },
                 new SensorData { Id = 13, SensorId = 4, Timestamp = DateTimeOffset.UtcNow.AddHours(-3), AirTemperature = -10 + rand.NextDouble()*50, RelativeHumidity = rand.NextDouble()*100, ParticulateMatter25 = rand.NextDouble()*200, ParticulateMatter100 = rand.NextDouble()*200 },
-                new SensorData { Id = 14, SensorId = 10, Timestamp = DateTimeOffset.UtcNow.AddHours(-3), AirTemperature = -10 + rand.NextDouble()*50, RelativeHumidity = rand.NextDouble()*100, ParticulateMatter25 = rand.NextDouble()*200, ParticulateMatter100 = rand.NextDouble()*200 }
+                new SensorData { Id = 14, SensorId = 10, Timestamp = DateTimeOffset.UtcNow.AddHours(-3), AirTemperature = -10 + rand.NextDouble()*50, RelativeHumidity = rand.NextDouble()*100, ParticulateMatter25 = rand.NextDouble()*200, ParticulateMatter100 = rand.NextDouble()*200 },
+                new SensorData { Id = 15, SensorId = 10, Timestamp = DateTimeOffset.UtcNow.AddHours(-4), AirTemperature = -10 + rand.NextDouble()*50, RelativeHumidity = rand.NextDouble()*100, ParticulateMatter25 = rand.NextDouble()*200, ParticulateMatter100 = rand.NextDouble()*200 }
             );
 
        }

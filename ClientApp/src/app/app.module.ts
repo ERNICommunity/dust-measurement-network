@@ -11,11 +11,12 @@ import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { AboutComponent } from './about/about.component';
 import { OsmMapComponent } from './osmmap/osmmap.component';
-import { ChartComponent } from './chart/chart.component';
+import { HistoryChartComponent } from './history-chart/history-chart.component';
 import { DustService } from './service/dust.service';
 import { LoadingProgressService } from './service/loading-progress.service';
 import { LoadingInterceptor } from './service/loading.interceptor';
 import { PopupComponent } from './popup/popup.component';
+import { PredictionChartComponent } from './prediction-chart/prediction-chart.component';
 
 @NgModule({
   declarations: [
@@ -23,8 +24,9 @@ import { PopupComponent } from './popup/popup.component';
     NavMenuComponent,
     AboutComponent,
     OsmMapComponent,
-    ChartComponent,
-    PopupComponent
+    HistoryChartComponent,
+    PopupComponent,
+    PredictionChartComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -32,8 +34,7 @@ import { PopupComponent } from './popup/popup.component';
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: OsmMapComponent, pathMatch: 'full' },
-      { path: 'about', component: AboutComponent},
-      { path: 'chart/:id', component: ChartComponent }
+      { path: 'about', component: AboutComponent}
     ]),
     LoadingBarModule.forRoot(),
     NgbModule
