@@ -38,13 +38,14 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       layers: [
         new TileLayer({
           source: new OSMSource()
-        }),
+        }), // add map control/overlay taha allows to get back to users location
         new VectorLayer({
           source: this.vectorSource,
-          style: (feature) => {
-            const matter25 = (feature.get('data') as SensorDto).particulateMatter25;
-            const matter100 = (feature.get('data') as SensorDto).particulateMatter100;
-            if(!matter100 && !matter25) {
+          style: feature => {
+            const featureData = feature.get('data') as SensorDto;
+            const matter25 = featureData.particulateMatter25;
+            const matter100 = featureData.particulateMatter100;
+            if (!matter100 && !matter25) {
               return new Style({
                 image: new Circle({
                   radius: 10,
@@ -81,7 +82,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
                   scale: 1.5
                 })
               }) : new Style()
-            ]
+            ];
           }
         })
       ],
@@ -134,7 +135,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   }
 
   private getColor(matterDensity: number) {
-    switch(true) {
+    switch (true) {
       case matterDensity < 25:
         return [0, 255, 0, 0.5];
       case matterDensity < 50:

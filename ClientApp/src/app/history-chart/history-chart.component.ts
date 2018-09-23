@@ -1,21 +1,19 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, Input,  } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Chart } from 'chart.js';
 import { DustService } from '../service/dust.service';
 import { DustDto } from '../service/DustDto';
-import { forkJoin } from 'rxjs';
-import * as moment from 'moment'
+import * as moment from 'moment';
 
 @Component({
-  selector: 'history-chart',
+  selector: 'app-history-chart',
   templateUrl: './history-chart.component.html',
   styleUrls: ['./history-chart.component.css']
 })
 export class HistoryChartComponent {
-  private _id : number;
+  private _id: number;
   private _dateFrom: Date;
-  private _dateTo: Date; 
+  private _dateTo: Date;
 
   @Input() set id(value: number) {
     this._id = value;
@@ -24,14 +22,14 @@ export class HistoryChartComponent {
     this.updateDustData(this._dateFrom, this._dateTo);
   }
 
-  dateFromStr: string = moment().subtract(2, 'days').startOf('day').format("YYYY-MM-DD");
-  dateToStr: string = moment().endOf('day').format("YYYY-MM-DD");;
+  dateFromStr: string = moment().subtract(2, 'days').startOf('day').format('YYYY-MM-DD');
+  dateToStr: string = moment().endOf('day').format('YYYY-MM-DD');
 
-  set dateFrom(value: string){
+  set dateFrom(value: string) {
     this._dateFrom = moment(this.dateFromStr).startOf('day').toDate();
   }
 
-  set dateTo(value: string){
+  set dateTo(value: string) {
     this._dateTo = moment(this.dateToStr).endOf('day').toDate();
   }
 
@@ -40,19 +38,18 @@ export class HistoryChartComponent {
   dateRangeChanged() {
     this.dateFrom = this.dateFromStr;
     this.dateTo = this.dateToStr;
-    
+
     this.updateDustData(this._dateFrom, this._dateTo);
   }
 
-  private updateDustData(dateFrom: Date, dateTo: Date) : void {
-    const datePipe = new DatePipe('en-US');
+  private updateDustData(dateFrom: Date, dateTo: Date): void {
     this.dustService.getDustHistory(this._id, dateFrom, dateTo).subscribe(
       result => this.drawChart(result),
       err => console.error(err)
     );
   }
 
-  private drawChart(history: DustDto[]) : void {
+  private drawChart(history: DustDto[]): void {
     const pipe = new DatePipe('en-US');
     const ctx = document.getElementById('chartcanvas') as HTMLCanvasElement;
     const chart = new Chart(ctx.getContext('2d'), {
