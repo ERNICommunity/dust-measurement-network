@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 @Injectable()
-export class LoadingProgressService {
+export class RunningRequestService {
   private _runningRequestsCount = 0;
   private _subject = new Subject<boolean>();
 
