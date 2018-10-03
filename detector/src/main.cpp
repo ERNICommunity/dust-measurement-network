@@ -41,7 +41,12 @@
 #include <SystemStatusFacade.hpp>
 #include <pb_encode.h>
 #include <pb_decode.h>
-#include <Assets.h>
+//#include <Assets.h>
+//#include <Wire.h>
+//#include <Adafruit_FRAM_I2C.h>
+//#include <Ivm.h>
+#include <DetectorIvm.h>
+//#include <DetectorIvmMemory.h>
 
 /* This is the buffer where we will store our message. */
 bool setMessageOnce = true;
@@ -58,16 +63,36 @@ SerialCommand* sCmd = 0;
 PM_Process* pmProcess = 0;
 DHT_Process* dhtProcess = 0;
 Battery* battery = 0;
-Assets* assets = 0;
+//Assets* assets = 0;
+DetectorIvm* ivm = 0;
+//Adafruit_FRAM_I2C* fram = 0;
 
 void setup()
 {
   pinMode(BUILTIN_LED, OUTPUT);
   digitalWrite(BUILTIN_LED, 0);
 
-  assets = new Assets();
-
   setupProdDebugEnv();
+
+  delay(5000);
+
+  //-----------------------------------------------------------------------------
+  // Inventory Management
+  //-----------------------------------------------------------------------------
+  ivm = new DetectorIvm();
+
+//  assets = new Assets(0);
+//  fram = new Adafruit_FRAM_I2C();
+//  if (fram->begin())     // you can stick the new i2c addr in here, e.g. begin(0x51);
+//  {
+//    Serial.println("Found I2C FRAM");
+//  }
+//  else
+//  {
+//    Serial.println("I2C FRAM not identified ... check your connections?\r\n");
+//    Serial.println("Will continue in case this processor doesn't support repeated start\r\n");
+//  }
+
   //-----------------------------------------------------------------------------
   // Battery Voltage Surveillance
   //-----------------------------------------------------------------------------
@@ -82,13 +107,13 @@ void setup()
   dhtProcess = new DHT_Process(new MyDHT_ProcessAdapter());
 
   m_LoraWanInterface = new LoraWanAbp();
-  m_LoraWanPriorityQueue = new LoraWanPriorityQueue(m_LoraWanInterface);
-  m_MeasurementFacade = new MeasurementFacade(m_LoraWanPriorityQueue);
-  m_MeasurementFacade->setNewMeasurementData(0.1f,10.1f,27.0f,80.0f);
-  m_SystemStatusFacade = new SystemStatusFacade(m_LoraWanPriorityQueue);
-  m_SystemStatusFacade->setBatteryStatus(SystemStatusFacade::State::e_OK,18.4f);
-  m_LoraWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
-  m_LoraWanPriorityQueue->start();
+//  m_LoraWanPriorityQueue = new LoraWanPriorityQueue(m_LoraWanInterface);
+//  m_MeasurementFacade = new MeasurementFacade(m_LoraWanPriorityQueue);
+//  m_MeasurementFacade->setNewMeasurementData(0.1f,10.1f,27.0f,80.0f);
+//  m_SystemStatusFacade = new SystemStatusFacade(m_LoraWanPriorityQueue);
+//  m_SystemStatusFacade->setBatteryStatus(SystemStatusFacade::State::e_OK,18.4f);
+//  m_LoraWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
+//  m_LoraWanPriorityQueue->start();
 }
 
 void loop()
@@ -100,5 +125,5 @@ void loop()
   pmProcess->pollSerialData();
   yield();                      // process Timers
   m_LoraWanInterface->loopOnce();
-  m_LoraWanPriorityQueue->update();
+//  m_LoraWanPriorityQueue->update();
 }
