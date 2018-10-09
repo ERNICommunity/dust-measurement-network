@@ -1,0 +1,44 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"resourceName": {
+			"value": "dmn-cluster"
+		},
+		"dnsPrefix": {
+			"value": "dmn"
+		},
+		"linuxAdminUsername": {
+			"reference": {
+				"keyVault": {
+					"id": "/subscriptions/8206e919-694c-4e32-86cc-df7f175806d4/resourceGroups/dmn-dev/providers/Microsoft.KeyVault/vaults/dmn-vault"
+				},
+				"secretName": "linux-vm-user"
+			}
+		},
+		"sshRSAPublicKey": {
+			"reference": {
+				"keyVault": {
+					"id": "/subscriptions/8206e919-694c-4e32-86cc-df7f175806d4/resourceGroups/dmn-dev/providers/Microsoft.KeyVault/vaults/dmn-vault"
+				},
+				"secretName": "linux-vm-ssh-key-pub"
+			}
+		},
+		"servicePrincipalClientId": {
+			"reference": {
+				"keyVault": {
+					"id": "/subscriptions/8206e919-694c-4e32-86cc-df7f175806d4/resourceGroups/dmn-dev/providers/Microsoft.KeyVault/vaults/dmn-vault"
+				},
+				"secretName": "dmn-service-app-id"
+			}
+		},
+		"servicePrincipalClientSecret": {
+			"reference": {
+				"keyVault": {
+					"id": "/subscriptions/8206e919-694c-4e32-86cc-df7f175806d4/resourceGroups/dmn-dev/providers/Microsoft.KeyVault/vaults/dmn-vault"
+				},
+				"secretName": "dmn-service-password"
+			}
+		}
+	}
+}
