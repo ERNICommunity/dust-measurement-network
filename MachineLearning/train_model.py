@@ -4,6 +4,7 @@ import pickle
 from sklearn.externals import joblib
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 import constants as const
+from sklearn.utils import shuffle
 
 # this will prevent TF from allocating the whole GPU
 from keras import backend as K
@@ -47,7 +48,7 @@ for c in [col for col in data.columns if col in const.categorical_column_names]:
 
 # categories + non categories
 X = np.concatenate((data.values, one_hot_categories), axis=1)
-np.random.shuffle(X) # shuffle to get rid of the start of month/end of month problem when selecting the validation set
+X, Y = shuffle(X, Y) # shuffle to get rid of the start of month/end of month problem when selecting the validation set
 
 # this will allow us to store the best fitting model we see during training
 cp = ModelCheckpoint(const.model_path, monitor='val_mean_absolute_error', verbose=0, save_best_only=True, save_weights_only=False)
