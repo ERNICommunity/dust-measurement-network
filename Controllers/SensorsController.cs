@@ -58,11 +58,11 @@ namespace hh_fe.Controllers
         public IEnumerable<DataPointDto> Prediction(int id)
         {
             var rand = new Random();
-            return Enumerable.Range(1, 5).Select(index => new DataPointDto
+            return Enumerable.Range(1, 10).Select(index => new DataPointDto
              {
                 Timestamp = DateTimeOffset.UtcNow.AddDays(index+1),
-                ParticulateMatter25 = rand.NextDouble()*500,
-                ParticulateMatter100 = rand.NextDouble()*500
+                ParticulateMatter25 = rand.NextDouble()*60,
+                ParticulateMatter100 = rand.NextDouble()*100
             });
         }
     }

@@ -1,3 +1,9 @@
 <div>
   <canvas id="canvas"></canvas>
+  <div class="row">
+      <div class="col-xs-6 offset-3">
+        <label><strong>To:</strong></label>
+        <input [(ngModel)]="dateToStr" (ngModelChange)="dateRangeChanged()" type="date" class="form-control">
+      </div>
+  </div>
 </div>

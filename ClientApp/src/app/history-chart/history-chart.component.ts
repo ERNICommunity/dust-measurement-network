@@ -1,4 +1,4 @@
-import { Component, Input,  } from '@angular/core';
+import { Component, Input, ViewChild,  } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Chart } from 'chart.js';
 import { DustService } from '../service/dust.service';
@@ -14,6 +14,8 @@ export class HistoryChartComponent {
   private _id: number;
   private _dateFrom: Date;
   private _dateTo: Date;
+
+  @ViewChild('canvas') elementView;
 
   @Input() set id(value: number) {
     this._id = value;
@@ -51,23 +53,47 @@ export class HistoryChartComponent {
 
   private drawChart(history: DustDto[]): void {
     const pipe = new DatePipe('en-US');
-    const ctx = document.getElementById('chartcanvas') as HTMLCanvasElement;
-    const chart = new Chart(ctx.getContext('2d'), {
+    const canvas = document.getElementById('chartcanvas') as HTMLCanvasElement;
+    const context = canvas.getContext('2d');
+    
+    const green_red_gradient_25 = context.createLinearGradient(0, 400, 0, 0);
+    green_red_gradient_25.addColorStop(0, 'green');
+    green_red_gradient_25.addColorStop(0.25, 'yellow');
+    green_red_gradient_25.addColorStop(0.5, 'red');
+
+    const green_red_gradient_100 = context.createLinearGradient(0, 400, 0, 0);
+    green_red_gradient_100.addColorStop(0, 'green');
+    green_red_gradient_100.addColorStop(0.5, 'yellow');
+    green_red_gradient_100.addColorStop(1, 'red');
+
+    const chart = new Chart(context, {
       type: 'line',
       data: {
         labels: history.map(dustdata => pipe.transform(dustdata.timestamp, 'medium')),
         datasets: [
           {
             label: 'Dust 2.5',
-            // backgroundColor: 'rgb(18, 99, 132)',
-            borderColor: 'rgb(18, 99, 32)',
-            data: (history.map(dustdata => dustdata.particulateMatter25))
+            data: (history.map(dustdata => dustdata.particulateMatter25)),
+            fill: false,
+            borderColor: 'grey',
+            pointBorderColor: green_red_gradient_25,
+            pointBackgroundColor: green_red_gradient_25,
+            pointHoverBackgroundColor: green_red_gradient_25,
+            pointHoverBorderColor: green_red_gradient_25,
+            pointRadius: 5,
+            pointHoverRadius: 8
           },
           {
-            label: 'Dust 10.0',
-            // backgroundColor: 'rgb(18, 3, 132)',
-            borderColor: 'rgb(18, 3, 32)',
-            data: (history.map(dustdata => dustdata.particulateMatter100))
+            label: 'Dust 10',
+            data: (history.map(dustdata => dustdata.particulateMatter100)),
+            fill: false,
+            borderColor: 'darkgreen',
+            pointBorderColor: green_red_gradient_100,
+            pointBackgroundColor: green_red_gradient_100,
+            pointHoverBackgroundColor: green_red_gradient_100,
+            pointHoverBorderColor: green_red_gradient_100,
+            pointRadius: 5,
+            pointHoverRadius: 8
           }]
       },
       options: {
@@ -81,6 +107,7 @@ export class HistoryChartComponent {
           yAxes: [{
             display: true,
             ticks: {
+              max: 100,
               min: 0
             }
           }],
