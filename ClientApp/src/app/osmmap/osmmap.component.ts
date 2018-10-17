@@ -4,8 +4,10 @@ import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
-import OSMSource from 'ol/source/OSM';
+import OSM from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
+import Cluster from 'ol/source/Cluster';
+import {defaults as defaultControls, OverviewMap} from 'ol/control';
 import { fromLonLat, transformExtent } from 'ol/proj';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
@@ -37,66 +39,91 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       target: 'osmmap',
       layers: [
         new TileLayer({
-          source: new OSMSource()
+          source: new OSM({
+            attributions: '© ERNI 2018, OpenStreetMap contributors'
+          })
         }),
         new VectorLayer({
-          source: this.vectorSource,
+          source: new Cluster({
+            source: this.vectorSource,
+            distance: 30
+          }),
           style: (feature) => {
-            const matter25 = (feature.get('data') as SensorDto).particulateMatter25;
-            const matter100 = (feature.get('data') as SensorDto).particulateMatter100;
-            if(!matter100 && !matter25) {
-              return new Style({
-                image: new Circle({
-                  radius: 10,
-                  fill: new Fill({
-                    color: [0, 0, 0, 0.5]
+            const features = feature.get('features');
+            if(features.length === 1) {
+              const matter25 = (features[0].get('data') as SensorDto).particulateMatter25;
+              const matter100 = (features[0].get('data') as SensorDto).particulateMatter100;
+              return [
+                matter25 ? new Style({
+                  image: new Circle({
+                    radius: 20,
+                    stroke: new Stroke({
+                      color: this.getColor25(matter25),
+                      width: 12.5
+                    })
+                  }),
+                  text: new Text({
+                    text: matter25 && matter25.toFixed(1),
+                    scale: 1.2,
+                    offsetY: 20
+                  })
+                }) : new Style(),
+                 new Style({
+                  image: new Circle({
+                    radius: 12.5,
+                    fill: new Fill({
+                      color: this.getColor100(matter100),
+                    })
+                  }),
+                  text: new Text({
+                    text: matter100 && matter100.toFixed(1),
+                    scale: 1.2
                   })
                 })
-              });
+              ]
+            } else {
+              return [
+                new Style({
+                  image: new Circle({
+                    radius: 20,
+                    stroke: new Stroke({
+                      color: this.getColor25(this.getAverage(features as Feature[], 'particulateMatter25')),
+                      width: 12.5
+                    })
+                  }),
+                }),
+                new Style({
+                  image: new Circle({
+                    radius: 12.5,
+                    fill: new Fill({
+                      color: this.getColor100(this.getAverage(features as Feature[], 'particulateMatter100')),
+                    })
+                  }),
+                  text: new Text({
+                    text: features.length.toString(),
+                    scale: 1.7
+                  })
+                })
+              ];
             }
-            return [
-              matter25 ? new Style({
-                image: new Circle({
-                  radius: 25,
-                  stroke: new Stroke({
-                    color: this.getColor(matter25),
-                    width: 15
-                  })
-                }),
-                text: new Text({
-                  text: matter25 && matter25.toFixed(1),
-                  scale: 1.5,
-                  offsetY: 25
-                })
-              }) : new Style(),
-              matter100 ? new Style({
-                image: new Circle({
-                  radius: 15,
-                  fill: new Fill({
-                    color: this.getColor(matter100),
-                  })
-                }),
-                text: new Text({
-                  text: matter100 && matter100.toFixed(1),
-                  scale: 1.5
-                })
-              }) : new Style()
-            ]
           }
         })
       ],
       view: new View({
         center: [0, 0],
         zoom: 13
-      })
+      }),
+      controls: defaultControls().extend([
+        new OverviewMap()
+      ]),
     });
 
     this.getUserPosition();
 
     this.map.on('click', evt => {
-      const feature = this.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
-      if (feature) {
-        this.popup.open(feature.get('data'));
+      const features = this.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
+      if (features.get('features').length == 1) {
+        this.popup.open(features.get('features')[0].get('data'));
       }
     });
 
@@ -133,7 +160,10 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getColor(matterDensity: number) {
+  private getColor25(matterDensity: number) {
+    if(!matterDensity) {
+      return [0,0,0,0.5];
+    }
     switch(true) {
       case matterDensity < 25:
         return [0, 255, 0, 0.5];
@@ -142,5 +172,23 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       case matterDensity >= 50:
         return [255, 0, 0, 0.5];
     }
+  }
+
+  private getColor100(matterDensity: number) {
+    if(!matterDensity) {
+      return [0,0,0,0.5];
+    }
+    switch(true) {
+      case matterDensity < 50:
+        return [0, 255, 0, 0.5];
+      case matterDensity < 100:
+        return [255, 255, 0, 0.5];
+      case matterDensity >= 100:
+        return [255, 0, 0, 0.5];
+    }
+  }
+
+  private getAverage(matterDensities: Feature[], type: string): number {
+    return matterDensities.reduce((a,b) => a + (b.get('data') as SensorDto)[type], 0) / matterDensities.length;
   }
 }

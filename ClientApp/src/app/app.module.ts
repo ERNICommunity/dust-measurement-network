@@ -17,6 +17,7 @@ import { LoadingProgressService } from './service/loading-progress.service';
 import { LoadingInterceptor } from './service/loading.interceptor';
 import { PopupComponent } from './popup/popup.component';
 import { PredictionChartComponent } from './prediction-chart/prediction-chart.component';
+import { LegendComponent } from './legend/legend.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { PredictionChartComponent } from './prediction-chart/prediction-chart.co
     OsmMapComponent,
     HistoryChartComponent,
     PopupComponent,
-    PredictionChartComponent
+    PredictionChartComponent,
+    LegendComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
