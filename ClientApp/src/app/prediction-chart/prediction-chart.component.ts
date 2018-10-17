@@ -44,7 +44,7 @@ export class PredictionChartComponent {
     const pipe = new DatePipe('en-US');
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     const context = canvas.getContext('2d');
-    
+
     const green_red_gradient_25 = context.createLinearGradient(0, 400, 0, 0);
     green_red_gradient_25.addColorStop(0, 'green');
     green_red_gradient_25.addColorStop(0.25, 'yellow');
