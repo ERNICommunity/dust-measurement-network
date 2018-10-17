@@ -5,7 +5,6 @@ import { DustDto } from './DustDto';
 
 @Injectable()
 export class DustService {
-  private reqCount = 0;
 
   constructor(
     private httpClient: HttpClient,

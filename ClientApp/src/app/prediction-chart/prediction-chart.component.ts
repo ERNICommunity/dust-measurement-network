@@ -1,11 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { DustService } from '../service/dust.service';
 import { DustDto } from '../service/DustDto';
 import { DatePipe } from '@angular/common';
 import { Chart } from 'chart.js';
 
 @Component({
-  selector: 'prediction-chart',
+  selector: 'app-prediction-chart',
   templateUrl: './prediction-chart.component.html',
   styleUrls: ['./prediction-chart.component.css']
 })
@@ -16,14 +16,14 @@ export class PredictionChartComponent {
 
   constructor(private dustService: DustService) { }
 
-  private updateDustData(id: number) : void {
+  private updateDustData(id: number): void {
     this.dustService.getDustPrediction(id).subscribe(
       result => this.drawChart(result),
       err => console.error(err)
     );
   }
 
-  private drawChart(prediction: DustDto[]) : void {
+  private drawChart(prediction: DustDto[]): void {
     const pipe = new DatePipe('en-US');
     const ctx = document.getElementById('canvas') as HTMLCanvasElement;
     const chart = new Chart(ctx.getContext('2d'), {
