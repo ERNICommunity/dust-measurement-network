@@ -50,7 +50,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
           }),
           style: (feature) => {
             const features = feature.get('features');
-            if(features.length === 1) {
+            if (features.length === 1) {
               const matter25 = (features[0].get('data') as SensorDto).particulateMatter25;
               const matter100 = (features[0].get('data') as SensorDto).particulateMatter100;
               return [
@@ -80,7 +80,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
                     scale: 1.2
                   })
                 })
-              ]
+              ];
             } else {
               return [
                 new Style({
@@ -122,7 +122,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
 
     this.map.on('click', evt => {
       const features = this.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
-      if (features.get('features').length == 1) {
+      if (features.get('features').length === 1) {
         this.popup.open(features.get('features')[0].get('data'));
       }
     });
@@ -161,10 +161,10 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   }
 
   private getColor25(matterDensity: number) {
-    if(!matterDensity) {
-      return [0,0,0,0.5];
+    if (!matterDensity) {
+      return [0, 0, 0, 0.5];
     }
-    switch(true) {
+    switch (true) {
       case matterDensity < 25:
         return [0, 255, 0, 0.5];
       case matterDensity < 50:
@@ -175,10 +175,10 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   }
 
   private getColor100(matterDensity: number) {
-    if(!matterDensity) {
-      return [0,0,0,0.5];
+    if (!matterDensity) {
+      return [0, 0, 0, 0.5];
     }
-    switch(true) {
+    switch (true) {
       case matterDensity < 50:
         return [0, 255, 0, 0.5];
       case matterDensity < 100:
@@ -189,6 +189,6 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   }
 
   private getAverage(matterDensities: Feature[], type: string): number {
-    return matterDensities.reduce((a,b) => a + (b.get('data') as SensorDto)[type], 0) / matterDensities.length;
+    return matterDensities.reduce((a, b) => a + (b.get('data') as SensorDto)[type], 0) / matterDensities.length;
   }
 }
