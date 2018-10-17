@@ -11,3 +11,5 @@ detector/\.vscode/launch\.json
 >>>>>>> ttn-gwy-dev
 
 ttn-gwy/output\.txt
+
+detector/\.vscode/
