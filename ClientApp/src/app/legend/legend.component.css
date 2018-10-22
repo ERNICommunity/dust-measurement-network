@@ -1,11 +1,10 @@
 #legend {
-    padding: 1%;
-    background: rgba(0,0,0,0.8);
+    padding: 1em;
+    background: rgba(52,58,64,0.9);
     position: absolute;
-    top: 10%;
-    right: 5%;
+    top: 4em;
+    right: 0.5em;
     color: white;
-    font-size: 0.8em;
 }
 
 .box-good {
