@@ -51,8 +51,9 @@ export class OsmMapComponent implements OnInit, OnDestroy {
           style: (feature) => {
             const features = feature.get('features');
             if (features.length === 1) {
-              const matter25 = (features[0].get('data') as SensorDto).particulateMatter25;
-              const matter100 = (features[0].get('data') as SensorDto).particulateMatter100;
+              const data = (features[0].get('data') as SensorDto);
+              const matter25 = data.particulateMatter25;
+              const matter100 = data.particulateMatter100;
               return [
                 matter25 ? new Style({
                   image: new Circle({
@@ -122,7 +123,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
 
     this.map.on('click', evt => {
       const features = this.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
-      if (features.get('features').length === 1) {
+      if (features && features.get('features').length === 1) {
         this.popup.open(features.get('features')[0].get('data'));
       }
     });
