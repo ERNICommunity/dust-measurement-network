@@ -7,7 +7,7 @@ import VectorLayer from 'ol/layer/Vector';
 import OSM from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
 import Cluster from 'ol/source/Cluster';
-import {defaults as defaultControls, OverviewMap} from 'ol/control';
+import {defaults as defaultControls, OverviewMap, Control} from 'ol/control';
 import { fromLonLat, transformExtent } from 'ol/proj';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
@@ -115,11 +115,12 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         zoom: 13
       }),
       controls: defaultControls().extend([
-        new OverviewMap()
+        new OverviewMap(),
+        new RotateNorthControl(null)
       ]),
     });
 
-    this.getUserPosition();
+    this.navigateMapToUsersPosition();
 
     this.map.on('click', evt => {
       const features = this.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
@@ -154,7 +155,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getUserPosition() {
+  private navigateMapToUsersPosition() {
     navigator.geolocation.getCurrentPosition(pos => {
       const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
       this.map.getView().animate({center: coords, zoom: 13});
@@ -189,7 +190,36 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getAverage(matterDensities: Feature[], type: string): number {
-    return matterDensities.reduce((a, b) => a + (b.get('data') as SensorDto)[type], 0) / matterDensities.length;
+  private getAverage(matterDensities: Feature[], key: string): number {
+    return matterDensities.reduce((a, b) => a + (b.get('data') as SensorDto)[key], 0) / matterDensities.length;
   }
+}
+
+
+class RotateNorthControl extends Control {
+
+  constructor(opt_options) {
+
+    const options = opt_options || {};
+
+    const button = document.createElement('button');
+    button.innerHTML = 'N';
+    button.addEventListener('click',  () => console.log('rotatemap1'), false);
+    button.addEventListener('touchstart', () => console.log('rotatemap2'), false);
+
+    const element = document.createElement('div');
+    element.className = 'rotate-north ol-unselectable ol-control';
+    element.appendChild(button);
+
+    super({
+      element: element,
+      target: options.target
+    });
+  }
+
+  private handleRotateNorth() {
+    // this.getMap().getView().setRotation(0);
+    console.log('rotatemap');
+  }
+
 }
