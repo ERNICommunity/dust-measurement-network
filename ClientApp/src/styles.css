@@ -9,6 +9,11 @@ div.ol-zoom.ol-control {
   top: 4em;
 }
 
+div.ol-rotate.ol-control {
+  top: 4em;
+  right: 10em;
+}
+
 div.user-location.ol-control {
   bottom: 3em;
   right: .5em;

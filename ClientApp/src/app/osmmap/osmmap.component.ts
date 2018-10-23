@@ -199,6 +199,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
 class UserLocation extends Control {
   constructor() {
     const button = document.createElement('button');
+    button.title = 'My location';
     button.innerHTML = '&#9678;'; // utf8 bullseye
     const element = document.createElement('div');
     element.className = 'user-location ol-unselectable ol-control';
