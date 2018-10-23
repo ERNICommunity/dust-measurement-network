@@ -1,6 +1,6 @@
 using System;
 
-namespace hh_fe.Controllers
+namespace Frontend.Controllers
 {
     public class SensorDto 
     {

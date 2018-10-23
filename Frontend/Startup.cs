@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
 
-namespace hh_fe
+namespace Frontend
 {
     public class Startup
     {

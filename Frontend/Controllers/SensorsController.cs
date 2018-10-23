@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Model;
 
-namespace hh_fe.Controllers
+namespace Frontend.Controllers
 {
     [Route("api/[controller]")]
     public class SensorsController : Controller

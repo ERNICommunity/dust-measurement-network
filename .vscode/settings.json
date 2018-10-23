@@ -1,8 +1,8 @@
 {
-    "typescript.tsdk": "./ClientApp/node_modules/typescript/lib",
+    "typescript.tsdk": "./Frontend/ClientApp/node_modules/typescript/lib",
     "files.exclude": {
-        "ClientApp/node_modules": true,
-        "bin": true,
-        "obj": true
+        "**/node_modules": true,
+        "**/bin": true,
+        "**/obj": true
     }
 }

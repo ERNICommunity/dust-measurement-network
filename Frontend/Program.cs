@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Model;
 
-namespace hh_fe
+namespace Frontend
 {
     public class Program
     {
