@@ -4,7 +4,7 @@ import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
-import OSM from 'ol/source/OSM';
+import OSM, {ATTRIBUTION} from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
 import Cluster from 'ol/source/Cluster';
 import {defaults as defaultControls, OverviewMap, Control} from 'ol/control';
@@ -40,7 +40,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       layers: [
         new TileLayer({
           source: new OSM({
-            attributions: '© ERNI 2018, OpenStreetMap contributors'
+            attributions: ['© <a href="https://www.betterask.erni/">ERNI</a> Community', ATTRIBUTION]
           })
         }),
         new VectorLayer({
@@ -116,7 +116,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       }),
       controls: defaultControls().extend([
         new OverviewMap(),
-        new RotateNorthControl(null)
+        new UserLocation()
       ]),
     });
 
@@ -196,30 +196,26 @@ export class OsmMapComponent implements OnInit, OnDestroy {
 }
 
 
-class RotateNorthControl extends Control {
-
-  constructor(opt_options) {
-
-    const options = opt_options || {};
-
+class UserLocation extends Control {
+  constructor() {
     const button = document.createElement('button');
-    button.innerHTML = 'N';
-    button.addEventListener('click',  () => console.log('rotatemap1'), false);
-    button.addEventListener('touchstart', () => console.log('rotatemap2'), false);
-
+    button.innerHTML = '&#9678;'; // utf8 bullseye
     const element = document.createElement('div');
-    element.className = 'rotate-north ol-unselectable ol-control';
+    element.className = 'user-location ol-unselectable ol-control';
     element.appendChild(button);
 
     super({
-      element: element,
-      target: options.target
+      element: element
+    });
+
+    button.addEventListener('click', () => this.navigateMapToUsersPosition(super.getMap()), false);
+    button.addEventListener('touchstart', () => this.navigateMapToUsersPosition(super.getMap()), false);
+  }
+
+  private navigateMapToUsersPosition(m: Map) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
+      m.getView().animate({center: coords, zoom: 13});
     });
   }
-
-  private handleRotateNorth() {
-    // this.getMap().getView().setRotation(0);
-    console.log('rotatemap');
-  }
-
 }
