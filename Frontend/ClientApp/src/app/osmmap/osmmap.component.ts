@@ -15,7 +15,7 @@ import MapEvent from 'ol/MapEvent';
 import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
 
 import { Subscription, fromEvent } from 'rxjs';
-import { debounceTime, map, switchMap } from 'rxjs/operators';
+import { debounceTime, map, switchMap, catchError } from 'rxjs/operators';
 
 import { SensorDto } from '../service/SensorDto';
 import { DustService } from '../service/dust.service';
@@ -133,10 +133,14 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     this.mapMoveSubscription = fromEvent(this.map, 'moveend').pipe(
       debounceTime(1000),
       map((evt: MapEvent) => transformExtent(evt.frameState.extent, this.map.getView().getProjection(), 'EPSG:4326')),
-      switchMap(extent => this.dustService.getSensors(extent[0], extent[1], extent[2], extent[3]))
+      switchMap(extent => this.dustService.getSensors(extent[0], extent[1], extent[2], extent[3])),
+      catchError((err, source) => {
+        console.error('getting available sensors failed', err);
+        return source;
+      })
     ).subscribe(
       result => this.drawMarkers(result),
-      err => console.error(err)
+      err => console.error('mapMoveSubscription fail', err)
     );
   }
 
