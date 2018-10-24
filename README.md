@@ -23,4 +23,6 @@ Few usefull VS Code extensions:
 
 Remember that **whenever you pull new version, it's a good idea to reinstall backend and frontend dependencies**, as someone might have changed them.
 
-Please **DONT commit connection strings/passwords/API keys etc.** into repository, because its public.
+**IMPORTANT**
+
+Please **DON'T** commit connection strings/passwords/API keys etc. into repository, because its public. Preferrably use [ASP.NET Core Secret manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-2.1&tabs=windows#secret-manager) to store them locally. For example to set connection string to database (this solution uses PostgreSQL) use: `dotnet user-secrets set "ConnectionStrings:DustDatabase" "<your-connection-string>"`

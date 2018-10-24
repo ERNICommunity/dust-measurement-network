@@ -23,7 +23,7 @@ namespace Frontend
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddDbContext<DustContext>(opt => opt.UseInMemoryDatabase("DustDatabase"));
+            services.AddDbContext<DustContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("DustDatabase")));
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
