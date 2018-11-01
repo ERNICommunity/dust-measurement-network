@@ -1,4 +1,4 @@
-# ERNI Hack&amp;Hike - Dust Measurement Network - Frontend + DataSync
+# ERNI Hack&amp;Hike - Dust Measurement Network: Frontend + DataSync
 
 This repo contains 2 main projects: Frontend (Angular 7 application with .NET Core 2.1 backend) and DataSyncService (.NET Core console app). There is also shared Model project (EF Core model).
 
@@ -12,7 +12,7 @@ To run it you need to have [Node.js](https://nodejs.org) and [.NET Core](https:/
  1. install Angular frontend dependencies `npm install`
  1. go back to Frontend `cd ..`
  1. launch the project by `dotnet run`
- 1. navigate your browser to https://localhost:5001The
+ 1. navigate your browser to https://localhost:5001
  
 This projects uses PostgreSQL database, therefore you need to set connection string `DustDatabase` to database instance you want to use. For local development it's recomended to use [ASP.NET Core Secret manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-2.1&tabs=windows#secret-manager). To do so, execute (inside Frontend project folder): `dotnet user-secrets set "ConnectionStrings:DustDatabase" "<your-connection-string>"`
 
