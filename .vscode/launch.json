@@ -9,7 +9,6 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/Frontend/bin/Debug/netcoreapp2.1/Frontend.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Frontend",
@@ -35,6 +34,17 @@
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Frontend/Views"
             }
+        },
+        {
+            "name": ".NET Core Launch (data sync service)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/DataSyncService/bin/Debug/netcoreapp2.1/DataSyncService.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/DataSyncService",
+            "stopAtEntry": false,
+            "console": "externalTerminal"
         },
         {
             "name": ".NET Core Attach",

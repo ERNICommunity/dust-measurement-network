@@ -1,21 +1,31 @@
-# ERNI Hack&amp;Hike - Dust Measurement Network - Frontend (and its backend)
+# ERNI Hack&amp;Hike - Dust Measurement Network - Frontend + DataSync
 
-This is Angular 6 application with .NET Core 2.1 backend.
+This repo contains 2 main projects: Frontend (Angular 7 application with .NET Core 2.1 backend) and DataSyncService (.NET Core console app). There is also shared Model project (EF Core model).
 
-To run it you need to have [Node.js](https://nodejs.org) and [.NET Core](https://www.microsoft.com/net/download) installed on your computer. When you have those then:
- 1. clone this repo
- 1. change into your clone `cd <your-clone-folder>`
+## Frontend
+
+This is a web UI for dust measurement solution.
+To run it you need to have [Node.js](https://nodejs.org) and [.NET Core](https://www.microsoft.com/net/download) installed on your computer. Once you have those:
+ 1. change into your clone directory `cd <your-clone-folder>`
  1. install .NET Core backend dependencies `dotnet restore`
- 1. change to angular app directory `cd Frontend/ClientApp`
+ 1. change to Angular app directory `cd Frontend/ClientApp`
  1. install Angular frontend dependencies `npm install`
  1. go back to Frontend `cd ..`
  1. launch the project by `dotnet run`
- 1. navigate your browser to https://localhost:5001
+ 1. navigate your browser to https://localhost:5001The
+ 
+This projects uses PostgreSQL database, therefore you need to set connection string `DustDatabase` to database instance you want to use. For local development it's recomended to use [ASP.NET Core Secret manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-2.1&tabs=windows#secret-manager). To do so, execute (inside Frontend project folder): `dotnet user-secrets set "ConnectionStrings:DustDatabase" "<your-connection-string>"`
 
-The project is developed in [Visual Studio Code](https://code.visualstudio.com/) so if you use this IDE, you don't need to do all the steps above, you only need to install frontend Angular dependencies, VS Code will do the rest (VS Code project settings are already part of this repo). To launch it, just hit F5.
+## DataSync
+
+This is a [.NET Core](https://www.microsoft.com/net/download) console application that takes data from InfluxDB (where sensors write), aggregates it into SQL database and enhances the data with additional weather information. 
+
+## VS Code
+
+The project is developed in [Visual Studio Code](https://code.visualstudio.com/) so if you use this IDE, your life is simpler, because VS Code project settings are already part of the repo. To launch a project, just hit F5 (pick what project you want to run in VS Code's Debug tab).
 
 Few usefull VS Code extensions:
-- C# by Microsoft (mandatory for running/debugging backend)
+- C# by Microsoft (mandatory for running/debugging .NET code)
 - Angular Language Service by Angular
 - EditorConfig for VS Code by EditorConfig
 - TSLint by egamma
@@ -25,4 +35,4 @@ Remember that **whenever you pull new version, it's a good idea to reinstall bac
 
 **IMPORTANT**
 
-Please **DON'T** commit connection strings/passwords/API keys etc. into repository, because its public. Preferrably use [ASP.NET Core Secret manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-2.1&tabs=windows#secret-manager) to store them locally. For example to set connection string to database (this solution uses PostgreSQL) use: `dotnet user-secrets set "ConnectionStrings:DustDatabase" "<your-connection-string>"`
+Please **DON'T** commit connection strings/passwords/API keys etc. into repository, because its public. Preferrably use [ASP.NET Core Secret manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-2.1&tabs=windows#secret-manager) to store them locally.
