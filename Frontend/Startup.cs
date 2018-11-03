@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
+using Npgsql;
 
 namespace Frontend
 {
@@ -23,7 +24,9 @@ namespace Frontend
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddDbContext<DustContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("DustDatabase")));
+            var csBuilder = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("DustDatabase"));
+            csBuilder.ApplicationName = "DMN Frontend";
+            services.AddDbContext<DustContext>(opt => opt.UseNpgsql(csBuilder.ToString()));
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

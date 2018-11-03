@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Model;
+using Npgsql;
 
 namespace DataSyncService
 {
@@ -17,8 +18,11 @@ namespace DataSyncService
                 .AddEnvironmentVariables();           
             var configuration = builder.Build();
 
+            var csBuilder = new NpgsqlConnectionStringBuilder(configuration.GetConnectionString("DustDatabase"));
+            csBuilder.ApplicationName = "DMN DataSyncService";
+
             var optionsBuilder = new DbContextOptionsBuilder<DustContext>();
-            optionsBuilder.UseNpgsql(configuration.GetConnectionString("DustDatabase"));
+            optionsBuilder.UseNpgsql(csBuilder.ToString());
 
             using(var ctx = new DustContext(optionsBuilder.Options))
             {
