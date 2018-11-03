@@ -12,7 +12,6 @@ namespace Model
         public double RelativeHumidity { get; set; }
         public int SensorId { get; set; }
         public Sensor Sensor { get; set; }
-        public int? DataEnhancemetId { get; set; }
         public DataEnhancement DataEnhancement { get; set; }         
     }
 }
