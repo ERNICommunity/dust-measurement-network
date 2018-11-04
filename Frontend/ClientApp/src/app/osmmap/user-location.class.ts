@@ -1,9 +1,8 @@
 import { Control } from 'ol/control';
 import Map from 'ol/Map';
-import { fromLonLat } from 'ol/proj';
 
 export class UserLocation extends Control {
-  constructor() {
+  constructor(clickCallback: (m: Map) => void) {
     const button = document.createElement('button');
     button.title = 'My location';
     button.innerHTML = '&#9678;'; // utf8 bullseye
@@ -16,14 +15,7 @@ export class UserLocation extends Control {
       element: element
     });
 
-    button.addEventListener('click', () => this.navigateMapToUsersPosition(super.getMap()), false);
-    button.addEventListener('touchstart', () => this.navigateMapToUsersPosition(super.getMap()), false);
-  }
-
-  private navigateMapToUsersPosition(m: Map) {
-    navigator.geolocation.getCurrentPosition(pos => {
-      const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
-      m.getView().animate({center: coords, zoom: 13});
-    });
+    button.addEventListener('click', () => clickCallback(super.getMap()), false);
+    button.addEventListener('touchstart', () => clickCallback(super.getMap()), false);
   }
 }

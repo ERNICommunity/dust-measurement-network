@@ -28,7 +28,6 @@ import { UserLocation } from './user-location.class';
   styleUrls: ['./osmmap.component.css']
 })
 export class OsmMapComponent implements OnInit, OnDestroy {
-  private map: Map;
   private vectorSource = new VectorSource();
   private mapMoveSubscription: Subscription;
   @ViewChild(PopupComponent) private popup: PopupComponent;
@@ -36,7 +35,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   constructor(private dustService: DustService) {}
 
   ngOnInit() {
-    this.map = new Map({
+    const osmMap = new Map({
       target: 'osmmap',
       layers: [
         new TileLayer({
@@ -49,66 +48,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
             source: this.vectorSource,
             distance: 30
           }),
-          style: (feature) => {
-            const features = feature.get('features');
-            if (features.length === 1) {
-              const data = (features[0].get('data') as SensorDto);
-              const matter25 = data.particulateMatter25;
-              const matter100 = data.particulateMatter100;
-              return [
-                matter25 ? new Style({
-                  image: new Circle({
-                    radius: 20,
-                    stroke: new Stroke({
-                      color: this.getColor25(matter25),
-                      width: 12.5
-                    })
-                  }),
-                  text: new Text({
-                    text: matter25 && matter25.toFixed(1),
-                    scale: 1.2,
-                    offsetY: 20
-                  })
-                }) : new Style(),
-                 new Style({
-                  image: new Circle({
-                    radius: 12.5,
-                    fill: new Fill({
-                      color: this.getColor100(matter100),
-                    })
-                  }),
-                  text: new Text({
-                    text: matter100 && matter100.toFixed(1),
-                    scale: 1.2
-                  })
-                })
-              ];
-            } else {
-              return [
-                new Style({
-                  image: new Circle({
-                    radius: 20,
-                    stroke: new Stroke({
-                      color: this.getColor25(this.getAverage(features as Feature[], 'particulateMatter25')),
-                      width: 12.5
-                    })
-                  }),
-                }),
-                new Style({
-                  image: new Circle({
-                    radius: 12.5,
-                    fill: new Fill({
-                      color: this.getColor100(this.getAverage(features as Feature[], 'particulateMatter100')),
-                    })
-                  }),
-                  text: new Text({
-                    text: features.length.toString(),
-                    scale: 1.7
-                  })
-                })
-              ];
-            }
-          }
+          style: f => this.getStyle(f)
         })
       ],
       view: new View({
@@ -117,22 +57,20 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       }),
       controls: defaultControls().extend([
         new OverviewMap(),
-        new UserLocation()
+        new UserLocation(this.navigateMapToUsersPosition)
       ]),
     });
 
-    this.navigateMapToUsersPosition();
-
-    this.map.on('click', evt => {
-      const features = this.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
+    osmMap.on('click', evt => {
+      const features = evt.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
       if (features && features.get('features').length === 1) {
         this.popup.open(features.get('features')[0].get('data'));
       }
     });
 
-    this.mapMoveSubscription = fromEvent(this.map, 'moveend').pipe(
+    this.mapMoveSubscription = fromEvent(osmMap, 'moveend').pipe(
       debounceTime(1000),
-      map((evt: MapEvent) => transformExtent(evt.frameState.extent, this.map.getView().getProjection(), 'EPSG:4326')),
+      map((evt: MapEvent) => transformExtent(evt.frameState.extent, evt.map.getView().getProjection(), 'EPSG:4326')),
       switchMap(extent => this.dustService.getSensors(extent[0], extent[1], extent[2], extent[3])),
       catchError((err, source) => {
         console.error('getting available sensors failed', err);
@@ -142,10 +80,73 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       result => this.drawMarkers(result),
       err => console.error('mapMoveSubscription fail', err)
     );
+
+    this.navigateMapToUsersPosition(osmMap);
   }
 
   ngOnDestroy(): void {
    this.mapMoveSubscription.unsubscribe();
+  }
+
+  private getStyle(feature: Feature) {
+    const features = feature.get('features');
+    if (features.length === 1) {
+      const data = (features[0].get('data') as SensorDto);
+      const matter25 = data.particulateMatter25;
+      const matter100 = data.particulateMatter100;
+      return [
+        matter25 ? new Style({
+          image: new Circle({
+            radius: 20,
+            stroke: new Stroke({
+              color: this.getColor25(matter25),
+              width: 12.5
+            })
+          }),
+          text: new Text({
+            text: matter25 && matter25.toFixed(1),
+            scale: 1.2,
+            offsetY: 20
+          })
+        }) : new Style(),
+          new Style({
+          image: new Circle({
+            radius: 12.5,
+            fill: new Fill({
+              color: this.getColor100(matter100),
+            })
+          }),
+          text: new Text({
+            text: matter100 && matter100.toFixed(1),
+            scale: 1.2
+          })
+        })
+      ];
+    } else {
+      return [
+        new Style({
+          image: new Circle({
+            radius: 20,
+            stroke: new Stroke({
+              color: this.getColor25(this.getAverage(features as Feature[], 'particulateMatter25')),
+              width: 12.5
+            })
+          }),
+        }),
+        new Style({
+          image: new Circle({
+            radius: 12.5,
+            fill: new Fill({
+              color: this.getColor100(this.getAverage(features as Feature[], 'particulateMatter100')),
+            })
+          }),
+          text: new Text({
+            text: features.length.toString(),
+            scale: 1.7
+          })
+        })
+      ];
+    }
   }
 
   private drawMarkers(markers: SensorDto[]) {
@@ -160,10 +161,10 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     }
   }
 
-  private navigateMapToUsersPosition() {
-    navigator.geolocation.getCurrentPosition(pos => {
+  private navigateMapToUsersPosition(m: Map) {
+    navigator.geolocation.getCurrentPosition((pos: Position) => {
       const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
-      this.map.getView().animate({center: coords, zoom: 13});
+      m.getView().animate({center: coords, zoom: 13});
     });
   }
 
