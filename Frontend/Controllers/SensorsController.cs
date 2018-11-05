@@ -24,7 +24,7 @@ namespace Frontend.Controllers
 
         public IEnumerable<SensorDto> Index([FromQuery]double minLon, [FromQuery]double minLat, [FromQuery]double maxLon, [FromQuery]double maxLat)
         {
-            return from s in _ctx.Sensors
+            return (from s in _ctx.Sensors
             where s.Longitude >= minLon && s.Longitude <= maxLon 
             where s.Latitude >= minLat && s.Latitude <= maxLat 
             let lastData = s.SensorDatas.OrderByDescending(x => x.Timestamp).FirstOrDefault()
@@ -36,7 +36,7 @@ namespace Frontend.Controllers
                 Timestamp = lastData == null ? (DateTimeOffset?)null : lastData.Timestamp,
                 ParticulateMatter25 = lastData == null ? (double?)null : lastData.ParticulateMatter25,
                 ParticulateMatter100 = lastData == null ? (double?)null : lastData.ParticulateMatter100
-            };
+            }).ToArray();
         }
 
         [Route("{id:int}/history")]
@@ -51,7 +51,7 @@ namespace Frontend.Controllers
                  Timestamp = x.Timestamp,
                  ParticulateMatter25 = x.ParticulateMatter25,
                  ParticulateMatter100 = x.ParticulateMatter100
-             });
+             }).ToArray();
         }
 
         [Route("{id:int}/prediction")]
@@ -63,7 +63,7 @@ namespace Frontend.Controllers
                 Timestamp = DateTimeOffset.UtcNow.AddDays(index+1),
                 ParticulateMatter25 = rand.NextDouble()*60,
                 ParticulateMatter100 = rand.NextDouble()*100
-            });
+            }).ToArray();
         }
     }
 }
