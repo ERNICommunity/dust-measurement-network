@@ -8,24 +8,23 @@
 #ifndef SRC_ASSETS_H_
 #define SRC_ASSETS_H_
 
-class Adafruit_FRAM_I2C;
 class DbgTrace_Port;
-
+class IAssetsDeviceSerialNrAdapter;
 
 class Assets
 {
 public:
-  Assets(Adafruit_FRAM_I2C* fram);
+  Assets(IAssetsDeviceSerialNrAdapter* deviceSerialNrAdapter = 0);
   virtual ~Assets();
 
-  static const int MAX_ID_LENGTH = 64;
-  void setDeviceId(const char* id);
-  const char* getDeviceId();
+  void setDeviceSerialNrAdapter(IAssetsDeviceSerialNrAdapter* deviceSerialNrAdapter);
+  IAssetsDeviceSerialNrAdapter* getDeviceSerialNrAdapter();
+  unsigned long int getDeviceSerialNr();
 
 private:
-  char m_id[MAX_ID_LENGTH + 1]; // one more to ensure we have termination!
-  Adafruit_FRAM_I2C* m_fram;
   DbgTrace_Port* m_trPort;
+  unsigned long int m_deviceSerialNr;						/// Device HW Serial Number (0..n)
+  IAssetsDeviceSerialNrAdapter* m_deviceSerialNrAdapter;	/// Device Serial Nr. accessor adapter
 
 private: // forbidden default functions
   Assets& operator = (const Assets& src); // assignment operator

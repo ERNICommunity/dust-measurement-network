@@ -28,6 +28,8 @@
 #include <AppDebug.h>
 #include <ProductDebug.h>
 #include <RamUtils.h>
+#include <Assets.h>
+#include <MyDeviceSerialNrAdapter.h>
 #include <Battery.h>
 #include <MyBatteryAdapter.h>
 #include <PM_Process.h>
@@ -57,6 +59,7 @@ SystemStatusFacade* m_SystemStatusFacade;
 SerialCommand* sCmd = 0;
 PM_Process* pmProcess = 0;
 DHT_Process* dhtProcess = 0;
+Assets* assets = 0;
 Battery* battery = 0;
 
 void setup()
@@ -65,6 +68,12 @@ void setup()
   digitalWrite(BUILTIN_LED, 0);
 
   setupProdDebugEnv();
+
+  //-----------------------------------------------------------------------------
+  // Assets (inventory and persistent data)
+  //-----------------------------------------------------------------------------
+  assets = new Assets(new MyDeviceSerialNrAdapter());
+
   //-----------------------------------------------------------------------------
   // Battery Voltage Surveillance
   //-----------------------------------------------------------------------------

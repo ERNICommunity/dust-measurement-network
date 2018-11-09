@@ -60,8 +60,8 @@ void do_send(osjob_t* j)
     {
         if(m_DataToSendSize>0)
         {
-        // Prepare upstream data transmission at the next possible time.
-        LMIC_setTxData2(1, (xref2u1_t)m_DataToSend, sizeof(uint8_t)*(m_DataToSendSize), 0);
+          // Prepare upstream data transmission at the next possible time.
+          LMIC_setTxData2(1, (xref2u1_t)m_DataToSend, sizeof(uint8_t)*(m_DataToSendSize), 0);
         }
     }
     // Next TX is scheduled after TX_COMPLETE event.
@@ -192,6 +192,7 @@ void configuration()
     LMIC_setSession(0x13, DEVADDR, NWKSKEY, APPSKEY);
 #endif
 
+
     // Set up the channels used by the Things Network, which corresponds
     // to the defaults of most gateways. Without this, only three base
     // channels from the LoRaWAN specification are used, which certainly
@@ -213,6 +214,7 @@ void configuration()
     // devices' ping slots. LMIC does not have an easy way to define set this
     // frequency and support for class B is spotty and untested, so this
     // frequency is not configured here.
+
 
     // Disable link check validation
     LMIC_setLinkCheckMode(0);

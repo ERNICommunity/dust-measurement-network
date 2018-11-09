@@ -6,62 +6,44 @@
   */
 
 #include<string.h>
-#include "Adafruit_FRAM_I2C.h" // PIO Lib: 658 -> https://platformio.org/lib/show/658/Adafruit%20FRAM%20I2C
-#include "Assets.h"
+//#include "Adafruit_FRAM_I2C.h" // PIO Lib: 658 -> https://platformio.org/lib/show/658/Adafruit%20FRAM%20I2C
+#include <Assets.h>
+#include <IAssetsDeviceSerialNrAdapter.h>
 #include <DbgTracePort.h>
 #include <DbgTraceLevel.h>
 
-Assets::Assets(Adafruit_FRAM_I2C* fram)
-: m_fram(fram),
-  m_trPort(new DbgTrace_Port("fram", DbgTrace_Level::info))
+Assets::Assets(IAssetsDeviceSerialNrAdapter* deviceSerialNrAdapter /* = 0*/)
+: m_trPort(new DbgTrace_Port("assets", DbgTrace_Level::info))
+, m_deviceSerialNr(0)
+, m_deviceSerialNrAdapter(0)
 {
-  memset(m_id, 0, MAX_ID_LENGTH + 1); // one more to ensure we have termination!
-  if (m_fram == 0)
-  {
-    return;
-  }
-  bool state = m_fram->begin();
-  if (!state)
-  {
-    TR_PRINT_STR(m_trPort, DbgTrace_Level::error, "FRAM is not available!");
-    m_fram = 0;
-    return;
-  }
-  char nibble;
-  int index = 0;
-  while (index < MAX_ID_LENGTH && (nibble = m_fram->read8(index)) != '\0')
-  {
-    m_id[index++] = nibble;
-  }
-  if (index >= MAX_ID_LENGTH)
-  {
-    TR_PRINT_STR(m_trPort, DbgTrace_Level::warning, "FRAM may not have been initialized properly.");
-  }
+  setDeviceSerialNrAdapter(deviceSerialNrAdapter);
 }
 
 Assets::~Assets()
 { }
 
-void Assets::setDeviceId(const char* id){
-  strncpy(m_id, id, MAX_ID_LENGTH);
-  if (m_fram == 0)
+void Assets::setDeviceSerialNrAdapter(IAssetsDeviceSerialNrAdapter* deviceSerialNrAdapter)
+{
+  m_deviceSerialNrAdapter = deviceSerialNrAdapter;
+  if (0 != m_deviceSerialNrAdapter)
   {
-    return; // no error messages, as we reported missing fram in constructor.
+    m_deviceSerialNr = m_deviceSerialNrAdapter->getDeviceSerialNr();
   }
-  char nibble;
-  int index = 0;
-  while (index < MAX_ID_LENGTH && (nibble = id[index]) != '\0')
+  else
   {
-    m_fram->write8(index++, nibble);
+    TR_PRINTF(m_trPort, DbgTrace_Level::error, "ERROR IN Assets: no deviceSerialNrAdapter set! Assume deviceSerialNr = 0");
+    m_deviceSerialNr = 0;
   }
-  if (index >= MAX_ID_LENGTH)
-  {
-    TR_PRINTF(m_trPort, DbgTrace_Level::warning, "device id has been truncated to %s", m_id);
-  }
-  m_fram->write8(index, (uint8_t)'\0'); // and always terminate!
+  TR_PRINTF(m_trPort, DbgTrace_Level::info, "Assets: deviceSerialNr = %u", m_deviceSerialNr);
 }
 
-const char* Assets::getDeviceId()
+IAssetsDeviceSerialNrAdapter* Assets::getDeviceSerialNrAdapter()
 {
-  return m_id;
+  return m_deviceSerialNrAdapter;
+}
+
+unsigned long int Assets::getDeviceSerialNr()
+{
+  return m_deviceSerialNr;
 }
