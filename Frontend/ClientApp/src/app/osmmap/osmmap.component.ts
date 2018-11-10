@@ -4,7 +4,7 @@ import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
-import OSM, {ATTRIBUTION} from 'ol/source/OSM';
+import OSM from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
 import Cluster from 'ol/source/Cluster';
 import { defaults as defaultControls, OverviewMap, Attribution, ScaleLine } from 'ol/control';
@@ -39,12 +39,11 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       target: 'osmmap',
       layers: [
         new TileLayer({
-          source: new OSM({
-            attributions: ['© <a href="https://www.betterask.erni/">ERNI</a> Community', ATTRIBUTION]
-          })
+          source: new OSM()
         }),
         new VectorLayer({
           source: new Cluster({
+            attributions: '© Dust data by <a href="https://www.betterask.erni/">ERNI</a> Community',
             source: this.vectorSource,
             distance: 30
           }),
