@@ -7,7 +7,7 @@ import VectorLayer from 'ol/layer/Vector';
 import OSM, {ATTRIBUTION} from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
 import Cluster from 'ol/source/Cluster';
-import { defaults as defaultControls, OverviewMap, Attribution } from 'ol/control';
+import { defaults as defaultControls, OverviewMap, Attribution, ScaleLine } from 'ol/control';
 import { fromLonLat, transformExtent } from 'ol/proj';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
@@ -57,9 +57,10 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       }),
       controls: defaultControls({attribution: false}).extend([
         new Attribution({collapsible: true}),
+        new ScaleLine(),
         new OverviewMap(),
         new UserLocation(this.navigateMapToUsersPosition)
-      ]),
+      ])
     });
 
     osmMap.on('click', evt => {
@@ -163,7 +164,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   }
 
   private navigateMapToUsersPosition(m: Map) {
-    navigator.geolocation.getCurrentPosition((pos: Position) => {
+    navigator.geolocation.getCurrentPosition(pos => {
       const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
       m.getView().animate({center: coords, zoom: 13});
     });
