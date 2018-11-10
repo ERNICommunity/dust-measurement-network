@@ -7,7 +7,7 @@ import VectorLayer from 'ol/layer/Vector';
 import OSM, {ATTRIBUTION} from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
 import Cluster from 'ol/source/Cluster';
-import { defaults as defaultControls, OverviewMap } from 'ol/control';
+import { defaults as defaultControls, OverviewMap, Attribution } from 'ol/control';
 import { fromLonLat, transformExtent } from 'ol/proj';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
@@ -55,7 +55,8 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         center: [0, 0],
         zoom: 13
       }),
-      controls: defaultControls().extend([
+      controls: defaultControls({attribution: false}).extend([
+        new Attribution({collapsible: true}),
         new OverviewMap(),
         new UserLocation(this.navigateMapToUsersPosition)
       ]),
