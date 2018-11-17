@@ -26,6 +26,38 @@ public:
   unsigned long int getDeviceSerialNr();
   void setDeviceSerialNr(unsigned long int deviceSerialNr);
 
+  /**
+   * Read Device Id string.
+   * @param deviceId OUT: Buffer for Device Id string to read from Persistent Data Memory.
+   * @param len Buffer size for Device Id
+   * @return Number of characters read (including '\0' terminator character)
+   */
+  unsigned int getDeviceId( char* deviceId, unsigned int len);
+
+  /**
+   * Read Device Address string.
+   * @param devAddr OUT: Buffer for Device Address string to read from Persistent Data Memory.
+   * @param len Buffer size for Device Address
+   * @return Number of characters read (including '\0' terminator character)
+   */
+  unsigned int getDevAddr(  char* devAddr,  unsigned int len);
+
+  /**
+   * Read Network Security Key string.
+   * @param Network Security Key OUT: Buffer for Device Address string to read from Persistent Data Memory.
+   * @param len Buffer size for Network Security Key
+   * @return Number of characters read (including '\0' terminator character)
+   */
+  unsigned int getNwkSKey( char* nwkSKey,  unsigned int len);
+
+  /**
+   * Read Application Security Key string.
+   * @param Application Security Key OUT: Buffer for Device Address string to read from Persistent Data Memory.
+   * @param len Buffer size for Application Security Key
+   * @return Number of characters read (including '\0' terminator character)
+   */
+  unsigned int getAppSKey(  char* appSKey,  unsigned int len);
+
 private:
   DbgTrace_Port* m_trPort;
   DbgCli_Topic* m_dbgCliTopicAssets;
