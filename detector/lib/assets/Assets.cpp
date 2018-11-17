@@ -14,6 +14,7 @@
 #include <DbgTraceLevel.h>
 #include <AssetsDbgCmd.h>
 #include <IPersistentDataMemory.h>
+#include <DetectorFakePersDataMemory.h>
 
 Assets::Assets(IAssetsDeviceSerialNrAdapter* deviceSerialNrAdapter /*= 0*/, IPersistentDataMemory* persistentDataMemory /*= 0*/)
 : m_trPort(new DbgTrace_Port("assets", DbgTrace_Level::info))
@@ -75,12 +76,12 @@ void Assets::setDeviceSerialNr(unsigned long int deviceSerialNr)
 unsigned int Assets::getDeviceId( char* deviceId, unsigned int len)
 {
   unsigned int count = 0;
-//  const unsigned int addr = DetectorIvmMemory::KT_devId * DetectorIvmMemory::s_numMaxChars;
-//  while ((count < len) && (count < DetectorIvmMemory::s_numMaxChars))
-//  {
-//    deviceId[count] = getIvmMemory()->read(addr + count);
-//    count++;
-//  }
+  const unsigned int addr = DetectorFakePersDataMemory::KT_devId * DetectorFakePersDataMemory::s_numMaxChars;
+  while ((0 != m_persistentDataMemory) && (count < len) && (count < DetectorFakePersDataMemory::s_numMaxChars))
+  {
+    deviceId[count] = m_persistentDataMemory->read(addr + count);
+    count++;
+  }
   deviceId[count] = '\0';
   return count;
 }
@@ -88,12 +89,12 @@ unsigned int Assets::getDeviceId( char* deviceId, unsigned int len)
 unsigned int Assets::getDevAddr(char* devAddr,  unsigned int len)
 {
   unsigned int count = 0;
-//  const unsigned int addr = DetectorIvmMemory::KT_devAddr * DetectorIvmMemory::s_numMaxChars;
-//  while ((count < len) && (count < DetectorIvmMemory::s_numMaxChars))
-//  {
-//    devAddr[count] = getIvmMemory()->read(addr + count);
-//    count++;
-//  }
+  const unsigned int addr = DetectorFakePersDataMemory::KT_devAddr * DetectorFakePersDataMemory::s_numMaxChars;
+  while ((0 != m_persistentDataMemory) && (count < len) && (count < DetectorFakePersDataMemory::s_numMaxChars))
+  {
+    devAddr[count] = m_persistentDataMemory->read(addr + count);
+    count++;
+  }
   devAddr[count] = '\0';
   return count;
 }
@@ -101,12 +102,12 @@ unsigned int Assets::getDevAddr(char* devAddr,  unsigned int len)
 unsigned int Assets::getNwkSKey(char* nwkSKey,  unsigned int len)
 {
   unsigned int count = 0;
-//  const unsigned int addr = DetectorIvmMemory::KT_nwkSKey * DetectorIvmMemory::s_numMaxChars;
-//  while ((count < len) && (count < DetectorIvmMemory::s_numMaxChars))
-//  {
-//    nwkSKey[count] = getIvmMemory()->read(addr + count);
-//    count++;
-//  }
+  const unsigned int addr = DetectorFakePersDataMemory::KT_nwkSKey * DetectorFakePersDataMemory::s_numMaxChars;
+  while ((0 != m_persistentDataMemory) && (count < len) && (count < DetectorFakePersDataMemory::s_numMaxChars))
+  {
+    nwkSKey[count] = m_persistentDataMemory->read(addr + count);
+    count++;
+  }
   nwkSKey[count] = '\0';
   return count;
 }
@@ -114,12 +115,12 @@ unsigned int Assets::getNwkSKey(char* nwkSKey,  unsigned int len)
 unsigned int Assets::getAppSKey(char* appSKey,  unsigned int len)
 {
   unsigned int count = 0;
-//  const unsigned int addr = DetectorIvmMemory::KT_appSKey * DetectorIvmMemory::s_numMaxChars;
-//  while ((count < len) && (count < DetectorIvmMemory::s_numMaxChars))
-//  {
-//    appSKey[count] = getIvmMemory()->read(addr + count);
-//    count++;
-//  }
+  const unsigned int addr = DetectorFakePersDataMemory::KT_appSKey * DetectorFakePersDataMemory::s_numMaxChars;
+  while ((0 != m_persistentDataMemory) && (count < len) && (count < DetectorFakePersDataMemory::s_numMaxChars))
+  {
+    appSKey[count] = m_persistentDataMemory->read(addr + count);
+    count++;
+  }
   appSKey[count] = '\0';
   return count;
 }
