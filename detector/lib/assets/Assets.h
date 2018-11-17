@@ -67,8 +67,10 @@ private:
   DbgTrace_Port* m_trPort;
   DbgCli_Topic* m_dbgCliTopicAssets;
   DbgCli_Topic* m_dbgCliTopicAssetsDeviceSerial;
+  DbgCli_Topic* m_dbgCliTopicAssetsLoRaKeys;
   DbgCli_Command* m_dbgCliSetDeviceSerialCmd;
   DbgCli_Command* m_dbgCliGetDeviceSerialCmd;
+  DbgCli_Command* m_dbgCliGetLoRaKeysCmd;
   unsigned long int m_deviceSerialNr;						          /// Device HW Serial Number (0..n)
   IAssetsDeviceSerialNrAdapter* m_deviceSerialNrAdapter;	/// Device Serial Nr. accessor adapter
   IPersistentDataMemory* m_persistentDataMemory;

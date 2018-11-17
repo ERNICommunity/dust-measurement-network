@@ -11,6 +11,7 @@
 #include <DbgCliTopic.h>
 #include <AssetsDbgCmd.h>
 #include <IAssetsDeviceSerialNrAdapter.h>
+#include <DetectorFakePersDataMemory.h>
 
 AssetsDbgCmd_SetDeviceSerial::AssetsDbgCmd_SetDeviceSerial(Assets* assets)
 : DbgCli_Command(assets->getCliTopicAssetsDeviceSerial(), "set", "Set Device Serial Number.")
@@ -65,14 +66,69 @@ void AssetsDbgCmd_GetDeviceSerial::execute(unsigned int argc, const char** args,
   {
     if (0 != m_assets)
     {
-      Serial.println("Assets - Device Serial Number:");
-      if (0 != m_assets->getDeviceSerialNrAdapter())
+      Serial.println("Assets - LoRa Keys:");
+      if (0 != m_assets->getPersistentDataMemory())
       {
         Serial.print("- Provisioned Data: ");
         Serial.println(m_assets->getDeviceSerialNrAdapter()->getDeviceSerialNr());
       }
+      else
       Serial.print("- Internal Data: ");
       Serial.println(m_assets->getDeviceSerialNr());
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+AssetsDbgCmd_GetLoRaKeys::AssetsDbgCmd_GetLoRaKeys(Assets* assets)
+: DbgCli_Command(assets->getCliTopicAssetsDeviceSerial(), "get", "Get LoRa Keys.")
+, m_assets(assets)
+{ }
+
+AssetsDbgCmd_GetLoRaKeys::~AssetsDbgCmd_GetLoRaKeys()
+{ }
+
+void AssetsDbgCmd_GetLoRaKeys::printUsage()
+{
+  Serial.println("dbg assets lorakeys get - usage: - ");
+}
+
+void AssetsDbgCmd_GetLoRaKeys::execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
+{
+  if (argc - idxToFirstArgToHandle != 0)
+  {
+    printUsage();
+  }
+  else
+  {
+    if (0 != m_assets)
+    {
+      Serial.println("Assets - Device Serial Number:");
+      if (0 != m_assets->getDeviceSerialNrAdapter())
+      {
+        char printBuffer[DetectorFakePersDataMemory::s_numMaxChars+1];
+
+        m_assets->getDeviceId(printBuffer, sizeof(printBuffer));
+        Serial.print("- Device Id:                ");
+        Serial.println(printBuffer);
+
+        m_assets->getDevAddr(printBuffer, sizeof(printBuffer));
+        Serial.print("- Device Addr:              ");
+        Serial.println();
+
+        m_assets->getNwkSKey(printBuffer, sizeof(printBuffer));
+        Serial.print("- Network Security Key:     ");
+        Serial.println(printBuffer);
+
+        m_assets->getAppSKey(printBuffer, sizeof(printBuffer));
+        Serial.print("- Application Security Key: ");
+        Serial.println();
+      }
+      else
+      {
+        Serial.println("Persistent Data Memory not accessible.");
+      }
     }
   }
 }
