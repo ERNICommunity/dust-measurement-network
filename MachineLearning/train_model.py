@@ -61,7 +61,7 @@ model.add(Dense(100, kernel_initializer='glorot_normal', activation='relu'))
 model.add(BatchNormalization())
 model.add(Dense(30, kernel_initializer='glorot_normal', activation='relu'))
 model.add(Dense(Y.shape[1], kernel_initializer='glorot_normal'))
-model.compile(loss='mean_squared_error', optimizer='adam',metrics=['mae'])
+model.compile(loss='mean_squared_error', optimizer='adam',metrics=['acc', 'mean_absolute_error'])
 
 history = model.fit(X, Y, batch_size=128,epochs=200,validation_split=0.15, callbacks=[cp])
 
