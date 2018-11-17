@@ -28,7 +28,6 @@ Few usefull VS Code extensions:
 - C# by Microsoft (mandatory for running/debugging .NET code)
 - Angular Language Service by Angular
 - EditorConfig for VS Code by EditorConfig
-- TSLint by egamma
 - vscode-icons by Roberto Huertas
 
 Remember that **whenever you pull new version, it's a good idea to reinstall backend and frontend dependencies**, as someone might have changed them.
