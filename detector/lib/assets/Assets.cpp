@@ -13,8 +13,9 @@
 #include <DbgTracePort.h>
 #include <DbgTraceLevel.h>
 #include <AssetsDbgCmd.h>
+#include <IPersistentDataMemory.h>
 
-Assets::Assets(IAssetsDeviceSerialNrAdapter* deviceSerialNrAdapter /* = 0*/)
+Assets::Assets(IAssetsDeviceSerialNrAdapter* deviceSerialNrAdapter /*= 0*/, IPersistentDataMemory* persistentDataMemory /*= 0*/)
 : m_trPort(new DbgTrace_Port("assets", DbgTrace_Level::info))
 , m_dbgCliTopicAssets(new DbgCli_Topic(DbgCli_Node::RootNode(), "assets", "Assets."))
 , m_dbgCliTopicAssetsDeviceSerial(new DbgCli_Topic(m_dbgCliTopicAssets, "dvcser", "Device Serial Number."))
@@ -22,6 +23,7 @@ Assets::Assets(IAssetsDeviceSerialNrAdapter* deviceSerialNrAdapter /* = 0*/)
 , m_dbgCliGetDeviceSerialCmd(new AssetsDbgCmd_GetDeviceSerial(this))
 , m_deviceSerialNr(0)
 , m_deviceSerialNrAdapter(0)
+, m_persistentDataMemory(persistentDataMemory)
 {
   setDeviceSerialNrAdapter(deviceSerialNrAdapter);
 }
@@ -48,6 +50,17 @@ IAssetsDeviceSerialNrAdapter* Assets::getDeviceSerialNrAdapter()
 {
   return m_deviceSerialNrAdapter;
 }
+
+void Assets::setPersistentDataMemory(IPersistentDataMemory* persistentDataMemory)
+{
+  m_persistentDataMemory = persistentDataMemory;
+}
+
+IPersistentDataMemory* Assets::getPersistentDataMemory()
+{
+  return m_persistentDataMemory;
+}
+
 
 unsigned long int Assets::getDeviceSerialNr()
 {

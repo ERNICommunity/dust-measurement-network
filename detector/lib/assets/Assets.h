@@ -12,17 +12,22 @@ class DbgTrace_Port;
 class DbgCli_Topic;
 class DbgCli_Command;
 class IAssetsDeviceSerialNrAdapter;
+class IPersistentDataMemory;
 
 class Assets
 {
 public:
-  Assets(IAssetsDeviceSerialNrAdapter* deviceSerialNrAdapter = 0);
+  Assets(IAssetsDeviceSerialNrAdapter* deviceSerialNrAdapter = 0, IPersistentDataMemory* persistentDataMemory = 0);
   virtual ~Assets();
 
   DbgCli_Topic* getCliTopicAssetsDeviceSerial() { return m_dbgCliTopicAssetsDeviceSerial; }
 
   void setDeviceSerialNrAdapter(IAssetsDeviceSerialNrAdapter* deviceSerialNrAdapter);
   IAssetsDeviceSerialNrAdapter* getDeviceSerialNrAdapter();
+
+  void setPersistentDataMemory(IPersistentDataMemory* persistentDataMemory);
+  IPersistentDataMemory* getPersistentDataMemory();
+
   unsigned long int getDeviceSerialNr();
   void setDeviceSerialNr(unsigned long int deviceSerialNr);
 
@@ -66,6 +71,7 @@ private:
   DbgCli_Command* m_dbgCliGetDeviceSerialCmd;
   unsigned long int m_deviceSerialNr;						          /// Device HW Serial Number (0..n)
   IAssetsDeviceSerialNrAdapter* m_deviceSerialNrAdapter;	/// Device Serial Nr. accessor adapter
+  IPersistentDataMemory* m_persistentDataMemory;
 
 private: // forbidden default functions
   Assets& operator = (const Assets& src); // assignment operator
