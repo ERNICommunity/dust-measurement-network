@@ -6,6 +6,7 @@ class LoraWanAdapter
 {
   public:
     LoraWanAdapter();
+    virtual ~LoraWanAdapter();
     virtual void setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData);
     virtual uint64_t getSentCounterPeriodicMessage();
     virtual bool isReadyToRead();

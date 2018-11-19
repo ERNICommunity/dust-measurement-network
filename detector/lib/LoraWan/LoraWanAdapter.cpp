@@ -1,24 +1,32 @@
-#include "LoraWanAdapter.hpp"
+#include <stdint.h>
+#include <LoraWanAdapter.hpp>
 
-LoraWanAdapter::LoraWanAdapter(){
+LoraWanAdapter::LoraWanAdapter()
+{ }
+
+LoraWanAdapter::~LoraWanAdapter()
+{ }
+
+void LoraWanAdapter::setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
+{
 
 }
 
-void LoraWanAdapter::setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData){
-
-}
-bool LoraWanAdapter::isReadyToRead(){
-    return false;
+bool LoraWanAdapter::isReadyToRead()
+{
+  return false;
 }
 uint64_t LoraWanAdapter::readData(uint8_t* const a_Data, uint64_t a_MaxSizeOfBuffer)
 {
- return 0;
+  return 0;
 }
 
-uint64_t LoraWanAdapter::getSentCounterPeriodicMessage(){
-
+uint64_t LoraWanAdapter::getSentCounterPeriodicMessage()
+{
+  return 0;
 }
 
-void LoraWanAdapter::loopOnce(){
+void LoraWanAdapter::loopOnce()
+{
 
 }
