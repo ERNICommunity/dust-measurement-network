@@ -110,19 +110,19 @@ void AssetsDbgCmd_GetLoRaKeys::execute(unsigned int argc, const char** args, uns
         char printBuffer[DetectorFakePersDataMemory::s_numMaxChars+1];
 
         m_assets->getDeviceId(printBuffer, sizeof(printBuffer));
-        Serial.print("- Device Id:                ");
+        Serial.print("- Device Id:               ");
         Serial.println(printBuffer);
 
         m_assets->getDevAddr(printBuffer, sizeof(printBuffer));
-        Serial.print("- Device Addr:              ");
+        Serial.print("- Device Addr:             ");
         Serial.println();
 
         m_assets->getNwkSKey(printBuffer, sizeof(printBuffer));
-        Serial.print("- Network Security Key:     ");
+        Serial.print("- Network Session Key:     ");
         Serial.println(printBuffer);
 
         m_assets->getAppSKey(printBuffer, sizeof(printBuffer));
-        Serial.print("- Application Security Key: ");
+        Serial.print("- Application Session Key: ");
         Serial.println();
       }
       else
