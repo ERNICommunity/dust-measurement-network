@@ -2,15 +2,25 @@
 #define _LoraWan_LoraWanAdapter_h_
 #include <inttypes.h>
 
+class ILoraWanConfigAdapter;
+
 class LoraWanAdapter
 {
   public:
-    LoraWanAdapter();
+    LoraWanAdapter(ILoraWanConfigAdapter* loraWanConfigAdapter = 0);
     virtual ~LoraWanAdapter();
     virtual void setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData);
     virtual uint64_t getSentCounterPeriodicMessage();
     virtual bool isReadyToRead();
     virtual uint64_t readData(uint8_t* const a_Data, uint64_t a_MaxSizeOfBuffer);
     virtual void loopOnce();
+    void setLoraWanConfigAdapter(ILoraWanConfigAdapter* loraWanConfigAdapter);
+
+  private:
+    ILoraWanConfigAdapter* m_loraWanConfigAdapter;
+
+  private: // forbidden default functions
+    LoraWanAdapter& operator = (const LoraWanAdapter& src); // assignment operator
+    LoraWanAdapter(const LoraWanAdapter& src);              // copy constructor
 };
 #endif

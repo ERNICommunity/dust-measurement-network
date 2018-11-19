@@ -1,11 +1,19 @@
 #include <stdint.h>
+#include <ILoraWanConfigAdapter.h>
 #include <LoraWanAdapter.hpp>
 
-LoraWanAdapter::LoraWanAdapter()
+LoraWanAdapter::LoraWanAdapter(ILoraWanConfigAdapter* loraWanConfigAdapter /*= 0*/)
+: m_loraWanConfigAdapter(loraWanConfigAdapter)
 { }
 
 LoraWanAdapter::~LoraWanAdapter()
 { }
+
+void LoraWanAdapter::setLoraWanConfigAdapter(ILoraWanConfigAdapter* loraWanConfigAdapter)
+{
+  m_loraWanConfigAdapter = loraWanConfigAdapter;
+}
+
 
 void LoraWanAdapter::setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
 {
