@@ -178,6 +178,14 @@ void configuration()
 
 // Set static session parameters. Instead of dynamically establishing a session
 // by joining the network, precomputed session parameters are be provided.
+
+    // TODO nid: fetch the LoRa Keys from Assets
+
+//    uint8_t appskey[sizeof(APPSKEY)];
+//    uint8_t nwkskey[sizeof(NWKSKEY)];
+//    memcpy_P(appskey, APPSKEY, sizeof(APPSKEY));
+//    memcpy_P(nwkskey, NWKSKEY, sizeof(NWKSKEY));
+
 #ifdef PROGMEM
     // On AVR, these values are stored in flash and only copied to RAM
     // once. Copy them to a temporary buffer here, LMIC_setSession will
