@@ -1,58 +1,63 @@
-import { Component, Input, ViewChild,  } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, Input, OnInit, } from '@angular/core';
 import { Chart } from 'chart.js';
 import { DustService } from '../service/dust.service';
 import { DustDto } from '../service/DustDto';
-import * as moment from 'moment';
 
 @Component({
   selector: 'app-history-chart',
   templateUrl: './history-chart.component.html',
   styleUrls: ['./history-chart.component.css']
 })
-export class HistoryChartComponent {
+export class HistoryChartComponent implements OnInit {
   private _id: number;
   private _dateFrom: Date;
   private _dateTo: Date;
 
-  @ViewChild('canvas') elementView;
-
   @Input() set id(value: number) {
     this._id = value;
-    this.dateFrom = this.dateFromStr;
-    this.dateTo = this.dateToStr;
-    this.updateDustData(this._dateFrom, this._dateTo);
   }
 
-  dateFromStr: string = moment().subtract(2, 'days').startOf('day').format('YYYY-MM-DD');
-  dateToStr: string = moment().endOf('day').format('YYYY-MM-DD');
-
   set dateFrom(value: string) {
-    this._dateFrom = moment(this.dateFromStr).startOf('day').toDate();
+    this._dateFrom = new Date(value);
+    this.updateDustData();
+  }
+  get dateFrom(): string {
+    return this.formatForDateInput(this._dateFrom);
   }
 
   set dateTo(value: string) {
-    this._dateTo = moment(this.dateToStr).endOf('day').toDate();
+    this._dateTo = new Date(value);
+    this.updateDustData();
+  }
+  get dateTo(): string {
+    return this.formatForDateInput(this._dateTo);
   }
 
-  constructor(private dustService: DustService) {}
-
-  dateRangeChanged() {
-    this.dateFrom = this.dateFromStr;
-    this.dateTo = this.dateToStr;
-
-    this.updateDustData(this._dateFrom, this._dateTo);
+  constructor(private dustService: DustService) {
+    const now = new Date();
+    this._dateFrom = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 20, 0, 0, 0, 0);
+    this._dateTo = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0 , 0, 0, 0);
   }
 
-  private updateDustData(dateFrom: Date, dateTo: Date): void {
-    this.dustService.getDustHistory(this._id, dateFrom, dateTo).subscribe(
+  ngOnInit(): void {
+    this.updateDustData();
+  }
+
+  private formatForDateInput(date: Date) {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+  }
+
+  private updateDustData(): void {
+    this.dustService.getDustHistory(this._id, this._dateFrom, this._dateTo).subscribe(
       result => this.drawChart(result),
       err => console.error(err)
     );
   }
 
   private drawChart(history: DustDto[]): void {
-    const pipe = new DatePipe('en-US');
     const canvas = document.getElementById('chartcanvas') as HTMLCanvasElement;
     const context = canvas.getContext('2d');
 
@@ -69,7 +74,7 @@ export class HistoryChartComponent {
     const chart = new Chart(context, {
       type: 'line',
       data: {
-        labels: history.map(dustdata => pipe.transform(dustdata.timestamp, 'medium')),
+        labels: history.map(dustdata => new Date(dustdata.timestamp).toLocaleString()),
         datasets: [
           {
             label: 'Dust 2.5',
