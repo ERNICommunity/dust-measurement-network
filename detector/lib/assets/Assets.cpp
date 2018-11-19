@@ -26,9 +26,10 @@ Assets::Assets(IAssetsDeviceSerialNrAdapter* deviceSerialNrAdapter /*= 0*/, IPer
 , m_dbgCliGetLoRaKeysCmd(new AssetsDbgCmd_GetLoRaKeys(this))
 , m_deviceSerialNr(0)
 , m_deviceSerialNrAdapter(0)
-, m_persistentDataMemory(persistentDataMemory)
+, m_persistentDataMemory(0)
 {
   setDeviceSerialNrAdapter(deviceSerialNrAdapter);
+  setPersistentDataMemory(persistentDataMemory);
 }
 
 Assets::~Assets()
@@ -57,6 +58,10 @@ IAssetsDeviceSerialNrAdapter* Assets::getDeviceSerialNrAdapter()
 void Assets::setPersistentDataMemory(IPersistentDataMemory* persistentDataMemory)
 {
   m_persistentDataMemory = persistentDataMemory;
+  if (0 != m_persistentDataMemory)
+  {
+	m_persistentDataMemory->setDeviceSerialNr(m_deviceSerialNr);
+  }
 }
 
 IPersistentDataMemory* Assets::getPersistentDataMemory()
@@ -73,6 +78,10 @@ unsigned long int Assets::getDeviceSerialNr()
 void Assets::setDeviceSerialNr(unsigned long int deviceSerialNr)
 {
   m_deviceSerialNr = deviceSerialNr;
+  if (0 != m_persistentDataMemory)
+  {
+    m_persistentDataMemory->setDeviceSerialNr(m_deviceSerialNr);
+  }
 }
 
 unsigned int Assets::getDeviceId( char* deviceId, unsigned int len)
