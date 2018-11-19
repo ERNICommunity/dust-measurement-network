@@ -14,7 +14,7 @@ const unsigned int DetectorFakePersDataMemory::s_numMaxChars = 32;
 
 //-----------------------------------------------------------------------------
 DetectorFakePersDataMemory::DetectorFakePersDataMemory()
-: m_hwDeviceId(0)
+: m_deviceSerialNr(0)
 { }
 
 DetectorFakePersDataMemory::~DetectorFakePersDataMemory()
@@ -68,12 +68,12 @@ char DetectorFakePersDataMemory::read(unsigned int address)
   };
   unsigned int key = address / s_numMaxChars;
   unsigned int ch  = address % s_numMaxChars;
-  return deviceSpecificKeys[m_hwDeviceId][key][ch];
+  return deviceSpecificKeys[m_deviceSerialNr][key][ch];
 }
 
 void DetectorFakePersDataMemory::setDeviceSerialNr(unsigned long int deviceSerialNr)
 {
-  m_hwDeviceId = deviceSerialNr;
+  m_deviceSerialNr = deviceSerialNr;
 }
 
 unsigned int DetectorFakePersDataMemory::sizeOfDeviceKeyStorage()

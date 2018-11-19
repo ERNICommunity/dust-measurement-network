@@ -40,7 +40,7 @@ private:
   unsigned int sizeOfDeviceKeyStorage();
 
 private:
-  unsigned char m_hwDeviceId;
+  unsigned char m_deviceSerialNr;
 
 private: // forbidden default functions
   DetectorFakePersDataMemory& operator = (const DetectorFakePersDataMemory& src); // assignment operator
