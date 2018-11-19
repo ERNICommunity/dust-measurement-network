@@ -30,6 +30,7 @@
 #include <RamUtils.h>
 #include <Assets.h>
 #include <MyDeviceSerialNrAdapter.h>
+#include <DetectorFakePersDataMemory.h>
 #include <Battery.h>
 #include <MyBatteryAdapter.h>
 #include <PM_Process.h>
@@ -72,7 +73,7 @@ void setup()
   //-----------------------------------------------------------------------------
   // Assets (inventory and persistent data)
   //-----------------------------------------------------------------------------
-  assets = new Assets(new MyDeviceSerialNrAdapter());
+  assets = new Assets(new MyDeviceSerialNrAdapter(), new DetectorFakePersDataMemory());
 
   //-----------------------------------------------------------------------------
   // Battery Voltage Surveillance
