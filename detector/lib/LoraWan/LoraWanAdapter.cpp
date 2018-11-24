@@ -14,6 +14,10 @@ void LoraWanAdapter::setLoraWanConfigAdapter(ILoraWanConfigAdapter* loraWanConfi
   m_loraWanConfigAdapter = loraWanConfigAdapter;
 }
 
+ILoraWanConfigAdapter* LoraWanAdapter::loraWanConfigAdapter()
+{
+  return m_loraWanConfigAdapter;
+}
 
 void LoraWanAdapter::setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
 {

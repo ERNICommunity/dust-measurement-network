@@ -1,6 +1,8 @@
 #ifndef _LoraWan_LoraWanAbp_h_
 #define _LoraWan_LoraWanAbp_h_
+
 #include <Arduino.h>
+#include <ILoraWanConfigAdapter.h>
 
 #ifdef __cplusplus
    extern "C"
@@ -18,7 +20,7 @@ void do_send();
 
 void onEvent(ev_t ev);
 
-void configuration();
+void configuration(ILoraWanConfigAdapter* configAdapter);
 
 void loop_once();
 #ifdef __cplusplus
@@ -30,7 +32,8 @@ void loop_once();
 class LoraWanAbp : public LoraWanAdapter
 {
     public:
-        LoraWanAbp();
+        LoraWanAbp(ILoraWanConfigAdapter* loraWanConfigAdapter = 0);
+        virtual ~LoraWanAbp();
         void loopOnce();
         bool isReadyToRead();
         uint64_t readData(uint8_t* const a_Data, uint64_t a_MaxSizeOfBuffer);

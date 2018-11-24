@@ -14,28 +14,24 @@ public:
   virtual ~ILoraWanConfigAdapter() { }
 
   /**
-   * Read Device Address string.
-   * @param devAddr OUT: Buffer for Device Address string to read from Persistent Data Memory.
-   * @param len Buffer size for Device Address
-   * @return Number of characters read (including '\0' terminator character)
+   * Read Device Address.
+   * @return Device Address
    */
-  virtual unsigned int getDevAddr(  char* devAddr,  unsigned int len) = 0;
+  virtual unsigned int getDevAddr() = 0;
 
   /**
-   * Read Network Security Key string.
-   * @param Network Security Key OUT: Buffer for Device Address string to read from Persistent Data Memory.
-   * @param len Buffer size for Network Security Key
-   * @return Number of characters read (including '\0' terminator character)
+   * Read Network Session Key byte array.
+   * @param Network Session Key OUT: Buffer for Network Session Key byte array
+   * @param len Buffer size for Network Session Key
    */
-  virtual unsigned int getNwkSKey( char* nwkSKey,  unsigned int len) = 0;
+  virtual void getNwkSKey(unsigned char* nwkSKey, unsigned int len) = 0;
 
   /**
-   * Read Application Security Key string.
-   * @param Application Security Key OUT: Buffer for Device Address string to read from Persistent Data Memory.
-   * @param len Buffer size for Application Security Key
-   * @return Number of characters read (including '\0' terminator character)
+   * Read Application Session Key byte array.
+   * @param Application Session Key OUT: Buffer for Application Session Key byte array
+   * @param len Buffer size for Application Session Key
    */
-  virtual unsigned int getAppSKey(  char* appSKey,  unsigned int len) = 0;
+  virtual void getAppSKey(unsigned char* appSKey, unsigned int len) = 0;
 
 protected:
   ILoraWanConfigAdapter() { }

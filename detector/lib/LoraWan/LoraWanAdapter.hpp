@@ -15,6 +15,10 @@ class LoraWanAdapter
     virtual uint64_t readData(uint8_t* const a_Data, uint64_t a_MaxSizeOfBuffer);
     virtual void loopOnce();
     void setLoraWanConfigAdapter(ILoraWanConfigAdapter* loraWanConfigAdapter);
+    ILoraWanConfigAdapter* loraWanConfigAdapter();
+
+  protected:
+    virtual void configure() = 0;
 
   private:
     ILoraWanConfigAdapter* m_loraWanConfigAdapter;

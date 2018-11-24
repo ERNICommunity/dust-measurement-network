@@ -5,7 +5,8 @@
 #include <lmic.h>
 
 #include <SPI.h>
-#include "configuration.h"
+#include <configuration.h>
+#include <ILoraWanConfigAdapter.h>
 
 #include <hal/hal.h>
 
@@ -162,7 +163,7 @@ void onEvent(ev_t ev)
     }
 }
 
-void configuration()
+void configuration(ILoraWanConfigAdapter* configAdapter)
 {
 #ifdef VCC_ENABLE
     // For Pinoccio Scout boards
@@ -180,25 +181,35 @@ void configuration()
 // by joining the network, precomputed session parameters are be provided.
 
     // TODO nid: fetch the LoRa Keys from Assets
+    if (0 != configAdapter)
+    {
+      uint8_t appSKey[16];
+      uint8_t nwkSKey[16];
 
-//    uint8_t appskey[sizeof(APPSKEY)];
+      configAdapter->getAppSKey(appSKey, sizeof(appSKey));
+      configAdapter->getNwkSKey(nwkSKey, sizeof(nwkSKey));
+
+      LMIC_setSession(0x13, configAdapter->getDevAddr(), nwkSKey, appSKey);
+
 //    uint8_t nwkskey[sizeof(NWKSKEY)];
 //    memcpy_P(appskey, APPSKEY, sizeof(APPSKEY));
 //    memcpy_P(nwkskey, NWKSKEY, sizeof(NWKSKEY));
 
-#ifdef PROGMEM
-    // On AVR, these values are stored in flash and only copied to RAM
-    // once. Copy them to a temporary buffer here, LMIC_setSession will
-    // copy them into a buffer of its own again.
-    uint8_t appskey[sizeof(APPSKEY)];
-    uint8_t nwkskey[sizeof(NWKSKEY)];
-    memcpy_P(appskey, APPSKEY, sizeof(APPSKEY));
-    memcpy_P(nwkskey, NWKSKEY, sizeof(NWKSKEY));
-    LMIC_setSession(0x13, DEVADDR, nwkskey, appskey);
-#else
-    // If not running an AVR with PROGMEM, just use the arrays directly
-    LMIC_setSession(0x13, DEVADDR, NWKSKEY, APPSKEY);
-#endif
+//#ifdef PROGMEM
+//    // On AVR, these values are stored in flash and only copied to RAM
+//    // once. Copy them to a temporary buffer here, LMIC_setSession will
+//    // copy them into a buffer of its own again.
+//    uint8_t appskey[sizeof(APPSKEY)];
+//    uint8_t nwkskey[sizeof(NWKSKEY)];
+//    memcpy_P(appskey, APPSKEY, sizeof(APPSKEY));
+//    memcpy_P(nwkskey, NWKSKEY, sizeof(NWKSKEY));
+//    LMIC_setSession(0x13, DEVADDR, nwkskey, appskey);
+//#else
+//    // If not running an AVR with PROGMEM, just use the arrays directly
+//    LMIC_setSession(0x13, DEVADDR, NWKSKEY, APPSKEY);
+//#endif
+
+    }
 
 
     // Set up the channels used by the Things Network, which corresponds
@@ -252,17 +263,19 @@ void loop_once()
     os_runloop_once();
 }
 
-LoraWanAbp::LoraWanAbp():
-    m_ConnectionIsConfigured(false)
-{
+LoraWanAbp::LoraWanAbp(ILoraWanConfigAdapter* loraWanConfigAdapter /*= 0*/)
+: LoraWanAdapter(loraWanConfigAdapter)
+, m_ConnectionIsConfigured(false)
+{ }
 
-}
+LoraWanAbp::~LoraWanAbp()
+{ }
 
 void LoraWanAbp::configure()
 {
     if(!m_ConnectionIsConfigured)
     {
-        configuration();
+        configuration(loraWanConfigAdapter());
         m_ConnectionIsConfigured = true;
     }
     else{
