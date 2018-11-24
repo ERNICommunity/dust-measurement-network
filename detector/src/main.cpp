@@ -39,6 +39,7 @@
 #include <MyDHT_ProcessAdapter.h>
 #include <LoraWanAbp.hpp>
 #include <LoraWanAdapter.hpp>
+#include <MyLoRaWanConfigAdapter.h>
 #include <LoraWanPriorityQueue.hpp>
 #include <MeasurementFacade.hpp>
 #include <SystemStatusFacade.hpp>
@@ -84,11 +85,18 @@ void setup()
                                      0.1  // BATT_HYST        [V]
                                     };
   battery = new Battery(new MyBatteryAdapter(), battCfg);
+
+  //-----------------------------------------------------------------------------
+  // Sensors
+  //-----------------------------------------------------------------------------
   pmProcess = new PM_Process(&Serial1, new MyPM_ProcessAdapter());
   pmProcess->init(9600);
   dhtProcess = new DHT_Process(new MyDHT_ProcessAdapter());
 
-  m_LoraWanInterface = new LoraWanAbp();
+  //-----------------------------------------------------------------------------
+  // LoRaWan
+  //-----------------------------------------------------------------------------
+  m_LoraWanInterface = new LoraWanAbp(new MyLoRaWanConfigAdapter(assets));
   m_LoraWanPriorityQueue = new LoraWanPriorityQueue(m_LoraWanInterface);
   m_MeasurementFacade = new MeasurementFacade(m_LoraWanPriorityQueue);
   m_SystemStatusFacade = new SystemStatusFacade(m_LoraWanPriorityQueue);
