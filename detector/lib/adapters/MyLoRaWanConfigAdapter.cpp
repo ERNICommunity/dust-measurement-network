@@ -22,6 +22,13 @@ MyLoRaWanConfigAdapter::~MyLoRaWanConfigAdapter()
 unsigned int MyLoRaWanConfigAdapter::getDevAddr()
 {
   unsigned int devAddr = 0x26011BF3;
+  if (0 != m_assets)
+  {
+    const unsigned int len = 2 * sizeof(unsigned int) + 1;
+    char devAddrStr[len]; /* = "26011BF3";*/
+    m_assets->getDevAddr(devAddrStr, len);
+    devAddr = static_cast<unsigned int>(strtol(devAddrStr, 0, 16));
+  }
   return devAddr;
 }
 
