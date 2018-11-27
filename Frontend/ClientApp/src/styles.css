@@ -22,3 +22,10 @@ div.user-location.ol-control {
   bottom: 2.5em;
   right: .5em;
 }
+
+.ct-series-a .ct-line, .ct-series-a .ct-point {
+  stroke: blue;
+}
+.ct-series-b .ct-line, .ct-series-b .ct-point {
+  stroke: green;
+}

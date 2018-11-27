@@ -22,9 +22,10 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "node_modules/ol/ol.css"
+              "node_modules/ol/ol.css",
+              "node_modules/chartist/dist/chartist.css",
+              "src/styles.css"
             ],
             "scripts": []
           },
