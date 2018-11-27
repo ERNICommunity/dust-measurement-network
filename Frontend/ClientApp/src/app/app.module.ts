@@ -38,7 +38,7 @@ import { LegendComponent } from './legend/legend.component';
       { path: '', component: OsmMapComponent, pathMatch: 'full' },
       { path: 'about', component: AboutComponent}
     ]),
-    LoadingBarModule.forRoot(),
+    LoadingBarModule,
     NgbModule
   ],
   providers: [
