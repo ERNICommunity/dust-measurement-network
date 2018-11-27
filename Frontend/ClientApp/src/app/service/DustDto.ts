@@ -1,5 +1,5 @@
 export interface DustDto {
-  timestamp: Date;
+  timestamp: string;
   particulateMatter25: number;
   particulateMatter100: number;
 }
