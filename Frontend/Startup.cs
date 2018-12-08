@@ -23,7 +23,7 @@ namespace Frontend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             var csBuilder = new NpgsqlConnectionStringBuilder(Configuration.GetConnectionString("DustDatabase"));
             csBuilder.ApplicationName = "DMN Frontend";
             services.AddDbContext<DustContext>(opt => opt.UseNpgsql(csBuilder.ToString()));
