@@ -67,7 +67,7 @@ void AssetsDbgCmd_GetDeviceSerial::execute(unsigned int argc, const char** args,
     if (0 != m_assets)
     {
       Serial.println("Assets - LoRa Keys:");
-      if (0 != m_assets->getPersistentDataMemory())
+      if (0 != m_assets->getDeviceSerialNrAdapter())
       {
         Serial.print("- Provisioned Data: ");
         Serial.println(m_assets->getDeviceSerialNrAdapter()->getDeviceSerialNr());
