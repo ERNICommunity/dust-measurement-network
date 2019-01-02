@@ -28,11 +28,11 @@ import { UserLocation } from './user-location.class';
   styleUrls: ['./osmmap.component.css']
 })
 export class OsmMapComponent implements OnInit, OnDestroy {
-  private vectorSource = new VectorSource();
-  private mapMoveSubscription: Subscription;
-  @ViewChild(PopupComponent) private popup: PopupComponent;
+  private _vectorSource = new VectorSource();
+  private _mapMoveSubscription: Subscription;
+  @ViewChild(PopupComponent) private _popup: PopupComponent;
 
-  constructor(private dustService: DustService) {}
+  constructor(private _dustService: DustService) {}
 
   ngOnInit() {
     const osmMap = new Map({
@@ -44,7 +44,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         new VectorLayer({
           source: new Cluster({
             attributions: '© Dust data by <a href="https://www.betterask.erni/">ERNI</a> Community',
-            source: this.vectorSource,
+            source: this._vectorSource,
             distance: 30
           }),
           style: f => this.getStyle(f)
@@ -65,14 +65,14 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     osmMap.on('click', evt => {
       const features = evt.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
       if (features && features.get('features').length === 1) {
-        this.popup.open(features.get('features')[0].get('data'));
+        this._popup.open(features.get('features')[0].get('data'));
       }
     });
 
-    this.mapMoveSubscription = fromEvent(osmMap, 'moveend').pipe(
+    this._mapMoveSubscription = fromEvent(osmMap, 'moveend').pipe(
       debounceTime(1000),
       map((evt: MapEvent) => transformExtent(evt.frameState.extent, evt.map.getView().getProjection(), 'EPSG:4326')),
-      switchMap(extent => this.dustService.getSensors(extent[0], extent[1], extent[2], extent[3])),
+      switchMap(extent => this._dustService.getSensors(extent[0], extent[1], extent[2], extent[3])),
       catchError((err, source) => {
         console.error('getting available sensors failed', err);
         return source;
@@ -86,7 +86,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-   this.mapMoveSubscription.unsubscribe();
+   this._mapMoveSubscription.unsubscribe();
   }
 
   private getStyle(feature: Feature) {
@@ -151,14 +151,14 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   }
 
   private drawMarkers(markers: SensorDto[]) {
-    this.vectorSource.clear();
+    this._vectorSource.clear();
     for (let i = 0; i < markers.length; i++) {
       const iconFeature = new Feature({
         geometry: new Point(fromLonLat([markers[i].longitude, markers[i].latitude])),
         name: markers[i].name,
         data: markers[i]
       });
-      this.vectorSource.addFeature(iconFeature);
+      this._vectorSource.addFeature(iconFeature);
     }
   }
 

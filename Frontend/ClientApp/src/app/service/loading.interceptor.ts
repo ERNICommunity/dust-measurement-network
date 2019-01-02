@@ -7,10 +7,10 @@ import { finalize } from 'rxjs/operators';
 @Injectable()
 export class LoadingInterceptor implements HttpInterceptor {
 
-  constructor(private requestService: RunningRequestService) { }
+  constructor(private _requestService: RunningRequestService) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
-    this.requestService.requestStarted();
-    return next.handle(req).pipe(finalize(() => this.requestService.requestFinished()));
+    this._requestService.requestStarted();
+    return next.handle(req).pipe(finalize(() => this._requestService.requestFinished()));
   }
 }

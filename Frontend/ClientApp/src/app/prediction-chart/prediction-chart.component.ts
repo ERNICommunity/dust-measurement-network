@@ -14,14 +14,14 @@ export class PredictionChartComponent implements OnInit {
     this._id = value;
   }
 
-  constructor(private dustService: DustService) { }
+  constructor(private _dustService: DustService) { }
 
   ngOnInit(): void {
     this.updateDustData();
   }
 
   private updateDustData(): void {
-    this.dustService.getDustPrediction(this._id).subscribe(
+    this._dustService.getDustPrediction(this._id).subscribe(
       results => {
         const data =  { labels: [], series: [] };
         data.series[0] = [];

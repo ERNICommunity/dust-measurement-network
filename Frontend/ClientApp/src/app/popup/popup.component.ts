@@ -8,7 +8,7 @@ import { SensorDto } from '../service/SensorDto';
   styleUrls: ['./popup.component.css']
 })
 export class PopupComponent {
-  @ViewChild('content') private modal;
+  @ViewChild('content') private _content;
 
   id: number;
   name: string;
@@ -18,7 +18,7 @@ export class PopupComponent {
   particulateMatter25: number;
   particulateMatter100: number;
 
-  constructor(private modalService: NgbModal) { }
+  constructor(private _modalService: NgbModal) { }
 
   open(data: SensorDto) {
     this.id = data.id;
@@ -28,6 +28,6 @@ export class PopupComponent {
     this.timestamp = data.timestamp;
     this.particulateMatter25 = data.particulateMatter25;
     this.particulateMatter100 = data.particulateMatter100;
-    this.modalService.open(this.modal, {size: 'lg'});
+    this._modalService.open(this._content, {size: 'lg'});
   }
 }

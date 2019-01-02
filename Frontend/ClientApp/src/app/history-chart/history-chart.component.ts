@@ -36,7 +36,7 @@ export class HistoryChartComponent implements OnInit {
     return this.formatForDateInput(this._dateTo);
   }
 
-  constructor(private dustService: DustService) {
+  constructor(private _dustService: DustService) {
     const now = new Date();
     this._dateFrom = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 20, 0, 0, 0, 0);
     this._dateTo = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0 , 0, 0, 0);
@@ -55,7 +55,7 @@ export class HistoryChartComponent implements OnInit {
   }
 
   private updateDustData(): void {
-    this.dustService.getDustHistory(this._id, this._dateFrom, this._dateTo).subscribe(
+    this._dustService.getDustHistory(this._id, this._dateFrom, this._dateTo).subscribe(
       results => {
         const data = { labels: [], series: [] };
         data.series[0] = [];

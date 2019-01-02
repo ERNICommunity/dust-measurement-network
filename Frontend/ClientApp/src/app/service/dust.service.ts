@@ -7,19 +7,19 @@ import { DustDto } from './DustDto';
 export class DustService {
 
   constructor(
-    private httpClient: HttpClient,
-    @Inject('BASE_URL') private baseUrl: string
+    private _httpClient: HttpClient,
+    @Inject('BASE_URL') private _baseUrl: string
   ) { }
 
   public getSensors(minLon: number, minLat: number , maxLon: number, maxLat: number) {
-    return this.httpClient.get<SensorDto[]>(`${this.baseUrl}api/sensors?minLon=${minLon}&minLat=${minLat}&maxLon=${maxLon}&maxLat=${maxLat}`);
+    return this._httpClient.get<SensorDto[]>(`${this._baseUrl}api/sensors?minLon=${minLon}&minLat=${minLat}&maxLon=${maxLon}&maxLat=${maxLat}`);
   }
 
   public getDustHistory(id: number, from: Date, to: Date) {
-    return this.httpClient.get<DustDto[]>(`${this.baseUrl}api/sensors/${id}/history?from=${from.getTime()}&to=${to.getTime()}`);
+    return this._httpClient.get<DustDto[]>(`${this._baseUrl}api/sensors/${id}/history?from=${from.getTime()}&to=${to.getTime()}`);
   }
 
   public getDustPrediction(id: number) {
-    return this.httpClient.get<DustDto[]>(`${this.baseUrl}api/sensors/${id}/prediction`);
+    return this._httpClient.get<DustDto[]>(`${this._baseUrl}api/sensors/${id}/prediction`);
   }
 }

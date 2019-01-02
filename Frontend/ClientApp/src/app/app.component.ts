@@ -9,16 +9,16 @@ import { LoadingBarService } from '@ngx-loading-bar/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
-  private requestWatcherSubscription: Subscription;
+  private _requestWatcherSubscription: Subscription;
 
   constructor(
-    private requestService: RunningRequestService,
-    private loadingBar: LoadingBarService) {}
+    private _requestService: RunningRequestService,
+    private _loadingBar: LoadingBarService) {}
 
   ngOnInit(): void {
-    this.requestWatcherSubscription = this.requestService.watcher.subscribe(x => x ? this.loadingBar.start() : this.loadingBar.complete() );
+    this._requestWatcherSubscription = this._requestService.watcher.subscribe(x => x ? this._loadingBar.start() : this._loadingBar.complete() );
   }
   ngOnDestroy(): void {
-    this.requestWatcherSubscription.unsubscribe();
+    this._requestWatcherSubscription.unsubscribe();
   }
 }
