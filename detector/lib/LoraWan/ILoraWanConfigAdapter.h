@@ -21,14 +21,14 @@ public:
 
   /**
    * Read Network Session Key byte array.
-   * @param Network Session Key OUT: Buffer for Network Session Key byte array
+    * @param nwkSKey Network Session Key OUT: Buffer for Network Session Key byte array
    * @param len Buffer size for Network Session Key
    */
   virtual void getNwkSKey(unsigned char* nwkSKey, unsigned int len) = 0;
 
   /**
    * Read Application Session Key byte array.
-   * @param Application Session Key OUT: Buffer for Application Session Key byte array
+    * @param appSKey Application Session Key OUT: Buffer for Application Session Key byte array
    * @param len Buffer size for Application Session Key
    */
   virtual void getAppSKey(unsigned char* appSKey, unsigned int len) = 0;

@@ -26,7 +26,7 @@ public:
 
   /**
    * Read Network Session Key byte array.
-   * @param Network Session Key OUT: Buffer for Network Session Key byte array
+    * @param nwkSKey Network Session Key OUT: Buffer for Network Session Key byte array
    * @param len Buffer size for Network Session Key
    * @return Number of bytes read
    */
@@ -34,7 +34,7 @@ public:
 
   /**
    * Read Application Session Key byte array.
-   * @param Application Session Key OUT: Buffer for Application Session Key byte array
+    * @param appSKey Application Session Key OUT: Buffer for Application Session Key byte array
    * @param len Buffer size for Application Session Key
    * @return Number of bytes read
    */
