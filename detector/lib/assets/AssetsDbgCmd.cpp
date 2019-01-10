@@ -66,14 +66,13 @@ void AssetsDbgCmd_GetDeviceSerial::execute(unsigned int argc, const char** args,
   {
     if (0 != m_assets)
     {
-      Serial.println("Assets - LoRa Keys:");
+      Serial.println("Assets - Device Serial Number:");
       if (0 != m_assets->getDeviceSerialNrAdapter())
       {
-        Serial.print("- Provisioned Data: ");
+        Serial.print("- Provisioned Data (by Production): ");
         Serial.println(m_assets->getDeviceSerialNrAdapter()->getDeviceSerialNr());
       }
-      else
-      Serial.print("- Internal Data: ");
+      Serial.print("- Current Data: ");
       Serial.println(m_assets->getDeviceSerialNr());
     }
   }
@@ -82,7 +81,7 @@ void AssetsDbgCmd_GetDeviceSerial::execute(unsigned int argc, const char** args,
 //-----------------------------------------------------------------------------
 
 AssetsDbgCmd_GetLoRaKeys::AssetsDbgCmd_GetLoRaKeys(Assets* assets)
-: DbgCli_Command(assets->getCliTopicAssetsDeviceSerial(), "get", "Get LoRa Keys.")
+: DbgCli_Command(assets->getCliTopicAssetsLoRaKeys(), "get", "Get LoRa Keys.")
 , m_assets(assets)
 { }
 
@@ -104,8 +103,8 @@ void AssetsDbgCmd_GetLoRaKeys::execute(unsigned int argc, const char** args, uns
   {
     if (0 != m_assets)
     {
-      Serial.println("Assets - Device Serial Number:");
-      if (0 != m_assets->getDeviceSerialNrAdapter())
+      Serial.println("Assets - LoRa Keys:");
+      if (0 != m_assets->getPersistentDataMemory())
       {
         char printBuffer[DetectorFakePersDataMemory::s_numMaxChars+1];
 
@@ -115,7 +114,7 @@ void AssetsDbgCmd_GetLoRaKeys::execute(unsigned int argc, const char** args, uns
 
         m_assets->getDevAddr(printBuffer, sizeof(printBuffer));
         Serial.print("- Device Addr:             ");
-        Serial.println();
+        Serial.println(printBuffer);
 
         m_assets->getNwkSKey(printBuffer, sizeof(printBuffer));
         Serial.print("- Network Session Key:     ");
@@ -123,7 +122,7 @@ void AssetsDbgCmd_GetLoRaKeys::execute(unsigned int argc, const char** args, uns
 
         m_assets->getAppSKey(printBuffer, sizeof(printBuffer));
         Serial.print("- Application Session Key: ");
-        Serial.println();
+        Serial.println(printBuffer);
       }
       else
       {

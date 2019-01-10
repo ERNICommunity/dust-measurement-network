@@ -21,6 +21,7 @@ public:
   virtual ~Assets();
 
   DbgCli_Topic* getCliTopicAssetsDeviceSerial() { return m_dbgCliTopicAssetsDeviceSerial; }
+  DbgCli_Topic* getCliTopicAssetsLoRaKeys()     { return m_dbgCliTopicAssetsLoRaKeys; }
 
   void setDeviceSerialNrAdapter(IAssetsDeviceSerialNrAdapter* deviceSerialNrAdapter);
   IAssetsDeviceSerialNrAdapter* getDeviceSerialNrAdapter();
