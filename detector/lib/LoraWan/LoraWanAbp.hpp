@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include <ILoraWanConfigAdapter.h>
 
+#include <LoraWanAdapter.hpp>
+
 #ifdef __cplusplus
    extern "C"
     {
@@ -20,7 +22,7 @@ void do_send();
 
 void onEvent(ev_t ev);
 
-void configuration(ILoraWanConfigAdapter* configAdapter);
+void configuration();
 
 void loop_once();
 #ifdef __cplusplus
