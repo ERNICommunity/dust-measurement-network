@@ -3,6 +3,7 @@
 #include <inttypes.h>
 
 class ILoraWanConfigAdapter;
+class DbgTrace_Port;
 
 class LoraWanAdapter
 {
@@ -17,11 +18,14 @@ class LoraWanAdapter
     void setLoraWanConfigAdapter(ILoraWanConfigAdapter* loraWanConfigAdapter);
     ILoraWanConfigAdapter* loraWanConfigAdapter();
 
-  protected:
+//  protected:
     virtual void configure() = 0;
+
+    DbgTrace_Port* trPort();
 
   private:
     ILoraWanConfigAdapter* m_loraWanConfigAdapter;
+    DbgTrace_Port* m_trPort;
 
   private: // forbidden default functions
     LoraWanAdapter& operator = (const LoraWanAdapter& src); // assignment operator

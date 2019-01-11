@@ -1,9 +1,12 @@
 #include <stdint.h>
+#include <DbgTracePort.h>
+#include <DbgTraceLevel.h>
 #include <ILoraWanConfigAdapter.h>
 #include <LoraWanAdapter.hpp>
 
 LoraWanAdapter::LoraWanAdapter(ILoraWanConfigAdapter* loraWanConfigAdapter /*= 0*/)
 : m_loraWanConfigAdapter(loraWanConfigAdapter)
+, m_trPort(new DbgTrace_Port("lora", DbgTrace_Level::debug))
 { }
 
 LoraWanAdapter::~LoraWanAdapter()
@@ -18,6 +21,12 @@ ILoraWanConfigAdapter* LoraWanAdapter::loraWanConfigAdapter()
 {
   return m_loraWanConfigAdapter;
 }
+
+DbgTrace_Port* LoraWanAdapter::trPort()
+{
+  return m_trPort;
+}
+
 
 void LoraWanAdapter::setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
 {
