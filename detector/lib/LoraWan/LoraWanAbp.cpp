@@ -10,6 +10,9 @@
 
 #include <hal/hal.h>
 
+#include <DbgTracePort.h>
+#include <DbgTraceLevel.h>
+
 // Pin mapping
 // Adapted for Feather M0 per p.10 of [feather]
 const lmic_pinmap lmic_pins = {
@@ -165,6 +168,12 @@ void onEvent(ev_t ev)
 
 void configuration()
 {
+  LoRaWanDriver* loRaWanDriver = LoRaWanDriver::getLoRaWanDriver();
+  ILoraWanConfigAdapter* configAdapter = loRaWanDriver->loraWanConfigAdapter();
+  DbgTrace_Port* trPort = loRaWanDriver->trPort();
+
+  TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWan configuration() start.");
+
 #ifdef VCC_ENABLE
     // For Pinoccio Scout boards
     pinMode(VCC_ENABLE, OUTPUT);
@@ -181,31 +190,59 @@ void configuration()
 // by joining the network, precomputed session parameters are be provided.
 
     // TODO nid: fetch the LoRa Keys from Assets
-//    if (0 != configAdapter)
-//    {
-//      uint8_t appSKey[16];
-//      uint8_t nwkSKey[16];
-//
-//      configAdapter->getAppSKey(appSKey, sizeof(appSKey));
-//      configAdapter->getNwkSKey(nwkSKey, sizeof(nwkSKey));
-//
-//      LMIC_setSession(0x13, configAdapter->getDevAddr(), nwkSKey, appSKey);
+    if (0 != configAdapter)
+    {
+      uint8_t appSKey[16];
+      uint8_t nwkSKey[16];
 
-//#ifdef PROGMEM
-//    // On AVR, these values are stored in flash and only copied to RAM
-//    // once. Copy them to a temporary buffer here, LMIC_setSession will
-//    // copy them into a buffer of its own again.
-    uint8_t appskey[sizeof(APPSKEY)];
-    uint8_t nwkskey[sizeof(NWKSKEY)];
-    memcpy_P(appskey, APPSKEY, sizeof(APPSKEY));
-    memcpy_P(nwkskey, NWKSKEY, sizeof(NWKSKEY));
-    LMIC_setSession(0x13, DEVADDR, nwkskey, appskey);
-//#else
-//    // If not running an AVR with PROGMEM, just use the arrays directly
-//    LMIC_setSession(0x13, DEVADDR, NWKSKEY, APPSKEY);
-//#endif
+      char singleBuf[10];
+      char strBuf[8*sizeof(appSKey)];
+      strcpy(strBuf, "");
+      for (unsigned int i = 0; i < sizeof(appSKey); i++)
+      {
+        sprintf(singleBuf, "{0x%0X}%s", appSKey[i], (i != sizeof(appSKey) - 1) ? ", " : "");
+        strcat(strBuf, singleBuf);
+      }
 
-//    }
+      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): AppSKey: %s", strBuf);
+
+      strcpy(strBuf, "");
+      for (unsigned int i = 0; i < sizeof(nwkSKey); i++)
+      {
+        sprintf(singleBuf, "{0x%0X}%s", nwkSKey[i], (i != sizeof(nwkSKey) - 1) ? ", " : "");
+        strcat(strBuf, singleBuf);
+      }
+      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): NwkSKey: %s", strBuf);
+
+      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): DEVADDR: 0x%X", configAdapter->getDevAddr());
+
+      LMIC_setSession(0x13, configAdapter->getDevAddr(), nwkSKey, appSKey);
+
+//      uint8_t appskey[sizeof(APPSKEY)];
+//      uint8_t nwkskey[sizeof(NWKSKEY)];
+//      memcpy_P(appskey, APPSKEY, sizeof(APPSKEY));
+//      memcpy_P(nwkskey, NWKSKEY, sizeof(NWKSKEY));
+//
+//      strcpy(strBuf, "");
+//      for (unsigned int i = 0; i < sizeof(appskey); i++)
+//      {
+//        sprintf(singleBuf, "{0x%0X}%s", appskey[i], (i != sizeof(appskey) - 1) ? ", " : "");
+//        strcat(strBuf, singleBuf);
+//      }
+//      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): AppSKey: %s", strBuf);
+//
+//      strcpy(strBuf, "");
+//      for (unsigned int i = 0; i < sizeof(nwkSKey); i++)
+//      {
+//        sprintf(singleBuf, "{0x%0X}%s", nwkskey[i], (i != sizeof(nwkskey) - 1) ? ", " : "");
+//        strcat(strBuf, singleBuf);
+//      }
+//      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): NwkSKey: %s", strBuf);
+//
+//      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): DEVADDR: 0x%X", DEVADDR);
+//
+//      LMIC_setSession(0x13, DEVADDR, nwkskey, appskey);
+    }
 
 
     // Set up the channels used by the Things Network, which corresponds
@@ -240,8 +277,19 @@ void configuration()
     // Set data rate and transmit power for uplink (note: txpow seems to be ignored by the library)
     LMIC_setDrTxpow(DR_SF7, 14);
 
+    if (loRaWanDriver->getIsSinglechannel())
+    {
+      // for use with Single channel Gateway only: disable cannels 1..8, just keep channel 0 enabled
+      for (int i = 1; i <= 8; i++)
+      {
+        LMIC_disableChannel(i);
+      }
+    }
+
     // Start job
     do_send(&sendjob);
+
+    TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWan configuration() done.");
 }
 
 void loop_once()
@@ -260,23 +308,21 @@ void loop_once()
 }
 
 LoraWanAbp::LoraWanAbp(ILoraWanConfigAdapter* loraWanConfigAdapter /*= 0*/)
-: LoraWanAdapter(loraWanConfigAdapter)
+: LoRaWanDriver(loraWanConfigAdapter)
 , m_ConnectionIsConfigured(false)
 { }
 
 LoraWanAbp::~LoraWanAbp()
 { }
 
-void LoraWanAbp::configure()
+void LoraWanAbp::configure(bool isForced /*= false*/)
 {
-    if(!m_ConnectionIsConfigured)
-    {
-        configuration();
-        m_ConnectionIsConfigured = true;
-    }
-    else{
-        //TODO SEND EXCEPTION
-    }
+  TR_PRINTF(trPort(), DbgTrace_Level::debug, "LoraWanAbp::configure(), isForced: %s", isForced ? "true" : "false");
+  if (!m_ConnectionIsConfigured || isForced)
+  {
+    configuration();
+    m_ConnectionIsConfigured = true;
+  }
 }
 
 bool LoraWanAbp::isReadyToRead()

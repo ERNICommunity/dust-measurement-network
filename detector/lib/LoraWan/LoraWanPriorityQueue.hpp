@@ -1,12 +1,12 @@
 #ifndef _LoraWan_LoraWanPriorityQueue_h_
 #define _LoraWan_LoraWanPriorityQueue_h_
 #include <inttypes.h>
-#include "LoraWanAdapter.hpp"
+#include <LoRaWanDriver.hpp>
 #include <vector>
 class LoraWanPriorityQueue
 {
   public:
-    explicit LoraWanPriorityQueue(LoraWanAdapter *a_LoraWandInterface);
+    explicit LoraWanPriorityQueue(LoRaWanDriver *a_LoraWandInterface);
     ~LoraWanPriorityQueue();
     void start();
     void setHighPriorityPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData);
@@ -16,7 +16,7 @@ class LoraWanPriorityQueue
     void update();
 
   private:
-    LoraWanAdapter *m_LoraWandInterface;
+    LoRaWanDriver *m_LoraWandInterface;
     
     enum class TypeOfMessage{
       e_Undefined,

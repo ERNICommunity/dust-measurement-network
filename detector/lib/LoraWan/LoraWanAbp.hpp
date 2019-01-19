@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <ILoraWanConfigAdapter.h>
 
-#include <LoraWanAdapter.hpp>
+#include <LoRaWanDriver.hpp>
 
 #ifdef __cplusplus
    extern "C"
@@ -29,9 +29,9 @@ void loop_once();
  }
 #endif
 
-#include "LoraWanAdapter.hpp"
+#include <LoRaWanDriver.hpp>
 
-class LoraWanAbp : public LoraWanAdapter
+class LoraWanAbp : public LoRaWanDriver
 {
     public:
         LoraWanAbp(ILoraWanConfigAdapter* loraWanConfigAdapter = 0);
@@ -43,6 +43,6 @@ class LoraWanAbp : public LoraWanAdapter
         uint64_t getSentCounterPeriodicMessage();
     private:
         bool m_ConnectionIsConfigured;
-        void configure();
+        void configure(bool isForced = false);
 };
 #endif

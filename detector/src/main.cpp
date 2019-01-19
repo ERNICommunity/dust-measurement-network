@@ -38,7 +38,7 @@
 #include <DHT_Process.h>
 #include <MyDHT_ProcessAdapter.h>
 #include <LoraWanAbp.hpp>
-#include <LoraWanAdapter.hpp>
+#include <LoRaWanDriver.hpp>
 #include <MyLoRaWanConfigAdapter.h>
 #include <LoraWanPriorityQueue.hpp>
 #include <MeasurementFacade.hpp>
@@ -49,7 +49,7 @@
 
 /* This is the buffer where we will store our message. */
 bool setMessageOnce = true;
-LoraWanAdapter* m_LoraWanInterface;
+LoRaWanDriver* m_LoraWanInterface;
 LoraWanPriorityQueue* m_LoraWanPriorityQueue;
 MeasurementFacade* m_MeasurementFacade;
 SystemStatusFacade* m_SystemStatusFacade;
@@ -104,17 +104,22 @@ void setup()
   m_LoraWanPriorityQueue->start();
 }
 
-SystemStatusFacade::State getBatteryState(){
-  if (battery->isBattVoltageOk()){
+SystemStatusFacade::State getBatteryState()
+{
+  if (battery->isBattVoltageOk())
+  {
     return SystemStatusFacade::State::e_OK;
   }
-  if (battery->isBattVoltageBelowWarnThreshold()){
+  if (battery->isBattVoltageBelowWarnThreshold())
+  {
     return SystemStatusFacade::State::e_WARNING;
   }
-  if (battery->isBattVoltageBelowStopThreshold()){
+  if (battery->isBattVoltageBelowStopThreshold())
+  {
     return SystemStatusFacade::State::e_STOP;
   }
-  if (battery->isBattVoltageBelowShutdownThreshold()){
+  if (battery->isBattVoltageBelowShutdownThreshold())
+  {
     return SystemStatusFacade::State::e_SHUTDOWN;
   }
   return SystemStatusFacade::State::e_UNDEFINED;
