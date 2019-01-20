@@ -129,7 +129,6 @@ void onEvent(ev_t ev)
             Serial.println(F(" bytes of payload"));
         }
         // Schedule next transmission
-        // os_setTimedCallbackos_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);
         os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), do_send);
         break;
     case EV_LOST_TSYNC:
@@ -186,10 +185,9 @@ void configuration()
     // Reset the MAC state. Session and pending data transfers will be discarded.
     LMIC_reset();
 
-// Set static session parameters. Instead of dynamically establishing a session
-// by joining the network, precomputed session parameters are be provided.
+    // Set static session parameters. Instead of dynamically establishing a session
+    // by joining the network, precomputed session parameters are be provided.
 
-    // TODO nid: fetch the LoRa Keys from Assets
     if (0 != configAdapter)
     {
       uint8_t appSKey[16];
@@ -217,31 +215,6 @@ void configuration()
       TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): DEVADDR: 0x%X", configAdapter->getDevAddr());
 
       LMIC_setSession(0x13, configAdapter->getDevAddr(), nwkSKey, appSKey);
-
-//      uint8_t appskey[sizeof(APPSKEY)];
-//      uint8_t nwkskey[sizeof(NWKSKEY)];
-//      memcpy_P(appskey, APPSKEY, sizeof(APPSKEY));
-//      memcpy_P(nwkskey, NWKSKEY, sizeof(NWKSKEY));
-//
-//      strcpy(strBuf, "");
-//      for (unsigned int i = 0; i < sizeof(appskey); i++)
-//      {
-//        sprintf(singleBuf, "{0x%0X}%s", appskey[i], (i != sizeof(appskey) - 1) ? ", " : "");
-//        strcat(strBuf, singleBuf);
-//      }
-//      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): AppSKey: %s", strBuf);
-//
-//      strcpy(strBuf, "");
-//      for (unsigned int i = 0; i < sizeof(nwkSKey); i++)
-//      {
-//        sprintf(singleBuf, "{0x%0X}%s", nwkskey[i], (i != sizeof(nwkskey) - 1) ? ", " : "");
-//        strcat(strBuf, singleBuf);
-//      }
-//      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): NwkSKey: %s", strBuf);
-//
-//      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): DEVADDR: 0x%X", DEVADDR);
-//
-//      LMIC_setSession(0x13, DEVADDR, nwkskey, appskey);
     }
 
 
@@ -266,7 +239,6 @@ void configuration()
     // devices' ping slots. LMIC does not have an easy way to define set this
     // frequency and support for class B is spotty and untested, so this
     // frequency is not configured here.
-
 
     // Disable link check validation
     LMIC_setLinkCheckMode(0);
@@ -343,14 +315,13 @@ uint64_t LoraWanAbp::readData(uint8_t* const a_Data, uint64_t a_MaxSizeOfBuffer)
         bufferSize = m_DataToReadSize;
     }
     else{
-        //TODO throw Exception Data buffer is to small for Data
+        //TODO throw Exception Data buffer is too small for Data
     }
-    memcpy(a_Data,m_DataToRead,bufferSize);
+    memcpy(a_Data, m_DataToRead, bufferSize);
     m_DataToRead = (uint8_t*) realloc(m_DataToRead, m_DataToReadSize * sizeof(uint8_t));
     m_DataToReadSize=0;
     return bufferSize;
 }
- 
 
 void LoraWanAbp::setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
 {
