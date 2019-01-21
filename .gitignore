@@ -7,6 +7,18 @@ detector/\.vscode/launch\.json
 /.metadata/
 /detector/.metadata
 
+detector/\.vscode/\.BROWSE\.C_CPP\.DB
+
+detector/\.vscode/c_cpp_properties\.json
+
+detector/\.vscode/launch\.json
+
+ttn-gwy/TTN_Interface\.exe
+
+ttn-gwy/output\.txt
+
+detector/\.vscode/
+
 \.vs/
 
 \.vscode/

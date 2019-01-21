@@ -28,6 +28,9 @@
 #include <AppDebug.h>
 #include <ProductDebug.h>
 #include <RamUtils.h>
+#include <Assets.h>
+#include <MyDeviceSerialNrAdapter.h>
+#include <DetectorFakePersDataMemory.h>
 #include <Battery.h>
 #include <MyBatteryAdapter.h>
 #include <PM_Process.h>
@@ -35,7 +38,8 @@
 #include <DHT_Process.h>
 #include <MyDHT_ProcessAdapter.h>
 #include <LoraWanAbp.hpp>
-#include <LoraWanAdapter.hpp>
+#include <LoRaWanDriver.hpp>
+#include <MyLoRaWanConfigAdapter.h>
 #include <LoraWanPriorityQueue.hpp>
 #include <MeasurementFacade.hpp>
 #include <SystemStatusFacade.hpp>
@@ -45,7 +49,7 @@
 
 /* This is the buffer where we will store our message. */
 bool setMessageOnce = true;
-LoraWanAdapter* m_LoraWanInterface;
+LoRaWanDriver* m_LoraWanInterface;
 LoraWanPriorityQueue* m_LoraWanPriorityQueue;
 MeasurementFacade* m_MeasurementFacade;
 SystemStatusFacade* m_SystemStatusFacade;
@@ -57,6 +61,7 @@ SystemStatusFacade* m_SystemStatusFacade;
 SerialCommand* sCmd = 0;
 PM_Process* pmProcess = 0;
 DHT_Process* dhtProcess = 0;
+Assets* assets = 0;
 Battery* battery = 0;
 
 void setup()
@@ -65,6 +70,12 @@ void setup()
   digitalWrite(BUILTIN_LED, 0);
 
   setupProdDebugEnv();
+
+  //-----------------------------------------------------------------------------
+  // Assets (inventory and persistent data)
+  //-----------------------------------------------------------------------------
+  assets = new Assets(new MyDeviceSerialNrAdapter(), new DetectorFakePersDataMemory());
+
   //-----------------------------------------------------------------------------
   // Battery Voltage Surveillance
   //-----------------------------------------------------------------------------
@@ -74,18 +85,44 @@ void setup()
                                      0.1  // BATT_HYST        [V]
                                     };
   battery = new Battery(new MyBatteryAdapter(), battCfg);
+
+  //-----------------------------------------------------------------------------
+  // Sensors
+  //-----------------------------------------------------------------------------
   pmProcess = new PM_Process(&Serial1, new MyPM_ProcessAdapter());
   pmProcess->init(9600);
   dhtProcess = new DHT_Process(new MyDHT_ProcessAdapter());
 
-  m_LoraWanInterface = new LoraWanAbp();
+  //-----------------------------------------------------------------------------
+  // LoRaWan
+  //-----------------------------------------------------------------------------
+  m_LoraWanInterface = new LoraWanAbp(new MyLoRaWanConfigAdapter(assets));
   m_LoraWanPriorityQueue = new LoraWanPriorityQueue(m_LoraWanInterface);
   m_MeasurementFacade = new MeasurementFacade(m_LoraWanPriorityQueue);
-  m_MeasurementFacade->setNewMeasurementData(0.1f,10.1f,27.0f,80.0f);
   m_SystemStatusFacade = new SystemStatusFacade(m_LoraWanPriorityQueue);
-  m_SystemStatusFacade->setBatteryStatus(SystemStatusFacade::State::e_OK,18.4f);
   m_LoraWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
   m_LoraWanPriorityQueue->start();
+}
+
+SystemStatusFacade::State getBatteryState()
+{
+  if (battery->isBattVoltageOk())
+  {
+    return SystemStatusFacade::State::e_OK;
+  }
+  if (battery->isBattVoltageBelowWarnThreshold())
+  {
+    return SystemStatusFacade::State::e_WARNING;
+  }
+  if (battery->isBattVoltageBelowStopThreshold())
+  {
+    return SystemStatusFacade::State::e_STOP;
+  }
+  if (battery->isBattVoltageBelowShutdownThreshold())
+  {
+    return SystemStatusFacade::State::e_SHUTDOWN;
+  }
+  return SystemStatusFacade::State::e_UNDEFINED;
 }
 
 void loop()
@@ -96,6 +133,14 @@ void loop()
   }
   pmProcess->pollSerialData();
   yield();                      // process Timers
+  float pm10 = pmProcess->getPm10Average();
+  float pm25 = pmProcess->getPm25Average();
+  float humidity = dhtProcess->getRelHumidity();
+  float temperature = dhtProcess->getTemperature();
+  float batteryVoltage = battery->getBatteryVoltage();
+
+  m_SystemStatusFacade->setBatteryStatus(getBatteryState(), batteryVoltage);
+  m_MeasurementFacade->setNewMeasurementData(pm25, pm10, temperature, humidity);
   m_LoraWanInterface->loopOnce();
   m_LoraWanPriorityQueue->update();
 }

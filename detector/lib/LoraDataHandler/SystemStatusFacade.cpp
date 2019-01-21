@@ -25,7 +25,6 @@ void SystemStatusFacade::setBatteryStatus(State a_State, float a_Voltage)
     if(encode(&nodeMessage, protobuf_NodeMessage_fields, a_BufferRawData, &a_BufferLength)){
       if(m_LoraWanInterface!=NULL)
       {
-        Serial.println("HELLO");
         m_LoraWanInterface->setHighPriorityPeriodicMessageData(a_BufferRawData,a_BufferLength);
       }
     }

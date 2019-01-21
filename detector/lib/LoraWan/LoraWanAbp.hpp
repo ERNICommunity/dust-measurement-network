@@ -1,6 +1,10 @@
 #ifndef _LoraWan_LoraWanAbp_h_
 #define _LoraWan_LoraWanAbp_h_
+
 #include <Arduino.h>
+#include <ILoraWanConfigAdapter.h>
+
+#include <LoRaWanDriver.hpp>
 
 #ifdef __cplusplus
    extern "C"
@@ -25,12 +29,13 @@ void loop_once();
  }
 #endif
 
-#include "LoraWanAdapter.hpp"
+#include <LoRaWanDriver.hpp>
 
-class LoraWanAbp : public LoraWanAdapter
+class LoraWanAbp : public LoRaWanDriver
 {
     public:
-        LoraWanAbp();
+        LoraWanAbp(ILoraWanConfigAdapter* loraWanConfigAdapter = 0);
+        virtual ~LoraWanAbp();
         void loopOnce();
         bool isReadyToRead();
         uint64_t readData(uint8_t* const a_Data, uint64_t a_MaxSizeOfBuffer);
@@ -38,6 +43,6 @@ class LoraWanAbp : public LoraWanAdapter
         uint64_t getSentCounterPeriodicMessage();
     private:
         bool m_ConnectionIsConfigured;
-        void configure();
+        void configure(bool isForced = false);
 };
 #endif

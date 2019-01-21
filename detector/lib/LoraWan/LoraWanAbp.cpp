@@ -5,9 +5,13 @@
 #include <lmic.h>
 
 #include <SPI.h>
-#include "configuration.h"
+#include <configuration.h>
+#include <ILoraWanConfigAdapter.h>
 
 #include <hal/hal.h>
+
+#include <DbgTracePort.h>
+#include <DbgTraceLevel.h>
 
 // Pin mapping
 // Adapted for Feather M0 per p.10 of [feather]
@@ -60,9 +64,8 @@ void do_send(osjob_t* j)
     {
         if(m_DataToSendSize>0)
         {
-        // Prepare upstream data transmission at the next possible time.
-        LMIC_setTxData2(1, (xref2u1_t)m_DataToSend, sizeof(uint8_t)*(m_DataToSendSize), 0);
-        Serial.println(F("Packet queued"));
+          // Prepare upstream data transmission at the next possible time.
+          LMIC_setTxData2(1, (xref2u1_t)m_DataToSend, sizeof(uint8_t)*(m_DataToSendSize), 0);
         }
     }
     // Next TX is scheduled after TX_COMPLETE event.
@@ -126,7 +129,6 @@ void onEvent(ev_t ev)
             Serial.println(F(" bytes of payload"));
         }
         // Schedule next transmission
-        // os_setTimedCallbackos_setTimedCallback(&sendjob, os_getTime()+sec2osticks(TX_INTERVAL), do_send);
         os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), do_send);
         break;
     case EV_LOST_TSYNC:
@@ -165,6 +167,12 @@ void onEvent(ev_t ev)
 
 void configuration()
 {
+  LoRaWanDriver* loRaWanDriver = LoRaWanDriver::getLoRaWanDriver();
+  ILoraWanConfigAdapter* configAdapter = loRaWanDriver->loraWanConfigAdapter();
+  DbgTrace_Port* trPort = loRaWanDriver->trPort();
+
+  TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWan configuration() start.");
+
 #ifdef VCC_ENABLE
     // For Pinoccio Scout boards
     pinMode(VCC_ENABLE, OUTPUT);
@@ -177,21 +185,38 @@ void configuration()
     // Reset the MAC state. Session and pending data transfers will be discarded.
     LMIC_reset();
 
-// Set static session parameters. Instead of dynamically establishing a session
-// by joining the network, precomputed session parameters are be provided.
-#ifdef PROGMEM
-    // On AVR, these values are stored in flash and only copied to RAM
-    // once. Copy them to a temporary buffer here, LMIC_setSession will
-    // copy them into a buffer of its own again.
-    uint8_t appskey[sizeof(APPSKEY)];
-    uint8_t nwkskey[sizeof(NWKSKEY)];
-    memcpy_P(appskey, APPSKEY, sizeof(APPSKEY));
-    memcpy_P(nwkskey, NWKSKEY, sizeof(NWKSKEY));
-    LMIC_setSession(0x13, DEVADDR, nwkskey, appskey);
-#else
-    // If not running an AVR with PROGMEM, just use the arrays directly
-    LMIC_setSession(0x13, DEVADDR, NWKSKEY, APPSKEY);
-#endif
+    // Set static session parameters. Instead of dynamically establishing a session
+    // by joining the network, precomputed session parameters are be provided.
+
+    if (0 != configAdapter)
+    {
+      uint8_t appSKey[16];
+      uint8_t nwkSKey[16];
+
+      char singleBuf[10];
+      char strBuf[8*sizeof(appSKey)];
+      strcpy(strBuf, "");
+      for (unsigned int i = 0; i < sizeof(appSKey); i++)
+      {
+        sprintf(singleBuf, "{0x%0X}%s", appSKey[i], (i != sizeof(appSKey) - 1) ? ", " : "");
+        strcat(strBuf, singleBuf);
+      }
+
+      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): AppSKey: %s", strBuf);
+
+      strcpy(strBuf, "");
+      for (unsigned int i = 0; i < sizeof(nwkSKey); i++)
+      {
+        sprintf(singleBuf, "{0x%0X}%s", nwkSKey[i], (i != sizeof(nwkSKey) - 1) ? ", " : "");
+        strcat(strBuf, singleBuf);
+      }
+      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): NwkSKey: %s", strBuf);
+
+      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): DEVADDR: 0x%X", configAdapter->getDevAddr());
+
+      LMIC_setSession(0x13, configAdapter->getDevAddr(), nwkSKey, appSKey);
+    }
+
 
     // Set up the channels used by the Things Network, which corresponds
     // to the defaults of most gateways. Without this, only three base
@@ -224,8 +249,19 @@ void configuration()
     // Set data rate and transmit power for uplink (note: txpow seems to be ignored by the library)
     LMIC_setDrTxpow(DR_SF7, 14);
 
+    if (loRaWanDriver->getIsSinglechannel())
+    {
+      // for use with Single channel Gateway only: disable cannels 1..8, just keep channel 0 enabled
+      for (int i = 1; i <= 8; i++)
+      {
+        LMIC_disableChannel(i);
+      }
+    }
+
     // Start job
     do_send(&sendjob);
+
+    TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWan configuration() done.");
 }
 
 void loop_once()
@@ -243,22 +279,22 @@ void loop_once()
     os_runloop_once();
 }
 
-LoraWanAbp::LoraWanAbp():
-    m_ConnectionIsConfigured(false)
-{
+LoraWanAbp::LoraWanAbp(ILoraWanConfigAdapter* loraWanConfigAdapter /*= 0*/)
+: LoRaWanDriver(loraWanConfigAdapter)
+, m_ConnectionIsConfigured(false)
+{ }
 
-}
+LoraWanAbp::~LoraWanAbp()
+{ }
 
-void LoraWanAbp::configure()
+void LoraWanAbp::configure(bool isForced /*= false*/)
 {
-    if(!m_ConnectionIsConfigured)
-    {
-        configuration();
-        m_ConnectionIsConfigured = true;
-    }
-    else{
-        //TODO SEND EXCEPTION
-    }
+  TR_PRINTF(trPort(), DbgTrace_Level::debug, "LoraWanAbp::configure(), isForced: %s", isForced ? "true" : "false");
+  if (!m_ConnectionIsConfigured || isForced)
+  {
+    configuration();
+    m_ConnectionIsConfigured = true;
+  }
 }
 
 bool LoraWanAbp::isReadyToRead()
@@ -279,14 +315,13 @@ uint64_t LoraWanAbp::readData(uint8_t* const a_Data, uint64_t a_MaxSizeOfBuffer)
         bufferSize = m_DataToReadSize;
     }
     else{
-        //TODO throw Exception Data buffer is to small for Data
+        //TODO throw Exception Data buffer is too small for Data
     }
-    memcpy(a_Data,m_DataToRead,bufferSize);
+    memcpy(a_Data, m_DataToRead, bufferSize);
     m_DataToRead = (uint8_t*) realloc(m_DataToRead, m_DataToReadSize * sizeof(uint8_t));
     m_DataToReadSize=0;
     return bufferSize;
 }
- 
 
 void LoraWanAbp::setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
 {

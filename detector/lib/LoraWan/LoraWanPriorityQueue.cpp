@@ -2,7 +2,7 @@
 #include <cstddef>
 #include <SerialCommand.h>
 
-LoraWanPriorityQueue::LoraWanPriorityQueue(LoraWanAdapter *a_LoraWandInterface):
+LoraWanPriorityQueue::LoraWanPriorityQueue(LoRaWanDriver *a_LoraWandInterface):
 m_LoraWandInterface(a_LoraWandInterface),
 m_CurrentTypeOfeMessage(TypeOfMessage::e_Undefined),
 m_SentCounterCurrentMessage(0),
@@ -49,7 +49,6 @@ void LoraWanPriorityQueue::setLowPriorityPeriodicMessageData(uint8_t* a_Data, ui
         delete m_BufferLowPrio;
     }
     m_BufferLowPrio = new std::vector<uint8_t>(a_Data,a_Data+a_SizeOfData);
-    Serial.println(F("Packet queued"));
 }
 
 void LoraWanPriorityQueue::setHighPriorityPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData){
@@ -61,7 +60,7 @@ void LoraWanPriorityQueue::setHighPriorityPeriodicMessageData(uint8_t* a_Data, u
 
 void LoraWanPriorityQueue::setUpdateCycleHighPriorityPerdioc(uint64_t a_SendCycle)
 {
-    if(a_SendCycle>1){
+    if(a_SendCycle>0){
         m_UpdateCycleHighPriority = a_SendCycle;
     }
     else{
@@ -82,8 +81,6 @@ void LoraWanPriorityQueue::updateLoraSentMessage()
     
     if(counterCurrentMessage>0||m_ForceUpdateBuffer)
     {
-        Serial.print("COUNTER ");
-        Serial.println((int)m_counterLowPriority);
         switch(m_CurrentTypeOfeMessage){
             case TypeOfMessage::e_Undefined:
             break;
@@ -95,18 +92,15 @@ void LoraWanPriorityQueue::updateLoraSentMessage()
             break;
             case TypeOfMessage::e_PeriodicHighPrio:
                     nextMessage = TypeOfMessage::e_PeriodicLowPrio;
-                    Serial.println("IN HIGH PRIORITY");
             break;
             case TypeOfMessage::e_PeriodicLowPrio:
                 if((m_counterLowPriority>=m_UpdateCycleHighPriority)&&
                     (m_UpdateCycleHighPriority>0))
                 {
-                    Serial.println("HIGH PRIORITY");
                     nextMessage = TypeOfMessage::e_PeriodicHighPrio;
                     m_counterLowPriority = 0;
                 }
                 else{
-                    Serial.println("Low PRIORITY");
                     m_counterLowPriority++;
                     nextMessage = TypeOfMessage::e_PeriodicLowPrio;
                 }
@@ -139,7 +133,6 @@ void LoraWanPriorityQueue::setNextLoraSentMessage(const TypeOfMessage& a_NextMes
         case TypeOfMessage::e_PeriodicHighPrio:
             if(m_BufferHighPrio!=NULL)
             {
-                Serial.println("SETTING HIGH PRIORITY");
             sizeOfData = m_BufferHighPrio->size();
             data = &(*m_BufferHighPrio)[0];
             for(int i=0;i<sizeOfData;i++)
@@ -147,7 +140,6 @@ void LoraWanPriorityQueue::setNextLoraSentMessage(const TypeOfMessage& a_NextMes
                 Serial.print((int)data[i]);
                 Serial.print(" ");
             }
-            Serial.println(" That was it");
             }
         break;
         case TypeOfMessage::e_PeriodicLowPrio:
