@@ -54,4 +54,26 @@ private: // forbidden default functions
   AssetsDbgCmd_GetDeviceSerial();                                                     // default constructor
 };
 
+//-----------------------------------------------------------------------------
+
+class AssetsDbgCmd_GetLoRaKeys : public DbgCli_Command
+{
+public:
+  AssetsDbgCmd_GetLoRaKeys(Assets* assets);
+  virtual ~AssetsDbgCmd_GetLoRaKeys();
+
+  void execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle);
+
+private:
+  void printUsage();
+
+private:
+  Assets* m_assets;
+
+private: // forbidden default functions
+  AssetsDbgCmd_GetLoRaKeys& operator = (const AssetsDbgCmd_GetLoRaKeys& src);       // assignment operator
+  AssetsDbgCmd_GetLoRaKeys(const AssetsDbgCmd_GetLoRaKeys& src);                    // copy constructor
+  AssetsDbgCmd_GetLoRaKeys();                                                       // default constructor
+};
+
 #endif /* LIB_ASSETS_ASSETSDBGCMD_H_ */

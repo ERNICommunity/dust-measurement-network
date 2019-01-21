@@ -2,7 +2,7 @@
 #include <cstddef>
 #include <SerialCommand.h>
 
-LoraWanPriorityQueue::LoraWanPriorityQueue(LoraWanAdapter *a_LoraWandInterface):
+LoraWanPriorityQueue::LoraWanPriorityQueue(LoRaWanDriver *a_LoraWandInterface):
 m_LoraWandInterface(a_LoraWandInterface),
 m_CurrentTypeOfeMessage(TypeOfMessage::e_Undefined),
 m_SentCounterCurrentMessage(0),

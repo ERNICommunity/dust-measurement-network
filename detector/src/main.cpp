@@ -30,6 +30,7 @@
 #include <RamUtils.h>
 #include <Assets.h>
 #include <MyDeviceSerialNrAdapter.h>
+#include <DetectorFakePersDataMemory.h>
 #include <Battery.h>
 #include <MyBatteryAdapter.h>
 #include <PM_Process.h>
@@ -37,7 +38,8 @@
 #include <DHT_Process.h>
 #include <MyDHT_ProcessAdapter.h>
 #include <LoraWanAbp.hpp>
-#include <LoraWanAdapter.hpp>
+#include <LoRaWanDriver.hpp>
+#include <MyLoRaWanConfigAdapter.h>
 #include <LoraWanPriorityQueue.hpp>
 #include <MeasurementFacade.hpp>
 #include <SystemStatusFacade.hpp>
@@ -47,7 +49,7 @@
 
 /* This is the buffer where we will store our message. */
 bool setMessageOnce = true;
-LoraWanAdapter* m_LoraWanInterface;
+LoRaWanDriver* m_LoraWanInterface;
 LoraWanPriorityQueue* m_LoraWanPriorityQueue;
 MeasurementFacade* m_MeasurementFacade;
 SystemStatusFacade* m_SystemStatusFacade;
@@ -72,7 +74,7 @@ void setup()
   //-----------------------------------------------------------------------------
   // Assets (inventory and persistent data)
   //-----------------------------------------------------------------------------
-  assets = new Assets(new MyDeviceSerialNrAdapter());
+  assets = new Assets(new MyDeviceSerialNrAdapter(), new DetectorFakePersDataMemory());
 
   //-----------------------------------------------------------------------------
   // Battery Voltage Surveillance
@@ -83,11 +85,18 @@ void setup()
                                      0.1  // BATT_HYST        [V]
                                     };
   battery = new Battery(new MyBatteryAdapter(), battCfg);
+
+  //-----------------------------------------------------------------------------
+  // Sensors
+  //-----------------------------------------------------------------------------
   pmProcess = new PM_Process(&Serial1, new MyPM_ProcessAdapter());
   pmProcess->init(9600);
   dhtProcess = new DHT_Process(new MyDHT_ProcessAdapter());
 
-  m_LoraWanInterface = new LoraWanAbp();
+  //-----------------------------------------------------------------------------
+  // LoRaWan
+  //-----------------------------------------------------------------------------
+  m_LoraWanInterface = new LoraWanAbp(new MyLoRaWanConfigAdapter(assets));
   m_LoraWanPriorityQueue = new LoraWanPriorityQueue(m_LoraWanInterface);
   m_MeasurementFacade = new MeasurementFacade(m_LoraWanPriorityQueue);
   m_SystemStatusFacade = new SystemStatusFacade(m_LoraWanPriorityQueue);
@@ -95,17 +104,22 @@ void setup()
   m_LoraWanPriorityQueue->start();
 }
 
-SystemStatusFacade::State getBatteryState(){
-  if (battery->isBattVoltageOk()){
+SystemStatusFacade::State getBatteryState()
+{
+  if (battery->isBattVoltageOk())
+  {
     return SystemStatusFacade::State::e_OK;
   }
-  if (battery->isBattVoltageBelowWarnThreshold()){
+  if (battery->isBattVoltageBelowWarnThreshold())
+  {
     return SystemStatusFacade::State::e_WARNING;
   }
-  if (battery->isBattVoltageBelowStopThreshold()){
+  if (battery->isBattVoltageBelowStopThreshold())
+  {
     return SystemStatusFacade::State::e_STOP;
   }
-  if (battery->isBattVoltageBelowShutdownThreshold()){
+  if (battery->isBattVoltageBelowShutdownThreshold())
+  {
     return SystemStatusFacade::State::e_SHUTDOWN;
   }
   return SystemStatusFacade::State::e_UNDEFINED;
