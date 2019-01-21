@@ -1,16 +1,12 @@
-<<<<<<< HEAD
 
 detector/\.vscode/\.BROWSE\.C_CPP\.DB
 
 detector/\.vscode/c_cpp_properties\.json
 
 detector/\.vscode/launch\.json
-=======
 /.metadata/
 /detector/.metadata
->>>>>>> ttn-gwy-dev
 
-<<<<<<< HEAD
 detector/\.vscode/\.BROWSE\.C_CPP\.DB
 
 detector/\.vscode/c_cpp_properties\.json
@@ -19,8 +15,12 @@ detector/\.vscode/launch\.json
 
 ttn-gwy/TTN_Interface\.exe
 
-=======
->>>>>>> dev_memi
 ttn-gwy/output\.txt
 
 detector/\.vscode/
+
+\.vs/
+
+\.vscode/
+
+__pycache__/

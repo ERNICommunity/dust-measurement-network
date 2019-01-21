@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: default
+  name: kapacitor
+spec:
+  replicas: 1
+  serviceName: kapacitor-ss
+  selector:
+    matchLabels:
+      app: kapacitor
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: default
+      resources:
+        requests:
+          storage: 10Gi
+  template:
+    metadata:
+      labels:
+        app: kapacitor
+    spec:
+      containers:
+      - name: kapacitor
+        image: kapacitor:1.4.1-alpine
+        env:
+        - name: KAPACITOR_HOSTNAME
+          value: kapacitor
+        - name: KAPACITOR_INFLUXDB_0_URLS_0
+          value: http://influxdb:8086
+        ports:
+        - name: api
+          containerPort: 9092
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/kapacitor
+        # resources:
+        #   requests:
+        #     cpu: 50m
+        #     memory: 500Mi
+        #   limits:
+        #     cpu: 500m
+        #     memory: 500Mi
