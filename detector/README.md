@@ -9,6 +9,9 @@ It is designed and tested on an Adafruit Feather M0 LoRa RFM95 Microcontroller U
 
 ## Hardware
 The Hardware design is shown here: [detector HW](https://github.com/ERNICommunity/dust-measurement-network/tree/master/detector/design/hw)
+![Detector HW Breadboard Design](https://raw.githubusercontent.com/ERNICommunity/dust-measurement-network/master/detector/design/hw/Dust_Measurement_Network_Detector_Proto-Breadboard.png "Detector HW Breadboard Design")
+
+
 
 ## Toolchain
 [PlatformIO](http://platformio.org "Cross-platform build system") is the ideal foundation when developing IoT devices. It supports cross-platform development for many different controller boards widely used in the maker field and also for industrial applications.
