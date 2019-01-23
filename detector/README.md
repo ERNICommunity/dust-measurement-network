@@ -89,8 +89,8 @@ Important setting in HTERM config for Status lines: DTR & RTS shall be set to tr
 |Trace Port|default level|functionality|
 |----------|-------------|:------------|
 |heap|info|if set to debug level: automatically print free heap memory [bytes], every 10 seconds|
-|assets|||
-|lora|||
+|assets|info||
+|lora|debug||
 
 ## Library Usage
 This chapter lists all the libraries this project is using.
