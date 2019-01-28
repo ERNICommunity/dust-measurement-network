@@ -193,6 +193,9 @@ void configuration()
       uint8_t appSKey[16];
       uint8_t nwkSKey[16];
 
+      configAdapter->getAppSKey(appSKey, sizeof(appSKey));
+      configAdapter->getNwkSKey(nwkSKey, sizeof(nwkSKey));
+
       char singleBuf[10];
       char strBuf[8*sizeof(appSKey)];
       strcpy(strBuf, "");
