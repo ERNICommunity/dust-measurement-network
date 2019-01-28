@@ -1,6 +1,9 @@
 ---
 name: Product Requirement
 about: High level Product Requirement
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
