@@ -29,41 +29,35 @@ char DetectorFakePersDataMemory::read(unsigned int address)
 {
   const char deviceSpecificKeys[s_numDevices][KT_NumKeys][s_numMaxChars+1] =
   {
-    {
-      { "erni-dustnode0809099878656515" },     // deviceId
-      { "26011BF3" },                          // devAddr
-      { "0123123D234A12450132413241243155" },  // nwkSKey
-      { "0123123D234A12450132413241243156" }   // appSKey
+    { /* device HW serial 0 */
+      { "erni-dmn-node-00009876b6106f1e" },    // deviceId
+      { "26011B83" },                          // devAddr
+      { "D4936ED63314416781EC511CBA7CE2D1" },  // nwkSKey
+      { "CCA8C876E2F53A706B5A565B38160931" }   // appSKey
     },
-    {
-      { "dust-node-00009876b6106f1e" },        // deviceId
-      { "26011430" },                          // devAddr
-      { "5BBB9FDB3FDC2D831B58DD5F0574B57A" },  // nwkSKey
-      { "8072354DD74768A5AD26DC819741FBEB" }   // appSKey
+    { /* device HW serial 1 */
+      { "erni-dmn-node-00009876b6106f27" },    // deviceId
+      { "26011120" },                          // devAddr
+      { "3FCB918FACD42BAB4D4507FFEE7BE047" },  // nwkSKey
+      { "3815692F5E1D19AA75F476BB08887C90" }   // appSKey
     },
-    {
-      { "dust-node-00009876b6106f27" },
-      { "26011F80" },
-      { "789BB7541EC24753EBD3BF8601BB198C" },
-      { "4630C03F65B37C6CC538C96710C8B8F8" }
+    { /* device HW serial 2 */
+      { "erni-dmn-node-00009876b610bdd2" },    // deviceId
+      { "2601194F" },                          // devAddr
+      { "30679C1293758F7784DA3896DEC5EF59" },  // nwkSKey
+      { "F3E1E27381C4A84E8658C7E9CEE88625" }   // appSKey
     },
-    {
-      { "dust-node-00009876b610bdd2" },
-      { "26011A76" },
-      { "6B0EE00A7C0C95A361B2ADA8B63039D3" },
-      { "8621804E68BE994C66758DF6B300DD99" }
+    { /* device HW serial 3 */
+      { "erni-dmn-node-00009876b610bf1f" },    // deviceId
+      { "2601169D" },                          // devAddr
+      { "DA08547B2AAFC7DC57B784894FD3AFA5" },  // nwkSKey
+      { "E9B83B8CADC5CFE8BBC24E39ECA4DC9A" }   // appSKey
     },
-    {
-      { "dust-node-00009876b610bf1f" },
-      { "26011817" },
-      { "66D75E115A3021423782BF15D8D9CAC2" },
-      { "2D54BD5203FC18D272A8E9F1B56439B1" }
-    },
-    {
-      { "dust-node-00009876b610bf99" },
-      { "260110CA" },
-      { "28600BE3147B28227FB254CAFC58C568" },
-      { "3F6EC124E9A08EC6BB38FB5404055A7E" }
+    { /* device HW serial 4 */
+      { "erni-dmn-node-00009876b610bf99" },    // deviceId
+      { "26011AA3" },                          // devAddr
+      { "82FE5E05A715E0EBFF0875ED58B8027B" },  // nwkSKey
+      { "4212FB8F2F5009659134B0BB62885C88" }   // appSKey
     }
   };
   unsigned int key = address / s_numMaxChars;
