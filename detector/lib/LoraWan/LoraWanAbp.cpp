@@ -73,96 +73,104 @@ void do_send(osjob_t* j)
 
 void onEvent(ev_t ev)
 {
-    Serial.print(os_getTime());
-    Serial.print(": ");
-    switch (ev)
-    {
+  LoRaWanDriver* loRaWanDriver = LoRaWanDriver::getLoRaWanDriver();
+  DbgTrace_Port* trPort = loRaWanDriver->trPort();
+
+  TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWan onEvent() start (os_getTime() [hal ticks]: %d).", os_getTime());
+
+  switch (ev)
+  {
     case EV_SCAN_TIMEOUT:
-        Serial.println(F("EV_SCAN_TIMEOUT"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_SCAN_TIMEOUT");
+      break;
     case EV_BEACON_FOUND:
-        Serial.println(F("EV_BEACON_FOUND"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_BEACON_FOUND");
+      break;
     case EV_BEACON_MISSED:
-        Serial.println(F("EV_BEACON_MISSED"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_BEACON_MISSED");
+      break;
     case EV_BEACON_TRACKED:
-       Serial.println(F("EV_BEACON_TRACKED"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_BEACON_TRACKED");
+      break;
     case EV_JOINING:
-        Serial.println(F("EV_JOINING"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_JOINING");
+      break;
     case EV_JOINED:
-        Serial.println(F("EV_JOINED"));
-        break;
-    /*
-        || This event is defined but not used in the code. No
-        || point in wasting codespace on it.
-        ||
-        || case EV_RFU1:
-        ||     Serial.println(F("EV_RFU1"));
-        ||     break;
-        */
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_JOINED");
+      break;
+      /*
+       || This event is defined but not used in the code. No
+       || point in wasting codespace on it.
+       ||
+       || case EV_RFU1:
+       ||     Serial.println(F("EV_RFU1"));
+       ||     break;
+       */
     case EV_JOIN_FAILED:
-        Serial.println(F("EV_JOIN_FAILED"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_JOIN_FAILED");
+      break;
     case EV_REJOIN_FAILED:
-        Serial.println(F("EV_REJOIN_FAILED"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_REJOIN_FAILED");
+      break;
     case EV_TXCOMPLETE:
-        Serial.println(F("EV_TXCOMPLETE (includes waiting for RX windows)"));
-        m_CounterPeriodicMessage++;
-        if (LMIC.txrxFlags & TXRX_ACK)
-            Serial.println(F("Received ack"));
-        if (LMIC.dataLen>0)
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_TXCOMPLETE (includes waiting for RX windows)");
+      m_CounterPeriodicMessage++;
+      if (LMIC.txrxFlags & TXRX_ACK)
+        TR_PRINT_STR(trPort, DbgTrace_Level::debug, "Received ack");
+      if (LMIC.dataLen > 0)
+      {
+        TR_PRINTF(trPort, DbgTrace_Level::debug, "Received %d bytes", LMIC.dataLen);
+        allocateNewBufferAndDeleteOld(&m_DataToRead, LMIC.dataLen);
+        memcpy(m_DataToRead, &LMIC.frame[LMIC.dataBeg], LMIC.dataLen);
+        m_DataToReadSize = LMIC.dataLen;
+
+        char singleBuf[5];
+        char strBuf[3*LMIC.dataLen];
+        strcpy(strBuf, "");
+        for (unsigned int i = 0; i < LMIC.dataLen; i++)
         {
-            Serial.println(F("Received "));
-            Serial.println(LMIC.dataLen);
-            Serial.print("-----> ");
-            allocateNewBufferAndDeleteOld(&m_DataToRead,LMIC.dataLen);
-            memcpy(m_DataToRead,&LMIC.frame[LMIC.dataBeg],LMIC.dataLen);
-            m_DataToReadSize = LMIC.dataLen;
-            for (int i = 0; i < LMIC.dataLen; i++)
-            {
-                Serial.print(LMIC.frame[LMIC.dataBeg + i], HEX);
-            }
-            Serial.println(F(" bytes of payload"));
+          sprintf(singleBuf, "%0X%s", LMIC.frame[LMIC.dataBeg + i], (i != LMIC.dataLen - 1) ? " " : "");
+          strcat(strBuf, singleBuf);
         }
-        // Schedule next transmission
-        os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), do_send);
-        break;
+        TR_PRINTF(trPort, DbgTrace_Level::debug, "-----> %s", strBuf);
+      }
+      // Schedule next transmission
+      os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL),
+          do_send);
+      break;
     case EV_LOST_TSYNC:
-        Serial.println(F("EV_LOST_TSYNC"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_LOST_TSYNC");
+      break;
     case EV_RESET:
-        Serial.println(F("EV_RESET"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_RESET");
+      break;
     case EV_RXCOMPLETE:
-        // data received in ping slot
-        Serial.println(F("EV_RXCOMPLETE"));
-        break;
+      // data received in ping slot
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_RXCOMPLETE");
+      break;
     case EV_LINK_DEAD:
-        Serial.println(F("EV_LINK_DEAD"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_LINK_DEAD");
+      break;
     case EV_LINK_ALIVE:
-        Serial.println(F("EV_LINK_ALIVE"));
-        break;
-    /*
-        || This event is defined but not used in the code. No
-        || point in wasting codespace on it.
-        ||
-        || case EV_SCAN_FOUND:
-        ||    Serial.println(F("EV_SCAN_FOUND"));
-        ||    break;
-        */
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_LINK_ALIVE");
+      break;
+      /*
+       || This event is defined but not used in the code. No
+       || point in wasting codespace on it.
+       ||
+       || case EV_SCAN_FOUND:
+       ||    Serial.println(F("EV_SCAN_FOUND"));
+       ||    break;
+       */
     case EV_TXSTART:
-        Serial.println(F("EV_TXSTART"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_TXSTART");
+      break;
     default:
-        Serial.print(F("Unknown event: "));
-        Serial.println((unsigned)ev);
-        break;
-    }
+      TR_PRINTF(trPort, DbgTrace_Level::debug, "Unknown event: %u", (unsigned int) ev);
+      break;
+  }
+
+  TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWan onEvent() end.");
 }
 
 void configuration()
