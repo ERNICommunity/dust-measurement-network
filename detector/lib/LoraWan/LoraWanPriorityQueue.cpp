@@ -137,6 +137,7 @@ void LoraWanPriorityQueue::setNextLoraSentMessage(const TypeOfMessage& a_NextMes
             data = &(*m_BufferHighPrio)[0];
             for(int i=0;i<sizeOfData;i++)
             {
+//              #TODO nid: replace by TR_PRINTF
                 Serial.print((int)data[i]);
                 Serial.print(" ");
             }

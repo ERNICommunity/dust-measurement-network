@@ -338,6 +338,7 @@ void LoraWanAbp::setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
 {
   if (a_SizeOfData > 0)
   {
+    // #TODO: add TR_PRINTF debug to show TX data packet
     allocateNewBufferAndDeleteOld(&m_DataToSend, a_SizeOfData);
     memcpy(m_DataToSend, a_Data, sizeof(uint8_t) * (int) a_SizeOfData);
     m_DataToSendSize = a_SizeOfData;
