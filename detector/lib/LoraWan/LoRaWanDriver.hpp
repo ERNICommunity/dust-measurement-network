@@ -25,7 +25,7 @@ class LoRaWanDriver
 
     virtual void configure(bool isForced = false) = 0;
 
-    void setIsSingleCHannel(bool isSignlechannel = true);
+    void setIsSingleChannel(bool isSingleChannel = true);
     bool getIsSinglechannel();
 
     DbgCli_Topic* getCliTopic() { return m_dbgCliTopic; }

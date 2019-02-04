@@ -11,7 +11,7 @@ LoRaWanDriver* LoRaWanDriver::s_loRaWanDriver = 0;
 
 LoRaWanDriver::LoRaWanDriver(ILoraWanConfigAdapter* loraWanConfigAdapter /*= 0*/)
 : m_loraWanConfigAdapter(loraWanConfigAdapter)
-, m_trPort(new DbgTrace_Port("lora", DbgTrace_Level::debug))
+, m_trPort(new DbgTrace_Port("lora", DbgTrace_Level::notice))
 , m_dbgCliTopic(new DbgCli_Topic(DbgCli_Node::RootNode(), "lora", "LoRaWan Driver."))
 , m_dbgCliLoRaCfg(new LoRaWanDbgCmd_Configure(this))
 , m_dbgCliSingleChannel(new LoRaWanDbgCmd_SingleChannel(this))
@@ -23,9 +23,9 @@ LoRaWanDriver::LoRaWanDriver(ILoraWanConfigAdapter* loraWanConfigAdapter /*= 0*/
 LoRaWanDriver::~LoRaWanDriver()
 { }
 
-void LoRaWanDriver::setIsSingleCHannel(bool isSignlechannel /*= true*/)
+void LoRaWanDriver::setIsSingleChannel(bool isSingleChannel /*= true*/)
 {
-  m_isSingleChannel = isSignlechannel;
+  m_isSingleChannel = isSingleChannel;
 }
 
 bool LoRaWanDriver::getIsSinglechannel()

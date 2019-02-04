@@ -71,7 +71,7 @@ void LoRaWanDbgCmd_SingleChannel::execute(unsigned int argc, const char** args, 
       if (m_loRaWanDriver->getIsSinglechannel() != isSingleChannel)
       {
         TR_PRINTF(m_loRaWanDriver->trPort(), DbgTrace_Level::alert, "The single channel mode has changed, applying configuration to LoRaWan driver.");
-        m_loRaWanDriver->setIsSingleCHannel(isSingleChannel);
+        m_loRaWanDriver->setIsSingleChannel(isSingleChannel);
         m_loRaWanDriver->configure(true);
       }
     }

@@ -119,7 +119,7 @@ void onEvent(ev_t ev)
         TR_PRINT_STR(trPort, DbgTrace_Level::debug, "Received ack");
       if (LMIC.dataLen > 0)
       {
-        TR_PRINTF(trPort, DbgTrace_Level::debug, "Received %d bytes", LMIC.dataLen);
+        TR_PRINTF(trPort, DbgTrace_Level::notice, "Received %d bytes", LMIC.dataLen);
         allocateNewBufferAndDeleteOld(&m_DataToRead, LMIC.dataLen);
         memcpy(m_DataToRead, &LMIC.frame[LMIC.dataBeg], LMIC.dataLen);
         m_DataToReadSize = LMIC.dataLen;
@@ -127,12 +127,12 @@ void onEvent(ev_t ev)
         char singleBuf[5];
         char strBuf[3*LMIC.dataLen];
         strcpy(strBuf, "");
-        for (unsigned int i = 0; i < LMIC.dataLen; i++)
+        for (int i = 0; i < LMIC.dataLen; i++)
         {
           sprintf(singleBuf, "%0X%s", LMIC.frame[LMIC.dataBeg + i], (i != LMIC.dataLen - 1) ? " " : "");
           strcat(strBuf, singleBuf);
         }
-        TR_PRINTF(trPort, DbgTrace_Level::debug, "-----> %s", strBuf);
+        TR_PRINTF(trPort, DbgTrace_Level::notice, "-----> %s", strBuf);
       }
       // Schedule next transmission
       os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL),
@@ -179,7 +179,7 @@ void configuration()
   ILoraWanConfigAdapter* configAdapter = loRaWanDriver->loraWanConfigAdapter();
   DbgTrace_Port* trPort = loRaWanDriver->trPort();
 
-  TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWan configuration() start.");
+  TR_PRINTF(trPort, DbgTrace_Level::info, "LoRaWan configuration() start.");
 
 #ifdef VCC_ENABLE
     // For Pinoccio Scout boards
@@ -213,7 +213,7 @@ void configuration()
         strcat(strBuf, singleBuf);
       }
 
-      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): AppSKey: %s", strBuf);
+      TR_PRINTF(trPort, DbgTrace_Level::info, "LoRaWanAbp configuration(): AppSKey: %s", strBuf);
 
       strcpy(strBuf, "");
       for (unsigned int i = 0; i < sizeof(nwkSKey); i++)
@@ -221,9 +221,9 @@ void configuration()
         sprintf(singleBuf, "{0x%0X}%s", nwkSKey[i], (i != sizeof(nwkSKey) - 1) ? ", " : "");
         strcat(strBuf, singleBuf);
       }
-      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): NwkSKey: %s", strBuf);
+      TR_PRINTF(trPort, DbgTrace_Level::info, "LoRaWanAbp configuration(): NwkSKey: %s", strBuf);
 
-      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): DEVADDR: 0x%X", configAdapter->getDevAddr());
+      TR_PRINTF(trPort, DbgTrace_Level::info, "LoRaWanAbp configuration(): DEVADDR: 0x%X", configAdapter->getDevAddr());
 
       LMIC_setSession(0x13, configAdapter->getDevAddr(), nwkSKey, appSKey);
     }
@@ -272,7 +272,7 @@ void configuration()
     // Start job
     do_send(&sendjob);
 
-    TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWan configuration() done.");
+    TR_PRINTF(trPort, DbgTrace_Level::info, "LoRaWan configuration() done.");
 }
 
 void loop_once()
@@ -336,20 +336,22 @@ uint64_t LoraWanAbp::readData(uint8_t* const a_Data, uint64_t a_MaxSizeOfBuffer)
 
 void LoraWanAbp::setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
 {
-    if(a_SizeOfData>0)
+  if (a_SizeOfData > 0)
+  {
+    allocateNewBufferAndDeleteOld(&m_DataToSend, a_SizeOfData);
+    memcpy(m_DataToSend, a_Data, sizeof(uint8_t) * (int) a_SizeOfData);
+    m_DataToSendSize = a_SizeOfData;
+    m_CounterPeriodicMessage = 0;
+    if (!m_ConnectionIsConfigured)
     {
-        allocateNewBufferAndDeleteOld(&m_DataToSend,a_SizeOfData);
-        memcpy(m_DataToSend,a_Data, sizeof(uint8_t)*(int)a_SizeOfData);
-        m_DataToSendSize = a_SizeOfData;
-        m_CounterPeriodicMessage = 0;
-        if(!m_ConnectionIsConfigured)
-        {
-            configure();
-        }
+      configure();
     }
-    else{
-        //TODO SEND EXCEPTION
-    }
+  }
+  else
+  {
+    TR_PRINTF(trPort(), DbgTrace_Level::error, "ERR: setPeriodicMessageData(): no data to send");
+    //TODO SEND EXCEPTION
+  }
 }
 
 void LoraWanAbp::loopOnce()
