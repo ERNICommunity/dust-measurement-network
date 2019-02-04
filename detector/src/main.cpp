@@ -97,6 +97,10 @@ void setup()
   // LoRaWan
   //-----------------------------------------------------------------------------
   m_LoraWanInterface = new LoraWanAbp(new MyLoRaWanConfigAdapter(assets));
+
+  // #TODO nid: remove this again (this is just used when working with single channel gateway)
+  m_LoraWanInterface->setIsSingleChannel(true);
+
   m_LoraWanPriorityQueue = new LoraWanPriorityQueue(m_LoraWanInterface);
   m_MeasurementFacade = new MeasurementFacade(m_LoraWanPriorityQueue);
   m_SystemStatusFacade = new SystemStatusFacade(m_LoraWanPriorityQueue);
