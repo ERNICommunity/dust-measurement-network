@@ -5,11 +5,11 @@
  *      Author: nid
  */
 #include <Arduino.h>
-#include <LoRaWanDriver.hpp>
 #include <LoRaWanDbgCmd.h>
 #include <DbgCliTopic.h>
 #include <DbgTracePort.h>
 #include <DbgTraceLevel.h>
+#include <LoRaWanDriver.h>
 
 LoRaWanDbgCmd_Configure::LoRaWanDbgCmd_Configure(LoRaWanDriver* loRaWanDriver)
 : DbgCli_Command(loRaWanDriver->getCliTopic(), "cfg", "Configure the LoRaWan Driver.")

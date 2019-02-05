@@ -5,7 +5,7 @@
 #include <DbgCliTopic.h>
 #include <ILoraWanConfigAdapter.h>
 #include <LoRaWanDbgCmd.h>
-#include <LoRaWanDriver.hpp>
+#include <LoRaWanDriver.h>
 
 LoRaWanDriver* LoRaWanDriver::s_loRaWanDriver = 0;
 

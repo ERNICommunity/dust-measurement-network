@@ -5,8 +5,8 @@
 //#include <SerialCommand.h>
 #include <DbgTracePort.h>
 #include <DbgTraceLevel.h>
-#include <LoRaWanDriver.hpp>
-#include <LoraWanPriorityQueue.hpp>
+#include <LoraWanPriorityQueue.h>
+#include <LoRaWanDriver.h>
 
 
 LoraWanPriorityQueue::LoraWanPriorityQueue(LoRaWanDriver* a_LoraWandInterface)

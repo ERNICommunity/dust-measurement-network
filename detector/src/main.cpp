@@ -37,10 +37,10 @@
 #include <MyPM_ProcessAdapter.h>
 #include <DHT_Process.h>
 #include <MyDHT_ProcessAdapter.h>
-#include <LoraWanAbp.hpp>
-#include <LoRaWanDriver.hpp>
+#include <LoraWanAbp.h>
+#include <LoRaWanDriver.h>
 #include <MyLoRaWanConfigAdapter.h>
-#include <LoraWanPriorityQueue.hpp>
+#include <LoraWanPriorityQueue.h>
 #include <MeasurementFacade.hpp>
 #include <SystemStatusFacade.hpp>
 #include <pb_encode.h>
