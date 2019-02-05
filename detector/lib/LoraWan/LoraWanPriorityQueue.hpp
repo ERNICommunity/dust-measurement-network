@@ -1,8 +1,12 @@
 #ifndef _LoraWan_LoraWanPriorityQueue_h_
 #define _LoraWan_LoraWanPriorityQueue_h_
+#undef max
+#undef min
 #include <inttypes.h>
-#include <LoRaWanDriver.hpp>
 #include <vector>
+
+class LoRaWanDriver;
+
 class LoraWanPriorityQueue
 {
   public:
