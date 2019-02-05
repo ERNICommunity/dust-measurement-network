@@ -2,7 +2,7 @@
 #ifndef _LoraDataHandler_SystemStatusFacade_h_
 #define _LoraDataHandler_SystemStatusFacade_h_
 #include <inttypes.h>
-#include "LoraWanDataHandler.hpp"
+#include <LoraWanDataHandler.h>
 #include "../Protobuf/batteryState.pb.h"
 #include <map>
 class SystemStatusFacade : LoraWanDataHandler

@@ -1,4 +1,4 @@
-#include "LoraWanDataHandler.hpp"
+#include <LoraWanDataHandler.h>
 #include "../Protobuf/dustMeasurement.pb.h"
 #include <SerialCommand.h>
 

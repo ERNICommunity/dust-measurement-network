@@ -41,8 +41,8 @@
 #include <LoRaWanDriver.h>
 #include <MyLoRaWanConfigAdapter.h>
 #include <LoraWanPriorityQueue.h>
-#include <MeasurementFacade.hpp>
-#include <SystemStatusFacade.hpp>
+#include <MeasurementFacade.h>
+#include <SystemStatusFacade.h>
 #include <pb_encode.h>
 #include <pb_decode.h>
 #include <SerialCommand.h>

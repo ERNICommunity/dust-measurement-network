@@ -1,7 +1,7 @@
-#include "SystemStatusFacade.hpp"
 #include <pb_encode.h>
 #include <inttypes.h>
 #include <SerialCommand.h>
+#include <SystemStatusFacade.h>
 
 #include "../Protobuf/nodeStatus.pb.h"
 SystemStatusFacade::SystemStatusFacade(LoraWanPriorityQueue* a_LoraWanInterface):

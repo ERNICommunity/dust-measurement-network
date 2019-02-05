@@ -1,7 +1,7 @@
 #ifndef _LoraDataHandler_MeasurementFacade_h_
 #define _LoraDataHandler_MeasurementFacade_h_
 #include <inttypes.h>
-#include "LoraWanDataHandler.hpp"
+#include <LoraWanDataHandler.h>
 
 class MeasurementFacade : LoraWanDataHandler
 {
