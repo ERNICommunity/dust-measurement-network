@@ -1,52 +1,29 @@
 #include <stdint.h>
 #include <DbgTracePort.h>
 #include <DbgTraceLevel.h>
-//#include <DbgCliCommand.h>
 #include <DbgCliTopic.h>
 #include <ILoraWanConfigAdapter.h>
+#include <ILoraWanRxDataEventAdapter.h>
 #include <LoRaWanDbgCmd.h>
 #include <LoRaWanDriver.h>
 
 LoRaWanDriver* LoRaWanDriver::s_loRaWanDriver = 0;
-//extern const lmic_pinmap lmic_pins;
-//lmic_pinmap* LoRaWanDriver::s_lmicPinmap = *(const_cast<lmic_pinmap>(lmic_pins));
 
-LoRaWanDriver::LoRaWanDriver(ILoraWanConfigAdapter* loraWanConfigAdapter /*= 0*/,
-    LoRaWanDriver::LwdLmicPinMapSelection lmicPinMapSelection /* = LLPMS_AdafruitFeatherM0*/)
+LoRaWanDriver::LoRaWanDriver(ILoraWanConfigAdapter* loraWanConfigAdapter /*= 0*/, ILoraWanRxDataEventAdapter* loraWanRxDataEventAdapter /*= 0*/)
 : m_loraWanConfigAdapter(loraWanConfigAdapter)
+, m_loraWanRxDataEventAdapter(loraWanRxDataEventAdapter)
 , m_trPort(new DbgTrace_Port("lora", DbgTrace_Level::notice))
 , m_dbgCliTopic(new DbgCli_Topic(DbgCli_Node::RootNode(), "lora", "LoRaWan Driver."))
 , m_dbgCliLoRaCfg(new LoRaWanDbgCmd_Configure(this))
 , m_dbgCliSingleChannel(new LoRaWanDbgCmd_SingleChannel(this))
 , m_isSingleChannel(false)
 {
-//  switch (lmicPinMapSelection)
-//  {
-//    case LLPMS_AdafruitFeather32u4:
-//      s_lmicPinmap = new LmicPinMap_AdafruitFeather32u4();
-//      break;
-//    case LLPMS_DraginoLoRaShield:
-//      s_lmicPinmap = new LmicPinMap_DraginoShield();
-//      break;
-//
-//    case LLPMS_AdafruitFeatherM0:
-//    default:
-//      s_lmicPinmap = new LmicPinMap_AdafruitFeatherM0();
-//      break;
-//  }
-//  (const_cast<lmic_pinmap>(lmic_pins)).nss   = s_lmicPinmap->nss;
-//  lmic_pins.rxtx  = s_lmicPinmap->rxtx;
-//  lmic_pins.rst   = s_lmicPinmap->rst;
-//  os_init_ex(s_lmicPinmap);
   s_loRaWanDriver = this;
 }
 
 LoRaWanDriver::~LoRaWanDriver()
 {
   s_loRaWanDriver = 0;
-
-//  delete s_lmicPinmap;
-//  s_lmicPinmap = 0;
 }
 
 void LoRaWanDriver::setIsSingleChannel(bool isSingleChannel /*= true*/)
@@ -67,6 +44,16 @@ void LoRaWanDriver::setLoraWanConfigAdapter(ILoraWanConfigAdapter* loraWanConfig
 ILoraWanConfigAdapter* LoRaWanDriver::loraWanConfigAdapter()
 {
   return m_loraWanConfigAdapter;
+}
+
+void LoRaWanDriver::setLoraWanRxDataEventAdapter(ILoraWanRxDataEventAdapter* loraWanRxDataEventAdapter)
+{
+  m_loraWanRxDataEventAdapter = loraWanRxDataEventAdapter;
+}
+
+ILoraWanRxDataEventAdapter* LoRaWanDriver::loraWanRxDataEventAdapter()
+{
+  return m_loraWanRxDataEventAdapter;
 }
 
 DbgTrace_Port* LoRaWanDriver::trPort()

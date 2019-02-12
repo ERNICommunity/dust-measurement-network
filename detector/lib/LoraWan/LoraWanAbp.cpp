@@ -8,21 +8,10 @@
 #include <configuration.h>
 #include <ILoraWanConfigAdapter.h>
 
-#include <hal/hal.h>
+#include <ILoraWanRxDataEventAdapter.h>
 
 #include <DbgTracePort.h>
 #include <DbgTraceLevel.h>
-
-// Pin mapping
-// Adapted for Feather M0 per p.10 of [feather]
-const lmic_pinmap lmic_pins = {
-    .nss = 8,                       // chip select on feather (rf95module) CS
-    .rxtx = LMIC_UNUSED_PIN,
-    .rst = 4,                       // reset pin
-    .dio = {6, 3, LMIC_UNUSED_PIN}, // assumes external jumpers [feather_lora_jumper]
-                                    // DIO1 is on JP1-1: is io1 - we connect to GPO6
-                                    // DIO1 is on JP5-3: is D2 - we connect to GPO5
-};
 
 
 // These callbacks are only used in over-the-air activation, so they are
@@ -44,36 +33,38 @@ static osjob_t sendjob;
 
 void allocateNewBufferAndDeleteOld(uint8_t** a_Buffer, uint64_t a_Length)
 {
-    if (a_Buffer != 0) {
-        *a_Buffer = (uint8_t*) realloc(*a_Buffer, a_Length * sizeof(uint8_t));
-    }
-    else{
-        *a_Buffer = (uint8_t*) malloc((int)a_Length * sizeof(uint8_t));
-    } 
-    
+  if (a_Buffer != 0)
+  {
+    *a_Buffer = (uint8_t*) realloc(*a_Buffer, a_Length * sizeof(uint8_t));
+  }
+  else
+  {
+    *a_Buffer = (uint8_t*) malloc((int) a_Length * sizeof(uint8_t));
+  }
 }
 
 void do_send(osjob_t* j)
 {
-    // Check if there is not a current TX/RX job running
-    if (LMIC.opmode & OP_TXRXPEND)
+  // Check if there is not a current TX/RX job running
+  if (LMIC.opmode & OP_TXRXPEND)
+  {
+    Serial.println(F("OP_TXRXPEND, not sending"));
+  }
+  else
+  {
+    if (m_DataToSendSize > 0)
     {
-        Serial.println(F("OP_TXRXPEND, not sending"));
+      // Prepare upstream data transmission at the next possible time.
+      LMIC_setTxData2(1, (xref2u1_t) m_DataToSend, sizeof(uint8_t) * (m_DataToSendSize), 0);
     }
-    else
-    {
-        if(m_DataToSendSize>0)
-        {
-          // Prepare upstream data transmission at the next possible time.
-          LMIC_setTxData2(1, (xref2u1_t)m_DataToSend, sizeof(uint8_t)*(m_DataToSendSize), 0);
-        }
-    }
-    // Next TX is scheduled after TX_COMPLETE event.
+  }
+  // Next TX is scheduled after TX_COMPLETE event.
 }
 
 void onEvent(ev_t ev)
 {
   LoRaWanDriver* loRaWanDriver = LoRaWanDriver::getLoRaWanDriver();
+  ILoraWanRxDataEventAdapter* loRaWanRxDataEventAdapter = loRaWanDriver->loraWanRxDataEventAdapter();
   DbgTrace_Port* trPort = loRaWanDriver->trPort();
 
   TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWan onEvent() start (os_getTime() [hal ticks]: %d).", os_getTime());
@@ -133,6 +124,10 @@ void onEvent(ev_t ev)
           strcat(strBuf, singleBuf);
         }
         TR_PRINTF(trPort, DbgTrace_Level::notice, "-----> %s", strBuf);
+        if (loRaWanRxDataEventAdapter != 0)
+        {
+          loRaWanRxDataEventAdapter->messageReceived(m_DataToRead, m_DataToReadSize);
+        }
       }
       // Schedule next transmission
       os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL),
@@ -320,18 +315,19 @@ bool LoraWanAbp::isReadyToRead()
 
 uint64_t LoraWanAbp::readData(uint8_t* const a_Data, uint64_t a_MaxSizeOfBuffer)
 {
-    uint64_t bufferSize = a_MaxSizeOfBuffer;
-    if(bufferSize>m_DataToReadSize)
-    {
-        bufferSize = m_DataToReadSize;
-    }
-    else{
-        //TODO throw Exception Data buffer is too small for Data
-    }
-    memcpy(a_Data, m_DataToRead, bufferSize);
-    m_DataToRead = (uint8_t*) realloc(m_DataToRead, m_DataToReadSize * sizeof(uint8_t));
-    m_DataToReadSize=0;
-    return bufferSize;
+  uint64_t bufferSize = a_MaxSizeOfBuffer;
+  if (bufferSize > m_DataToReadSize)
+  {
+    bufferSize = m_DataToReadSize;
+  }
+  else
+  {
+    //TODO throw Exception Data buffer is too small for Data
+  }
+  memcpy(a_Data, m_DataToRead, bufferSize);
+  m_DataToRead = (uint8_t*) realloc(m_DataToRead, m_DataToReadSize * sizeof(uint8_t));
+  m_DataToReadSize = 0;
+  return bufferSize;
 }
 
 void LoraWanAbp::setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
@@ -357,10 +353,10 @@ void LoraWanAbp::setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
 
 void LoraWanAbp::loopOnce()
 {
-    loop_once();
+  loop_once();
 }
 
 uint64_t LoraWanAbp::getSentCounterPeriodicMessage()
 {
-    return m_CounterPeriodicMessage;
+  return m_CounterPeriodicMessage;
 }

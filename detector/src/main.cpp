@@ -38,7 +38,6 @@
 #include <DHT_Process.h>
 #include <MyDHT_ProcessAdapter.h>
 #include <LoraWanAbp.h>
-#include <LoRaWanDriver.h>
 #include <MyLoRaWanConfigAdapter.h>
 #include <LoraWanPriorityQueue.h>
 #include <MeasurementFacade.h>
@@ -47,9 +46,24 @@
 #include <pb_decode.h>
 #include <SerialCommand.h>
 
+#include <LoRaWanDriver.h>
+LoRaWanDriver* m_LoraWanInterface;
+
+// Pin mapping
+#if defined (ARDUINO_ARCH_SAMD) && defined (__SAMD21G18A__)   // Adafruit Feather M0
+const lmic_pinmap lmic_pins = LmicPinMap_AdafruitFeatherM0();
+#elif defined (__arm__) && defined (__SAM3X8E__)              // Arduino Due => Dragino Shield
+const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
+#elif defined (__avr__)                                       // Arduino Uno or Mega 2560 => Dragino Shield
+const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
+#else                                                         // Adafruit Feather 32u4
+const lmic_pinmap lmic_pins = LmicPinMap_AdafruitFeather32u4;
+#endif
+
 /* This is the buffer where we will store our message. */
 bool setMessageOnce = true;
-LoRaWanDriver* m_LoraWanInterface;
+
+
 LoraWanPriorityQueue* m_LoraWanPriorityQueue;
 MeasurementFacade* m_MeasurementFacade;
 SystemStatusFacade* m_SystemStatusFacade;
