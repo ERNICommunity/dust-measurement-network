@@ -27,6 +27,7 @@ The project is developed in [Visual Studio Code](https://code.visualstudio.com/)
 Few usefull VS Code extensions:
 - C# by Microsoft (mandatory for running/debugging .NET code)
 - Angular Language Service by Angular
+- TSlint by Microsoft
 - EditorConfig for VS Code by EditorConfig
 - vscode-icons by Roberto Huertas
 
