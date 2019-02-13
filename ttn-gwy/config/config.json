@@ -1,0 +1,42 @@
+{
+    "hosts": {
+        "mqtt" : {
+            "id": "wewe",
+            "username": "michu",
+            "password": "asdas",
+            "brokers": ["www.broker.ch"]
+        },
+        "timeSeries":{
+            "database":{
+                "address":     "104.40.196.109",
+                "port": 8086,
+		        "username": "admin",
+                "password": "hnh2018s",
+                "enable": true
+            },
+            "logFile":{
+                "path":"",
+                "enable":true,
+                "maxSizeByte":0
+            }
+
+        }
+    },
+    "clients": [
+        {
+            "id": 2,
+            "place": "kitchen",
+            "url": "https://www.srf.ch/"
+        },
+        {
+            "id": 3,
+            "place": "toilet",
+            "url": "https://www.srf.ch/"
+        },
+        {
+            "id": 1,
+            "place": "Kitchen",
+            "url": "https://www.google.ch"
+        }
+    ]
+}

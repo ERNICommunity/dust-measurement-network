@@ -10,10 +10,8 @@ import (
 	"time"
 
 	"./protobuf"
-	"github.com/TheThingsNetwork/go-utils/log"
-	"github.com/TheThingsNetwork/go-utils/log/apex"
+	"./ttnconnector"
 	"github.com/TheThingsNetwork/ttn/core/types"
-	"github.com/TheThingsNetwork/ttn/mqtt"
 	"github.com/gogo/protobuf/proto"
 	"github.com/influxdata/influxdb/client/v2"
 )
@@ -230,31 +228,16 @@ func decodeNodeState(appID string,
 }
 
 func main() {
-	ctx := apex.Stdout().WithField("Example", "Go Client")
-	log.Set(ctx)
+	var mqttConfig ttnconnector.MqttClientConfiguration
+	mqttConfig.Id = "ttnctl"
+	mqttConfig.UserName = "erni-dmn"
+	mqttConfig.Password = "ttn-account-v2.qcc_E-maVc_P1uFLeP4KRgBBaE3EF3-Or6u9BU6STac"
+	mqttConfig.Brokers = "eu.thethings.network:1883"
+	ttnMessages, error := ttnconnector.Subscribe(mqttConfig, "erni-dmn")
 
-	client := mqtt.NewClient(ctx, "ttnctl", "erni-hello-world", "ttn-account-v2.bWBs5y8lsFgMuZC9zG01vd_faBksM0acxkxrpzm7zwg", "eu.thethings.network:1883")
-	if err := client.Connect(); err != nil {
-		ctx.WithError(err).Fatal("Could not connect")
+	if error != nil {
+		fmt.Println(error)
 	}
-
-	influxClient, err := initializeInfluxConnection()
-
-	file, err := os.Create("output.txt")
-	checkError(err)
-	//defer file.Close()
-
-	token := client.SubscribeAppUplink("erni-hello-world", func(client mqtt.Client, appID string, devID string, req types.UplinkMessage) {
-		fmt.Println("------Received - UPLINK ------")
-		go decodeNodeState(appID, devID, req, file,
-			influxClient)
-	})
-	token.Wait()
-
-	if err := token.Error(); err != nil {
-		ctx.WithError(err).Fatal("Could not subscribe")
-	}
-
-	runtime.Goexit()
-
+	val := <-ttnMessages // read from a channel
+	fmt.Println(val.ApplicationID)
 }
