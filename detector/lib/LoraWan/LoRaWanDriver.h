@@ -67,7 +67,9 @@ struct LmicPinMap_AdafruitFeather32u4 : public lmic_pinmap
 class LoRaWanDriver
 {
 public:
-  LoRaWanDriver(ILoraWanConfigAdapter* loraWanConfigAdapter = 0, ILoraWanRxDataEventAdapter* loraWanRxDataEventAdapter = 0);
+  LoRaWanDriver(ILoraWanConfigAdapter* loraWanConfigAdapter = 0,
+                ILoraWanRxDataEventAdapter* loraWanRxDataEventAdapter = 0,
+                unsigned int txInterval = s_defaultTxInterval);
   virtual ~LoRaWanDriver();
   virtual void setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData);
   virtual uint64_t getSentCounterPeriodicMessage();
@@ -84,6 +86,8 @@ public:
   void setIsSingleChannel(bool isSingleChannel = true);
   bool getIsSinglechannel();
 
+  unsigned int getTxInterval();
+
   DbgCli_Topic* getCliTopic() { return m_dbgCliTopic; }
   DbgTrace_Port* trPort();
   static LoRaWanDriver* getLoRaWanDriver();
@@ -96,7 +100,9 @@ private:
   LoRaWanDbgCmd_Configure* m_dbgCliLoRaCfg;
   LoRaWanDbgCmd_SingleChannel* m_dbgCliSingleChannel;
   bool m_isSingleChannel;
+  unsigned int m_txInterval;                                  /// LoRaWan transmit interval [s]
   static LoRaWanDriver* s_loRaWanDriver;
+  const static unsigned int s_defaultTxInterval;
 
 private: // forbidden default functions
   LoRaWanDriver& operator = (const LoRaWanDriver& src); // assignment operator

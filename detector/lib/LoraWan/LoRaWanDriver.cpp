@@ -8,8 +8,11 @@
 #include <LoRaWanDriver.h>
 
 LoRaWanDriver* LoRaWanDriver::s_loRaWanDriver = 0;
+const unsigned int LoRaWanDriver::s_defaultTxInterval = 15;
 
-LoRaWanDriver::LoRaWanDriver(ILoraWanConfigAdapter* loraWanConfigAdapter /*= 0*/, ILoraWanRxDataEventAdapter* loraWanRxDataEventAdapter /*= 0*/)
+LoRaWanDriver::LoRaWanDriver(ILoraWanConfigAdapter* loraWanConfigAdapter /*= 0*/,
+                             ILoraWanRxDataEventAdapter* loraWanRxDataEventAdapter /*= 0*/,
+                             unsigned int txInterval /*= s_defaultTxInterval*/)
 : m_loraWanConfigAdapter(loraWanConfigAdapter)
 , m_loraWanRxDataEventAdapter(loraWanRxDataEventAdapter)
 , m_trPort(new DbgTrace_Port("lora", DbgTrace_Level::notice))
@@ -17,6 +20,7 @@ LoRaWanDriver::LoRaWanDriver(ILoraWanConfigAdapter* loraWanConfigAdapter /*= 0*/
 , m_dbgCliLoRaCfg(new LoRaWanDbgCmd_Configure(this))
 , m_dbgCliSingleChannel(new LoRaWanDbgCmd_SingleChannel(this))
 , m_isSingleChannel(false)
+, m_txInterval(txInterval)
 {
   s_loRaWanDriver = this;
 }
@@ -34,6 +38,11 @@ void LoRaWanDriver::setIsSingleChannel(bool isSingleChannel /*= true*/)
 bool LoRaWanDriver::getIsSinglechannel()
 {
   return m_isSingleChannel;
+}
+
+unsigned int LoRaWanDriver::getTxInterval()
+{
+  return m_txInterval;
 }
 
 void LoRaWanDriver::setLoraWanConfigAdapter(ILoraWanConfigAdapter* loraWanConfigAdapter)

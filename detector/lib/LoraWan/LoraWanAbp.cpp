@@ -5,7 +5,6 @@
 #include <lmic.h>
 
 #include <SPI.h>
-#include <configuration.h>
 #include <ILoraWanConfigAdapter.h>
 
 #include <ILoraWanRxDataEventAdapter.h>
@@ -130,7 +129,7 @@ void onEvent(ev_t ev)
         }
       }
       // Schedule next transmission
-      os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL),
+      os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(loRaWanDriver->getTxInterval()),
           do_send);
       break;
     case EV_LOST_TSYNC:
