@@ -129,8 +129,7 @@ void onEvent(ev_t ev)
         }
       }
       // Schedule next transmission
-      os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(loRaWanDriver->getTxInterval()),
-          do_send);
+      os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(loRaWanDriver->getTxInterval()), do_send);
       break;
     case EV_LOST_TSYNC:
       TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_LOST_TSYNC");
