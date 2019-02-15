@@ -5,8 +5,6 @@
  *      Author: niklaudi
  */
 
-//#include <Arduino.h>
-
 #include <DetectorFakePersDataMemory.h>
 
 const unsigned int DetectorFakePersDataMemory::s_numDevices  =  6;
