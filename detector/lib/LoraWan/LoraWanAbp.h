@@ -1,9 +1,7 @@
 #ifndef _LoraWan_LoraWanAbp_h_
 #define _LoraWan_LoraWanAbp_h_
 
-#include <Arduino.h>
 #include <ILoraWanConfigAdapter.h>
-
 #include <LoRaWanDriver.h>
 
 #ifdef __cplusplus

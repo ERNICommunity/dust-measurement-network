@@ -4,7 +4,6 @@
  *  Created on: 12.01.2019
  *      Author: nid
  */
-#include <Arduino.h>
 #include <LoRaWanDbgCmd.h>
 #include <DbgCliTopic.h>
 #include <DbgTracePort.h>

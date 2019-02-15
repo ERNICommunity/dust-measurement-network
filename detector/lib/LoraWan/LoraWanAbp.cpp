@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <LoraWanAbp.h>
 #undef max
 #undef min
