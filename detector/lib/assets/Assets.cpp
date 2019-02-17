@@ -69,6 +69,11 @@ IPersistentDataMemory* Assets::getPersistentDataMemory()
   return m_persistentDataMemory;
 }
 
+DbgTrace_Port* Assets::trPort()
+{
+  return m_trPort;
+}
+
 
 unsigned long int Assets::getDeviceSerialNr()
 {

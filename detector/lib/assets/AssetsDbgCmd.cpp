@@ -6,10 +6,11 @@
  */
 
 #include <stdlib.h>
-#include <Arduino.h>
 #include <Assets.h>
-#include <DbgCliTopic.h>
 #include <AssetsDbgCmd.h>
+#include <DbgCliTopic.h>
+#include <DbgTracePort.h>
+#include <DbgTraceLevel.h>
 #include <IAssetsDeviceSerialNrAdapter.h>
 #include <DetectorFakePersDataMemory.h>
 
@@ -23,7 +24,7 @@ AssetsDbgCmd_SetDeviceSerial::~AssetsDbgCmd_SetDeviceSerial()
 
 void AssetsDbgCmd_SetDeviceSerial::printUsage()
 {
-  Serial.println("dbg assets dvcser set - usage: <DeviceSerialNr>");
+  TR_PRINTF(m_assets->trPort(), DbgTrace_Level::alert, "dbg assets dvcser set - usage: <DeviceSerialNr>");
 }
 
 void AssetsDbgCmd_SetDeviceSerial::execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
@@ -53,7 +54,7 @@ AssetsDbgCmd_GetDeviceSerial::~AssetsDbgCmd_GetDeviceSerial()
 
 void AssetsDbgCmd_GetDeviceSerial::printUsage()
 {
-  Serial.println("dbg assets dvcser get - usage: - ");
+  TR_PRINTF(m_assets->trPort(), DbgTrace_Level::alert, "dbg assets dvcser get - usage: - ");
 }
 
 void AssetsDbgCmd_GetDeviceSerial::execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
@@ -66,14 +67,12 @@ void AssetsDbgCmd_GetDeviceSerial::execute(unsigned int argc, const char** args,
   {
     if (0 != m_assets)
     {
-      Serial.println("Assets - Device Serial Number:");
+      TR_PRINTF(m_assets->trPort(), DbgTrace_Level::alert, "Assets - Device Serial Number:");
       if (0 != m_assets->getDeviceSerialNrAdapter())
       {
-        Serial.print("- Provisioned Data (by Production): ");
-        Serial.println(m_assets->getDeviceSerialNrAdapter()->getDeviceSerialNr());
+        TR_PRINTF(m_assets->trPort(), DbgTrace_Level::alert, "- Provisioned Data (by Production): %d", m_assets->getDeviceSerialNrAdapter()->getDeviceSerialNr());
       }
-      Serial.print("- Current Data: ");
-      Serial.println(m_assets->getDeviceSerialNr());
+      TR_PRINTF(m_assets->trPort(), DbgTrace_Level::alert, "- Current Data: %d", m_assets->getDeviceSerialNr());
     }
   }
 }
@@ -90,7 +89,7 @@ AssetsDbgCmd_GetLoRaKeys::~AssetsDbgCmd_GetLoRaKeys()
 
 void AssetsDbgCmd_GetLoRaKeys::printUsage()
 {
-  Serial.println("dbg assets lorakeys get - usage: - ");
+  TR_PRINTF(m_assets->trPort(), DbgTrace_Level::alert, "dbg assets lorakeys get - usage: - ");
 }
 
 void AssetsDbgCmd_GetLoRaKeys::execute(unsigned int argc, const char** args, unsigned int idxToFirstArgToHandle)
@@ -103,30 +102,25 @@ void AssetsDbgCmd_GetLoRaKeys::execute(unsigned int argc, const char** args, uns
   {
     if (0 != m_assets)
     {
-      Serial.println("Assets - LoRa Keys:");
+      TR_PRINTF(m_assets->trPort(), DbgTrace_Level::alert, "Assets - LoRa Keys:");
       if (0 != m_assets->getPersistentDataMemory())
       {
         char printBuffer[DetectorFakePersDataMemory::s_numMaxChars+1];
-
         m_assets->getDeviceId(printBuffer, sizeof(printBuffer));
-        Serial.print("- Device Id:               ");
-        Serial.println(printBuffer);
+        TR_PRINTF(m_assets->trPort(), DbgTrace_Level::alert, "- Device Id:               %s", printBuffer);
 
         m_assets->getDevAddr(printBuffer, sizeof(printBuffer));
-        Serial.print("- Device Addr:             ");
-        Serial.println(printBuffer);
+        TR_PRINTF(m_assets->trPort(), DbgTrace_Level::alert, "- Device Addr:             %s", printBuffer);
 
         m_assets->getNwkSKey(printBuffer, sizeof(printBuffer));
-        Serial.print("- Network Session Key:     ");
-        Serial.println(printBuffer);
+        TR_PRINTF(m_assets->trPort(), DbgTrace_Level::alert, "- Network Session Key:     %s", printBuffer);
 
         m_assets->getAppSKey(printBuffer, sizeof(printBuffer));
-        Serial.print("- Application Session Key: ");
-        Serial.println(printBuffer);
+        TR_PRINTF(m_assets->trPort(), DbgTrace_Level::alert, "- Application Session Key: %s", printBuffer);
       }
       else
       {
-        Serial.println("Persistent Data Memory not accessible.");
+        TR_PRINTF(m_assets->trPort(), DbgTrace_Level::alert, "Persistent Data Memory not accessible.");
       }
     }
   }
