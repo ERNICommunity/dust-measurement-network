@@ -50,7 +50,8 @@
 LoRaWanDriver* m_LoraWanInterface;
 
 // Pin mapping
-#if defined (ARDUINO_ARCH_SAMD) && defined (__SAMD21G18A__)   // Adafruit Feather M0
+//#if defined (ARDUINO_ARCH_SAMD) && defined (__SAMD21G18A__)   // Adafruit Feather M0
+#if defined(ARDUINO_SAMD_FEATHER_M0)
 const lmic_pinmap lmic_pins = LmicPinMap_AdafruitFeatherM0();
 #elif defined (__arm__) && defined (__SAM3X8E__)              // Arduino Due => Dragino Shield
 const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();

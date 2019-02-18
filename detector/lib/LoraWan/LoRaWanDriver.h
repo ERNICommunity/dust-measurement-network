@@ -39,8 +39,8 @@ struct LmicPinMap_AdafruitFeatherM0 : public lmic_pinmap
     nss    = 8;                // chip select
     rxtx   = LMIC_UNUSED_PIN;  // rx/tx control
     rst    = 4;                // reset
-    dio[0] = 6;                // DIO0   (=> needs external jumoper!)
-    dio[1] = 3;                // DIO1
+    dio[0] = 3;                // DIO0
+    dio[1] = 6;                // DIO1    (=> needs external jumper!)
     dio[2] = LMIC_UNUSED_PIN;  // DIO2
   }
 };
