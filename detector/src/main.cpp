@@ -56,7 +56,6 @@ const lmic_pinmap lmic_pins = LmicPinMap_AdafruitFeatherM0();
 const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
 #elif defined (__avr__)                                       // Arduino Uno or Mega 2560 => Dragino Shield
 const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
-
 #endif
 
 LoraWanPriorityQueue* m_LoraWanPriorityQueue = 0;
