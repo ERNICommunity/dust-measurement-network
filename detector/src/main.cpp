@@ -47,27 +47,21 @@
 #include <SerialCommand.h>
 
 #include <LoRaWanDriver.h>
-LoRaWanDriver* m_LoraWanInterface;
+LoRaWanDriver* m_LoraWanInterface = 0;
 
 // Pin mapping
-//#if defined (ARDUINO_ARCH_SAMD) && defined (__SAMD21G18A__)   // Adafruit Feather M0
 #if defined(ARDUINO_SAMD_FEATHER_M0)
 const lmic_pinmap lmic_pins = LmicPinMap_AdafruitFeatherM0();
 #elif defined (__arm__) && defined (__SAM3X8E__)              // Arduino Due => Dragino Shield
 const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
 #elif defined (__avr__)                                       // Arduino Uno or Mega 2560 => Dragino Shield
 const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
-#else                                                         // Adafruit Feather 32u4
-const lmic_pinmap lmic_pins = LmicPinMap_AdafruitFeather32u4;
+
 #endif
 
-/* This is the buffer where we will store our message. */
-bool setMessageOnce = true;
-
-
-LoraWanPriorityQueue* m_LoraWanPriorityQueue;
-MeasurementFacade* m_MeasurementFacade;
-SystemStatusFacade* m_SystemStatusFacade;
+LoraWanPriorityQueue* m_LoraWanPriorityQueue = 0;
+MeasurementFacade* m_MeasurementFacade = 0;
+SystemStatusFacade* m_SystemStatusFacade = 0;
 
 #ifndef BUILTIN_LED
 #define BUILTIN_LED 13
