@@ -30,15 +30,16 @@ type MqttClientConfiguration struct {
 	Brokers  string
 }
 
-type ttnConnection struct {
+type TTNConnection struct {
 	mqttClient       MqttClientConfiguration
+	client           mqtt.Client
 	applicationID    string
 	receivedMessages chan TTNUplinkMessage
 }
 
-func (c *ttnConnection) handler(client mqtt.Client, appID string, devID string, req types.UplinkMessage) {
+func (c *TTNConnection) handler(client mqtt.Client, appID string, devID string, req types.UplinkMessage) {
 	var rx_message TTNUplinkMessage
-
+	fmt.Println("--- RECEIVED MESSAGE ---")
 	rx_message.ApplicationID = appID
 	rx_message.DeviceID = devID
 	rx_message.PayloadRaw = req.PayloadRaw
@@ -51,16 +52,16 @@ func (c *ttnConnection) handler(client mqtt.Client, appID string, devID string, 
 	c.receivedMessages <- rx_message
 }
 
-func (c *ttnConnection) uplinkHandler() error {
+func (c *TTNConnection) uplinkHandler() error {
 	fmt.Println("TRY TO CONNECT " + c.mqttClient.UserName)
-	mqttClient := mqtt.NewClient(nil, c.mqttClient.Id, c.mqttClient.UserName, c.mqttClient.Password, c.mqttClient.Brokers)
-	err := mqttClient.Connect()
+	c.client = mqtt.NewClient(nil, c.mqttClient.Id, c.mqttClient.UserName, c.mqttClient.Password, c.mqttClient.Brokers)
+	err := c.client.Connect()
 	if err != nil {
 
 		return errors.New("MQTT-Client: Could not connect")
 
 	}
-	token := mqttClient.SubscribeAppUplink(c.applicationID, c.handler)
+	token := c.client.SubscribeAppUplink(c.applicationID, c.handler)
 	token.Wait()
 	err = token.Error()
 	if err != nil {
@@ -68,12 +69,16 @@ func (c *ttnConnection) uplinkHandler() error {
 	}
 	return err
 }
-
-func Subscribe(mqttClientConfig MqttClientConfiguration, applicationID string) (<-chan TTNUplinkMessage, error) {
-	var connection ttnConnection
-	connection.mqttClient = mqttClientConfig
-	connection.applicationID = applicationID
-	connection.receivedMessages = make(chan TTNUplinkMessage)
-	err := connection.uplinkHandler()
-	return connection.receivedMessages, err
+func (r *TTNConnection) Unsubscribe() {
+	token := r.client.UnsubscribeAppUplink(r.applicationID)
+	token.Wait()
+	fmt.Println("TTN DISCONNECT")
+	r.client.Disconnect()
+}
+func (r *TTNConnection) Subscribe(mqttClientConfig MqttClientConfiguration, applicationID string) (<-chan TTNUplinkMessage, error) {
+	r.mqttClient = mqttClientConfig
+	r.applicationID = applicationID
+	r.receivedMessages = make(chan TTNUplinkMessage)
+	err := r.uplinkHandler()
+	return r.receivedMessages, err
 }

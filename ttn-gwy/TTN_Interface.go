@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"./decoder"
 	"./protobuf"
 	"./ttnconnector"
 	"github.com/TheThingsNetwork/ttn/core/types"
@@ -227,17 +228,33 @@ func decodeNodeState(appID string,
 	}
 }
 
+func test(decodedMessages decoder.ReceivedMessage, doneChannel chan bool) {
+	for val := range decodedMessages.BatteryStateData {
+		// read from a channel
+		fmt.Println(val)
+	}
+	doneChannel <- true
+}
 func main() {
 	var mqttConfig ttnconnector.MqttClientConfiguration
 	mqttConfig.Id = "ttnctl"
 	mqttConfig.UserName = "erni-dmn"
 	mqttConfig.Password = "ttn-account-v2.qcc_E-maVc_P1uFLeP4KRgBBaE3EF3-Or6u9BU6STac"
 	mqttConfig.Brokers = "eu.thethings.network:1883"
-	ttnMessages, error := ttnconnector.Subscribe(mqttConfig, "erni-dmn")
 
+	var ttnConnection ttnconnector.TTNConnection
+	ttnMessages, error := ttnConnection.Subscribe(mqttConfig, "erni-dmn")
+	doneChannel := make(chan bool)
+	defer ttnConnection.Unsubscribe()
 	if error != nil {
 		fmt.Println(error)
 	}
-	val := <-ttnMessages // read from a channel
-	fmt.Println(val.ApplicationID)
+	decodedMessages := decoder.Decode(ttnMessages)
+	go test(decodedMessages, doneChannel)
+	finish := <-doneChannel
+	if finish {
+		fmt.Println("FINISH ")
+	}
+
+	//runtime.Goexit()
 }
