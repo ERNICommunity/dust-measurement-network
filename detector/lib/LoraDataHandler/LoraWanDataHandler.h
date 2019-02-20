@@ -1,7 +1,7 @@
 #ifndef _LoraDataHandler_LoraWanDataHandler_h_
 #define _LoraDataHandler_LoraWanDataHandler_h_
 #include <inttypes.h>
-#include "../LoraWan/LoraWanPriorityQueue.hpp"
+#include <LoraWanPriorityQueue.h>
 #include "stdlib.h"
 #include <pb_encode.h>
 

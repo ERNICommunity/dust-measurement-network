@@ -1,28 +1,15 @@
-#include "LoraWanAbp.hpp"
-#include <Arduino.h>
+#include <LoraWanAbp.h>
 #undef max
 #undef min
 #include <lmic.h>
 
 #include <SPI.h>
-#include <configuration.h>
 #include <ILoraWanConfigAdapter.h>
 
-#include <hal/hal.h>
+#include <ILoraWanRxDataEventAdapter.h>
 
 #include <DbgTracePort.h>
 #include <DbgTraceLevel.h>
-
-// Pin mapping
-// Adapted for Feather M0 per p.10 of [feather]
-const lmic_pinmap lmic_pins = {
-    .nss = 8,                       // chip select on feather (rf95module) CS
-    .rxtx = LMIC_UNUSED_PIN,
-    .rst = 4,                       // reset pin
-    .dio = {6, 3, LMIC_UNUSED_PIN}, // assumes external jumpers [feather_lora_jumper]
-                                    // DIO1 is on JP1-1: is io1 - we connect to GPO6
-                                    // DIO1 is on JP5-3: is D2 - we connect to GPO5
-};
 
 
 // These callbacks are only used in over-the-air activation, so they are
@@ -44,125 +31,138 @@ static osjob_t sendjob;
 
 void allocateNewBufferAndDeleteOld(uint8_t** a_Buffer, uint64_t a_Length)
 {
-    if (a_Buffer != 0) {
-        *a_Buffer = (uint8_t*) realloc(*a_Buffer, a_Length * sizeof(uint8_t));
-    }
-    else{
-        *a_Buffer = (uint8_t*) malloc((int)a_Length * sizeof(uint8_t));
-    } 
-    
+  if (a_Buffer != 0)
+  {
+    *a_Buffer = (uint8_t*) realloc(*a_Buffer, a_Length * sizeof(uint8_t));
+  }
+  else
+  {
+    *a_Buffer = (uint8_t*) malloc((int) a_Length * sizeof(uint8_t));
+  }
 }
 
 void do_send(osjob_t* j)
 {
-    // Check if there is not a current TX/RX job running
-    if (LMIC.opmode & OP_TXRXPEND)
+  // Check if there is not a current TX/RX job running
+  if (LMIC.opmode & OP_TXRXPEND)
+  {
+    Serial.println(F("OP_TXRXPEND, not sending"));
+  }
+  else
+  {
+    if (m_DataToSendSize > 0)
     {
-        Serial.println(F("OP_TXRXPEND, not sending"));
+      // Prepare upstream data transmission at the next possible time.
+      LMIC_setTxData2(1, (xref2u1_t) m_DataToSend, sizeof(uint8_t) * (m_DataToSendSize), 0);
     }
-    else
-    {
-        if(m_DataToSendSize>0)
-        {
-          // Prepare upstream data transmission at the next possible time.
-          LMIC_setTxData2(1, (xref2u1_t)m_DataToSend, sizeof(uint8_t)*(m_DataToSendSize), 0);
-        }
-    }
-    // Next TX is scheduled after TX_COMPLETE event.
+  }
+  // Next TX is scheduled after TX_COMPLETE event.
 }
 
 void onEvent(ev_t ev)
 {
-    Serial.print(os_getTime());
-    Serial.print(": ");
-    switch (ev)
-    {
+  LoRaWanDriver* loRaWanDriver = LoRaWanDriver::getLoRaWanDriver();
+  ILoraWanRxDataEventAdapter* loRaWanRxDataEventAdapter = loRaWanDriver->loraWanRxDataEventAdapter();
+  DbgTrace_Port* trPort = loRaWanDriver->trPort();
+
+  TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWan onEvent() start (os_getTime() [hal ticks]: %d).", os_getTime());
+
+  switch (ev)
+  {
     case EV_SCAN_TIMEOUT:
-        Serial.println(F("EV_SCAN_TIMEOUT"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_SCAN_TIMEOUT");
+      break;
     case EV_BEACON_FOUND:
-        Serial.println(F("EV_BEACON_FOUND"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_BEACON_FOUND");
+      break;
     case EV_BEACON_MISSED:
-        Serial.println(F("EV_BEACON_MISSED"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_BEACON_MISSED");
+      break;
     case EV_BEACON_TRACKED:
-       Serial.println(F("EV_BEACON_TRACKED"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_BEACON_TRACKED");
+      break;
     case EV_JOINING:
-        Serial.println(F("EV_JOINING"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_JOINING");
+      break;
     case EV_JOINED:
-        Serial.println(F("EV_JOINED"));
-        break;
-    /*
-        || This event is defined but not used in the code. No
-        || point in wasting codespace on it.
-        ||
-        || case EV_RFU1:
-        ||     Serial.println(F("EV_RFU1"));
-        ||     break;
-        */
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_JOINED");
+      break;
+      /*
+       || This event is defined but not used in the code. No
+       || point in wasting codespace on it.
+       ||
+       || case EV_RFU1:
+       ||     Serial.println(F("EV_RFU1"));
+       ||     break;
+       */
     case EV_JOIN_FAILED:
-        Serial.println(F("EV_JOIN_FAILED"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_JOIN_FAILED");
+      break;
     case EV_REJOIN_FAILED:
-        Serial.println(F("EV_REJOIN_FAILED"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_REJOIN_FAILED");
+      break;
     case EV_TXCOMPLETE:
-        Serial.println(F("EV_TXCOMPLETE (includes waiting for RX windows)"));
-        m_CounterPeriodicMessage++;
-        if (LMIC.txrxFlags & TXRX_ACK)
-            Serial.println(F("Received ack"));
-        if (LMIC.dataLen>0)
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_TXCOMPLETE (includes waiting for RX windows)");
+      m_CounterPeriodicMessage++;
+      if (LMIC.txrxFlags & TXRX_ACK)
+        TR_PRINT_STR(trPort, DbgTrace_Level::debug, "Received ack");
+      if (LMIC.dataLen > 0)
+      {
+        TR_PRINTF(trPort, DbgTrace_Level::notice, "Received %d bytes", LMIC.dataLen);
+        allocateNewBufferAndDeleteOld(&m_DataToRead, LMIC.dataLen);
+        memcpy(m_DataToRead, &LMIC.frame[LMIC.dataBeg], LMIC.dataLen);
+        m_DataToReadSize = LMIC.dataLen;
+
+        char singleBuf[5];
+        char strBuf[3*LMIC.dataLen];
+        strcpy(strBuf, "");
+        for (int i = 0; i < LMIC.dataLen; i++)
         {
-            Serial.println(F("Received "));
-            Serial.println(LMIC.dataLen);
-            Serial.print("-----> ");
-            allocateNewBufferAndDeleteOld(&m_DataToRead,LMIC.dataLen);
-            memcpy(m_DataToRead,&LMIC.frame[LMIC.dataBeg],LMIC.dataLen);
-            m_DataToReadSize = LMIC.dataLen;
-            for (int i = 0; i < LMIC.dataLen; i++)
-            {
-                Serial.print(LMIC.frame[LMIC.dataBeg + i], HEX);
-            }
-            Serial.println(F(" bytes of payload"));
+          sprintf(singleBuf, "%0X%s", LMIC.frame[LMIC.dataBeg + i], (i != LMIC.dataLen - 1) ? " " : "");
+          strcat(strBuf, singleBuf);
         }
-        // Schedule next transmission
-        os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), do_send);
-        break;
+        TR_PRINTF(trPort, DbgTrace_Level::notice, "-----> %s", strBuf);
+        if (loRaWanRxDataEventAdapter != 0)
+        {
+          loRaWanRxDataEventAdapter->messageReceived(m_DataToRead, m_DataToReadSize);
+        }
+      }
+      // Schedule next transmission
+      os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(loRaWanDriver->getTxInterval()), do_send);
+      break;
     case EV_LOST_TSYNC:
-        Serial.println(F("EV_LOST_TSYNC"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_LOST_TSYNC");
+      break;
     case EV_RESET:
-        Serial.println(F("EV_RESET"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_RESET");
+      break;
     case EV_RXCOMPLETE:
-        // data received in ping slot
-        Serial.println(F("EV_RXCOMPLETE"));
-        break;
+      // data received in ping slot
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_RXCOMPLETE");
+      break;
     case EV_LINK_DEAD:
-        Serial.println(F("EV_LINK_DEAD"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_LINK_DEAD");
+      break;
     case EV_LINK_ALIVE:
-        Serial.println(F("EV_LINK_ALIVE"));
-        break;
-    /*
-        || This event is defined but not used in the code. No
-        || point in wasting codespace on it.
-        ||
-        || case EV_SCAN_FOUND:
-        ||    Serial.println(F("EV_SCAN_FOUND"));
-        ||    break;
-        */
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_LINK_ALIVE");
+      break;
+      /*
+       || This event is defined but not used in the code. No
+       || point in wasting codespace on it.
+       ||
+       || case EV_SCAN_FOUND:
+       ||    Serial.println(F("EV_SCAN_FOUND"));
+       ||    break;
+       */
     case EV_TXSTART:
-        Serial.println(F("EV_TXSTART"));
-        break;
+      TR_PRINT_STR(trPort, DbgTrace_Level::debug, "EV_TXSTART");
+      break;
     default:
-        Serial.print(F("Unknown event: "));
-        Serial.println((unsigned)ev);
-        break;
-    }
+      TR_PRINTF(trPort, DbgTrace_Level::debug, "Unknown event: %u", (unsigned int) ev);
+      break;
+  }
+
+  TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWan onEvent() end.");
 }
 
 void configuration()
@@ -171,7 +171,7 @@ void configuration()
   ILoraWanConfigAdapter* configAdapter = loRaWanDriver->loraWanConfigAdapter();
   DbgTrace_Port* trPort = loRaWanDriver->trPort();
 
-  TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWan configuration() start.");
+  TR_PRINTF(trPort, DbgTrace_Level::info, "LoRaWan configuration() start.");
 
 #ifdef VCC_ENABLE
     // For Pinoccio Scout boards
@@ -193,6 +193,9 @@ void configuration()
       uint8_t appSKey[16];
       uint8_t nwkSKey[16];
 
+      configAdapter->getAppSKey(appSKey, sizeof(appSKey));
+      configAdapter->getNwkSKey(nwkSKey, sizeof(nwkSKey));
+
       char singleBuf[10];
       char strBuf[8*sizeof(appSKey)];
       strcpy(strBuf, "");
@@ -202,7 +205,7 @@ void configuration()
         strcat(strBuf, singleBuf);
       }
 
-      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): AppSKey: %s", strBuf);
+      TR_PRINTF(trPort, DbgTrace_Level::info, "LoRaWanAbp configuration(): AppSKey: %s", strBuf);
 
       strcpy(strBuf, "");
       for (unsigned int i = 0; i < sizeof(nwkSKey); i++)
@@ -210,9 +213,9 @@ void configuration()
         sprintf(singleBuf, "{0x%0X}%s", nwkSKey[i], (i != sizeof(nwkSKey) - 1) ? ", " : "");
         strcat(strBuf, singleBuf);
       }
-      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): NwkSKey: %s", strBuf);
+      TR_PRINTF(trPort, DbgTrace_Level::info, "LoRaWanAbp configuration(): NwkSKey: %s", strBuf);
 
-      TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWanAbp configuration(): DEVADDR: 0x%X", configAdapter->getDevAddr());
+      TR_PRINTF(trPort, DbgTrace_Level::info, "LoRaWanAbp configuration(): DEVADDR: 0x%X", configAdapter->getDevAddr());
 
       LMIC_setSession(0x13, configAdapter->getDevAddr(), nwkSKey, appSKey);
     }
@@ -261,7 +264,7 @@ void configuration()
     // Start job
     do_send(&sendjob);
 
-    TR_PRINTF(trPort, DbgTrace_Level::debug, "LoRaWan configuration() done.");
+    TR_PRINTF(trPort, DbgTrace_Level::info, "LoRaWan configuration() done.");
 }
 
 void loop_once()
@@ -309,44 +312,48 @@ bool LoraWanAbp::isReadyToRead()
 
 uint64_t LoraWanAbp::readData(uint8_t* const a_Data, uint64_t a_MaxSizeOfBuffer)
 {
-    uint64_t bufferSize = a_MaxSizeOfBuffer;
-    if(bufferSize>m_DataToReadSize)
-    {
-        bufferSize = m_DataToReadSize;
-    }
-    else{
-        //TODO throw Exception Data buffer is too small for Data
-    }
-    memcpy(a_Data, m_DataToRead, bufferSize);
-    m_DataToRead = (uint8_t*) realloc(m_DataToRead, m_DataToReadSize * sizeof(uint8_t));
-    m_DataToReadSize=0;
-    return bufferSize;
+  uint64_t bufferSize = a_MaxSizeOfBuffer;
+  if (bufferSize > m_DataToReadSize)
+  {
+    bufferSize = m_DataToReadSize;
+  }
+  else
+  {
+    //TODO throw Exception Data buffer is too small for Data
+  }
+  memcpy(a_Data, m_DataToRead, bufferSize);
+  m_DataToRead = (uint8_t*) realloc(m_DataToRead, m_DataToReadSize * sizeof(uint8_t));
+  m_DataToReadSize = 0;
+  return bufferSize;
 }
 
 void LoraWanAbp::setPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
 {
-    if(a_SizeOfData>0)
+  if (a_SizeOfData > 0)
+  {
+    // #TODO: add TR_PRINTF debug to show TX data packet
+    allocateNewBufferAndDeleteOld(&m_DataToSend, a_SizeOfData);
+    memcpy(m_DataToSend, a_Data, sizeof(uint8_t) * (int) a_SizeOfData);
+    m_DataToSendSize = a_SizeOfData;
+    m_CounterPeriodicMessage = 0;
+    if (!m_ConnectionIsConfigured)
     {
-        allocateNewBufferAndDeleteOld(&m_DataToSend,a_SizeOfData);
-        memcpy(m_DataToSend,a_Data, sizeof(uint8_t)*(int)a_SizeOfData);
-        m_DataToSendSize = a_SizeOfData;
-        m_CounterPeriodicMessage = 0;
-        if(!m_ConnectionIsConfigured)
-        {
-            configure();
-        }
+      configure();
     }
-    else{
-        //TODO SEND EXCEPTION
-    }
+  }
+  else
+  {
+    TR_PRINTF(trPort(), DbgTrace_Level::error, "ERR: setPeriodicMessageData(): no data to send");
+    //TODO SEND EXCEPTION
+  }
 }
 
 void LoraWanAbp::loopOnce()
 {
-    loop_once();
+  loop_once();
 }
 
 uint64_t LoraWanAbp::getSentCounterPeriodicMessage()
 {
-    return m_CounterPeriodicMessage;
+  return m_CounterPeriodicMessage;
 }

@@ -4,12 +4,11 @@
  *  Created on: 12.01.2019
  *      Author: nid
  */
-#include <Arduino.h>
-#include <LoRaWanDriver.hpp>
 #include <LoRaWanDbgCmd.h>
 #include <DbgCliTopic.h>
 #include <DbgTracePort.h>
 #include <DbgTraceLevel.h>
+#include <LoRaWanDriver.h>
 
 LoRaWanDbgCmd_Configure::LoRaWanDbgCmd_Configure(LoRaWanDriver* loRaWanDriver)
 : DbgCli_Command(loRaWanDriver->getCliTopic(), "cfg", "Configure the LoRaWan Driver.")
@@ -71,7 +70,7 @@ void LoRaWanDbgCmd_SingleChannel::execute(unsigned int argc, const char** args, 
       if (m_loRaWanDriver->getIsSinglechannel() != isSingleChannel)
       {
         TR_PRINTF(m_loRaWanDriver->trPort(), DbgTrace_Level::alert, "The single channel mode has changed, applying configuration to LoRaWan driver.");
-        m_loRaWanDriver->setIsSingleCHannel(isSingleChannel);
+        m_loRaWanDriver->setIsSingleChannel(isSingleChannel);
         m_loRaWanDriver->configure(true);
       }
     }

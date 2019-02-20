@@ -1,31 +1,41 @@
-#include "LoraWanPriorityQueue.hpp"
 #include <cstddef>
-#include <SerialCommand.h>
+//#undef max
+//#undef min
+//#include <Arduino.h>
+//#include <SerialCommand.h>
+#include <DbgTracePort.h>
+#include <DbgTraceLevel.h>
+#include <LoraWanPriorityQueue.h>
+#include <LoRaWanDriver.h>
 
-LoraWanPriorityQueue::LoraWanPriorityQueue(LoRaWanDriver *a_LoraWandInterface):
-m_LoraWandInterface(a_LoraWandInterface),
-m_CurrentTypeOfeMessage(TypeOfMessage::e_Undefined),
-m_SentCounterCurrentMessage(0),
-m_UpdateCycleHighPriority(0),
-m_BufferResponse(NULL),
-m_BufferHighPrio(NULL),
-m_BufferLowPrio(NULL),
-m_ForceUpdateBuffer(false),
-m_counterLowPriority(0)
+
+LoraWanPriorityQueue::LoraWanPriorityQueue(LoRaWanDriver* a_LoraWandInterface)
+: m_LoraWandInterface(a_LoraWandInterface)
+, m_CurrentTypeOfeMessage(TypeOfMessage::e_Undefined)
+, m_SentCounterCurrentMessage(0)
+, m_UpdateCycleHighPriority(0)
+, m_BufferResponse(0)
+, m_BufferHighPrio(0)
+, m_BufferLowPrio(0)
+, m_ForceUpdateBuffer(false)
+, m_counterLowPriority(0)
+{ }
+
+
+LoraWanPriorityQueue::~LoraWanPriorityQueue()
 {
-}
-
-
-LoraWanPriorityQueue::~LoraWanPriorityQueue(){
-    if(m_BufferResponse!=NULL){
-        delete m_BufferResponse;
-    }
-    if(m_BufferHighPrio!=NULL){
-        delete m_BufferHighPrio;
-    }
-    if(m_BufferLowPrio!=NULL){
-        delete m_BufferLowPrio;
-    }
+  if (m_BufferResponse != 0)
+  {
+    delete m_BufferResponse;
+  }
+  if (m_BufferHighPrio != 0)
+  {
+    delete m_BufferHighPrio;
+  }
+  if (m_BufferLowPrio != 0)
+  {
+    delete m_BufferLowPrio;
+  }
 }
 
 void LoraWanPriorityQueue::start()
@@ -118,42 +128,64 @@ void LoraWanPriorityQueue::updateLoraSentMessage()
 
 void LoraWanPriorityQueue::setNextLoraSentMessage(const TypeOfMessage& a_NextMessage)
 {
-     uint8_t* data;
-     uint64_t sizeOfData = 0;
-     switch(a_NextMessage){
-        case TypeOfMessage::e_Undefined:
-        break;
-        case TypeOfMessage::e_ResponseMessage:
-            if(m_BufferResponse!=NULL)
-            {
-            sizeOfData = m_BufferResponse->size();
-            data = &(*m_BufferResponse)[0];
-            }
-        break;
-        case TypeOfMessage::e_PeriodicHighPrio:
-            if(m_BufferHighPrio!=NULL)
-            {
-            sizeOfData = m_BufferHighPrio->size();
-            data = &(*m_BufferHighPrio)[0];
-            for(int i=0;i<sizeOfData;i++)
-            {
-                Serial.print((int)data[i]);
-                Serial.print(" ");
-            }
-            }
-        break;
-        case TypeOfMessage::e_PeriodicLowPrio:
-            if(m_BufferLowPrio!=NULL)
-            {
-            sizeOfData = m_BufferLowPrio->size();
-            data = &(*m_BufferLowPrio)[0];
-            }
-        break;
-        default:
-        break;
-    }
-    if(sizeOfData>0)
-    {
-        m_LoraWandInterface->setPeriodicMessageData(data,sizeOfData);
-    }
+  uint8_t* data;
+  uint64_t sizeOfData = 0;
+  switch (a_NextMessage)
+  {
+    case TypeOfMessage::e_Undefined:
+      break;
+    case TypeOfMessage::e_ResponseMessage:
+      if (m_BufferResponse != 0)
+      {
+        sizeOfData = m_BufferResponse->size();
+        data = &(*m_BufferResponse)[0];
+      }
+      break;
+    case TypeOfMessage::e_PeriodicHighPrio:
+      if (m_BufferHighPrio != 0)
+      {
+        sizeOfData = m_BufferHighPrio->size();
+        data = &(*m_BufferHighPrio)[0];
+
+        if (0 != m_LoraWandInterface)
+        {
+          char singleBuf[5];
+          char strBuf[20*sizeOfData];
+          strcpy(strBuf, "");
+          for (unsigned int i = 0; i < sizeOfData; i++)
+          {
+            sprintf(singleBuf, "%02X%s", data[i], (i != sizeOfData - 1) ? " " : "");
+            strcat(strBuf, singleBuf);
+          }
+          TR_PRINTF(m_LoraWandInterface->trPort(), DbgTrace_Level::info, "PriorityQueue setNextLoraSentMessage() - HighPrio: %s", strBuf);
+        }
+      }
+      break;
+    case TypeOfMessage::e_PeriodicLowPrio:
+      if (m_BufferLowPrio != 0)
+      {
+        sizeOfData = m_BufferLowPrio->size();
+        data = &(*m_BufferLowPrio)[0];
+
+        if (0 != m_LoraWandInterface)
+        {
+          char singleBuf[5];
+          char strBuf[20*sizeOfData];
+          strcpy(strBuf, "");
+          for (unsigned int i = 0; i < sizeOfData; i++)
+          {
+            sprintf(singleBuf, "%02X%s", data[i], (i != sizeOfData - 1) ? " " : "");
+            strcat(strBuf, singleBuf);
+          }
+          TR_PRINTF(m_LoraWandInterface->trPort(), DbgTrace_Level::info, "PriorityQueue setNextLoraSentMessage() - Low Prio: %s", strBuf);
+        }
+      }
+      break;
+    default:
+      break;
+  }
+  if (sizeOfData > 0)
+  {
+    m_LoraWandInterface->setPeriodicMessageData(data, sizeOfData);
+  }
 }

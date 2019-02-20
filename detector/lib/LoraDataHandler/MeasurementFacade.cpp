@@ -1,6 +1,6 @@
-#include "MeasurementFacade.hpp"
 #include <pb_encode.h>
 #include <inttypes.h>
+#include <MeasurementFacade.h>
 #include <SerialCommand.h>
 #include "../Protobuf/dustMeasurement.pb.h"
 #include "../Protobuf/nodeStatus.pb.h"

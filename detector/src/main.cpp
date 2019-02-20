@@ -37,22 +37,30 @@
 #include <MyPM_ProcessAdapter.h>
 #include <DHT_Process.h>
 #include <MyDHT_ProcessAdapter.h>
-#include <LoraWanAbp.hpp>
-#include <LoRaWanDriver.hpp>
+#include <LoraWanAbp.h>
 #include <MyLoRaWanConfigAdapter.h>
-#include <LoraWanPriorityQueue.hpp>
-#include <MeasurementFacade.hpp>
-#include <SystemStatusFacade.hpp>
+#include <LoraWanPriorityQueue.h>
+#include <MeasurementFacade.h>
+#include <SystemStatusFacade.h>
 #include <pb_encode.h>
 #include <pb_decode.h>
 #include <SerialCommand.h>
 
-/* This is the buffer where we will store our message. */
-bool setMessageOnce = true;
-LoRaWanDriver* m_LoraWanInterface;
-LoraWanPriorityQueue* m_LoraWanPriorityQueue;
-MeasurementFacade* m_MeasurementFacade;
-SystemStatusFacade* m_SystemStatusFacade;
+#include <LoRaWanDriver.h>
+LoRaWanDriver* m_LoraWanInterface = 0;
+
+// Pin mapping
+#if defined(ARDUINO_SAMD_FEATHER_M0)
+const lmic_pinmap lmic_pins = LmicPinMap_AdafruitFeatherM0();
+#elif defined (__arm__) && defined (__SAM3X8E__)              // Arduino Due => Dragino Shield
+const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
+#elif defined (__avr__)                                       // Arduino Uno or Mega 2560 => Dragino Shield
+const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
+#endif
+
+LoraWanPriorityQueue* m_LoraWanPriorityQueue = 0;
+MeasurementFacade* m_MeasurementFacade = 0;
+SystemStatusFacade* m_SystemStatusFacade = 0;
 
 #ifndef BUILTIN_LED
 #define BUILTIN_LED 13
@@ -97,6 +105,10 @@ void setup()
   // LoRaWan
   //-----------------------------------------------------------------------------
   m_LoraWanInterface = new LoraWanAbp(new MyLoRaWanConfigAdapter(assets));
+
+  // #TODO nid: remove this again (this is just used when working with single channel gateway)
+  m_LoraWanInterface->setIsSingleChannel(true);
+
   m_LoraWanPriorityQueue = new LoraWanPriorityQueue(m_LoraWanInterface);
   m_MeasurementFacade = new MeasurementFacade(m_LoraWanPriorityQueue);
   m_SystemStatusFacade = new SystemStatusFacade(m_LoraWanPriorityQueue);

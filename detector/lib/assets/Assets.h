@@ -32,6 +32,8 @@ public:
   unsigned long int getDeviceSerialNr();
   void setDeviceSerialNr(unsigned long int deviceSerialNr);
 
+  DbgTrace_Port* trPort();
+
   /**
    * Read Device Id string.
    * @param deviceId OUT: Buffer for Device Id string to read from Persistent Data Memory.
