@@ -70,13 +70,11 @@ func (r *channelsToDecode) decodeMessages(receivedTTNDataChannel <-chan ttnconne
 			}
 		}
 	}
-	fmt.Println("LEFT LOOP")
 }
 func Decode(receivedTTNDataChannel <-chan ttnconnector.TTNUplinkMessage) ReceivedMessage {
 	var decodedMessages channelsToDecode
 	decodedMessages.dustMeasurementData = make(chan ReceivedDustMeasurement)
 	decodedMessages.batteryStateData = make(chan ReceivedBatteryStateData)
-	fmt.Println("--- Decode ---")
 	go decodedMessages.decodeMessages(receivedTTNDataChannel)
 	var retDecodedMessages ReceivedMessage
 	retDecodedMessages.BatteryStateData = decodedMessages.batteryStateData

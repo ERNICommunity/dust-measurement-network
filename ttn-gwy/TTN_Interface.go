@@ -11,6 +11,7 @@ import (
 
 	"./decoder"
 	"./protobuf"
+	"./timeseriesdb"
 	"./ttnconnector"
 	"github.com/TheThingsNetwork/ttn/core/types"
 	"github.com/gogo/protobuf/proto"
@@ -244,17 +245,17 @@ func main() {
 
 	var ttnConnection ttnconnector.TTNConnection
 	ttnMessages, error := ttnConnection.Subscribe(mqttConfig, "erni-dmn")
-	doneChannel := make(chan bool)
-	defer ttnConnection.Unsubscribe()
+	//defer ttnConnection.Unsubscribe()
 	if error != nil {
 		fmt.Println(error)
 	}
 	decodedMessages := decoder.Decode(ttnMessages)
-	go test(decodedMessages, doneChannel)
-	finish := <-doneChannel
-	if finish {
-		fmt.Println("FINISH ")
-	}
+	timeseriesdb.WriteData(decodedMessages)
+	//go test(decodedMessages, doneChannel)
+	//finish := <-doneChannel
+	//if finish {
+	//	fmt.Println("FINISH ")
+	//}
 
-	//runtime.Goexit()
+	runtime.Goexit()
 }
