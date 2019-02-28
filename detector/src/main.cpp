@@ -43,6 +43,8 @@
 #include <LoraWanAbp.h>
 #include <LoRaWanDriver.h>
 #include <MyLoRaWanConfigAdapter.h>
+#include <ToggleButton.h>
+#include <LoRaWanRxDataToStatusLedAdapter.h>
 
 LoRaWanDriver* loRaWanInterface = 0;
 
@@ -68,6 +70,7 @@ PM_Process* pmProcess = 0;
 DHT_Process* dhtProcess = 0;
 Assets* assets = 0;
 Battery* battery = 0;
+ToggleButton* statusLed = 0;
 
 void setup()
 {
@@ -93,6 +96,11 @@ void setup()
                                     };
   battery = new Battery(new MyBatteryAdapter(), battCfg);
 
+  //---------------------------------------------------------------------------
+  // Status LED (ToggleButton)
+  //---------------------------------------------------------------------------
+  statusLed = new ToggleButton(ToggleButton::BTN_NC, BUILTIN_LED);
+
   //-----------------------------------------------------------------------------
   // Sensors
   //-----------------------------------------------------------------------------
@@ -108,6 +116,8 @@ void setup()
 
   // #TODO nid: remove this again (this is just used when working with single channel gateway)
 //  m_LoraWanInterface->setIsSingleChannel(true);
+
+  loRaWanInterface->setLoraWanRxDataEventAdapter(new LoRaWanRxDataToStatusLedAdapter(statusLed, loRaWanInterface));
 
   loRaWanPriorityQueue = new LoraWanPriorityQueue(loRaWanInterface);
   measurementFacade = new MeasurementFacade(loRaWanPriorityQueue);
