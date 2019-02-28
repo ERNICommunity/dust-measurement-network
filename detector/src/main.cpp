@@ -6,8 +6,6 @@
  */
 
 #include <Arduino.h>
-#undef max
-#undef min
 
 // PlatformIO libraries
 #include <SerialCommand.h>    // pio lib install 173, lib details see https://github.com/kroimon/Arduino-SerialCommand
@@ -37,30 +35,29 @@
 #include <MyPM_ProcessAdapter.h>
 #include <DHT_Process.h>
 #include <MyDHT_ProcessAdapter.h>
-#include <LoraWanAbp.h>
-#include <MyLoRaWanConfigAdapter.h>
+#include <pb_encode.h>
+#include <pb_decode.h>
 #include <LoraWanPriorityQueue.h>
 #include <MeasurementFacade.h>
 #include <SystemStatusFacade.h>
-#include <pb_encode.h>
-#include <pb_decode.h>
-#include <SerialCommand.h>
-
+#include <LoraWanAbp.h>
 #include <LoRaWanDriver.h>
-LoRaWanDriver* m_LoraWanInterface = 0;
+#include <MyLoRaWanConfigAdapter.h>
+
+LoRaWanDriver* loRaWanInterface = 0;
 
 // Pin mapping
-#if defined(ARDUINO_SAMD_FEATHER_M0)
+//#if defined(ARDUINO_SAMD_FEATHER_M0)
 const lmic_pinmap lmic_pins = LmicPinMap_AdafruitFeatherM0();
-#elif defined (__arm__) && defined (__SAM3X8E__)              // Arduino Due => Dragino Shield
-const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
-#elif defined (__avr__)                                       // Arduino Uno or Mega 2560 => Dragino Shield
-const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
-#endif
+//#elif defined (__arm__) && defined (__SAM3X8E__)              // Arduino Due => Dragino Shield
+//const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
+//#elif defined (__avr__)                                       // Arduino Uno or Mega 2560 => Dragino Shield
+//const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
+//#endif
 
-LoraWanPriorityQueue* m_LoraWanPriorityQueue = 0;
-MeasurementFacade* m_MeasurementFacade = 0;
-SystemStatusFacade* m_SystemStatusFacade = 0;
+LoraWanPriorityQueue* loRaWanPriorityQueue = 0;
+MeasurementFacade* measurementFacade = 0;
+SystemStatusFacade* systemStatusFacade = 0;
 
 #ifndef BUILTIN_LED
 #define BUILTIN_LED 13
@@ -76,6 +73,8 @@ void setup()
 {
   pinMode(BUILTIN_LED, OUTPUT);
   digitalWrite(BUILTIN_LED, 0);
+
+  delay(5000);
 
   setupProdDebugEnv();
 
@@ -104,16 +103,17 @@ void setup()
   //-----------------------------------------------------------------------------
   // LoRaWan
   //-----------------------------------------------------------------------------
-  m_LoraWanInterface = new LoraWanAbp(new MyLoRaWanConfigAdapter(assets));
+  loRaWanInterface = new LoraWanAbp(new MyLoRaWanConfigAdapter(assets));
+  loRaWanInterface->configure(true);
 
   // #TODO nid: remove this again (this is just used when working with single channel gateway)
-  m_LoraWanInterface->setIsSingleChannel(true);
+//  m_LoraWanInterface->setIsSingleChannel(true);
 
-  m_LoraWanPriorityQueue = new LoraWanPriorityQueue(m_LoraWanInterface);
-  m_MeasurementFacade = new MeasurementFacade(m_LoraWanPriorityQueue);
-  m_SystemStatusFacade = new SystemStatusFacade(m_LoraWanPriorityQueue);
-  m_LoraWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
-  m_LoraWanPriorityQueue->start();
+  loRaWanPriorityQueue = new LoraWanPriorityQueue(loRaWanInterface);
+  measurementFacade = new MeasurementFacade(loRaWanPriorityQueue);
+  systemStatusFacade = new SystemStatusFacade(loRaWanPriorityQueue);
+  loRaWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
+  loRaWanPriorityQueue->start();
 }
 
 SystemStatusFacade::State getBatteryState()
@@ -151,8 +151,8 @@ void loop()
   float temperature = dhtProcess->getTemperature();
   float batteryVoltage = battery->getBatteryVoltage();
 
-  m_SystemStatusFacade->setBatteryStatus(getBatteryState(), batteryVoltage);
-  m_MeasurementFacade->setNewMeasurementData(pm25, pm10, temperature, humidity);
-  m_LoraWanInterface->loopOnce();
-  m_LoraWanPriorityQueue->update();
+  systemStatusFacade->setBatteryStatus(getBatteryState(), batteryVoltage);
+  measurementFacade->setNewMeasurementData(pm25, pm10, temperature, humidity);
+  loRaWanInterface->loopOnce();
+  loRaWanPriorityQueue->update();
 }
