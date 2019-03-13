@@ -250,7 +250,9 @@ func main() {
 		fmt.Println(error)
 	}
 	decodedMessages := decoder.Decode(ttnMessages)
-	timeseriesdb.WriteData(decodedMessages)
+	var timeDb timeseriesdb.TimeSeriesDataBase
+	timeDb.FileWriter.FileName = "timeDB.txt"
+	timeDb.WriteData(decodedMessages)
 	//go test(decodedMessages, doneChannel)
 	//finish := <-doneChannel
 	//if finish {

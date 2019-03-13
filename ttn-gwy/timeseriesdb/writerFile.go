@@ -11,7 +11,7 @@ type FileSettings struct {
 	file     *os.File
 }
 
-func (r FileSettings) Initialize() {
+func (r *FileSettings) Initialize() {
 	var err error
 	r.file, err = os.Create(r.FileName)
 	if err != nil {
@@ -19,7 +19,7 @@ func (r FileSettings) Initialize() {
 	}
 }
 
-func (r FileSettings) WriteDustMeasurementEntry(
+func (r *FileSettings) WriteDustMeasurementEntry(
 	devID string,
 	dustMeasure DustMeasurement,
 	positionGeo PositionGeo,
@@ -38,7 +38,7 @@ func (r FileSettings) WriteDustMeasurementEntry(
 	return err
 }
 
-func (r FileSettings) WriteBatteryStateEntry(
+func (r *FileSettings) WriteBatteryStateEntry(
 	devID string,
 	batteryData BatteryData,
 	positionGeo PositionGeo,
