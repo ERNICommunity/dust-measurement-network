@@ -9,18 +9,18 @@ type Client struct {
 
 // Client clients to show the results
 type HostMqtt struct {
-	ID       string   `json:"id"`
-	Username string   `json:"username"`
-	Password string   `json:"password"`
-	Brokers  []string `json:"brokers"`
+	ID       string `json:"id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Broker   string `json:"broker"`
 }
 
 type TimeSeriesDataBase struct {
 	Address  string `json:"address"`
-	Port     int    `json:"port"`
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Enable   bool   `json:"true"`
+	Enable   bool   `json:"enable"`
+	Name     string `json:"name"`
 }
 
 type TimeSeriesLog struct {

@@ -9,19 +9,20 @@ import (
 )
 
 type InfluxConnection struct {
-	Address  string
-	Port     int
-	Username string
-	Password string
-	client   *client.Client
+	Address      string
+	Username     string
+	Password     string
+	DataBaseName string
+	client       *client.Client
 }
 
-func (r InfluxConnection) InitializeInfluxConnection() error {
+func (r *InfluxConnection) InitializeInfluxConnection() error {
 	c, err := client.NewHTTPClient(client.HTTPConfig{
-		Addr:     r.Address + ":" + string(r.Port),
+		Addr:     r.Address,
 		Username: r.Username,
 		Password: r.Password,
 	})
+	fmt.Println("CONNECT " + r.Address)
 	if err != nil {
 		fmt.Println(err)
 		r.client = nil
@@ -31,7 +32,7 @@ func (r InfluxConnection) InitializeInfluxConnection() error {
 	return nil
 }
 
-func (r InfluxConnection) writeToInfluxDB(
+func (r *InfluxConnection) writeToInfluxDB(
 	dataBase string,
 	point string,
 	tags map[string]string,
@@ -61,7 +62,7 @@ func (r InfluxConnection) writeToInfluxDB(
 }
 
 /*WriteDustMeasurementEntry Entry a dust Measurement Data to DataBase */
-func (r InfluxConnection) WriteDustMeasurementEntry(
+func (r *InfluxConnection) WriteDustMeasurementEntry(
 	devID string,
 	dustMeasure DustMeasurement,
 	positionGeo PositionGeo,
@@ -78,11 +79,11 @@ func (r InfluxConnection) WriteDustMeasurementEntry(
 		"longitude": positionGeo.Longitude,
 		"altitude":  positionGeo.Altitude,
 	}
-	return r.writeToInfluxDB("dmn", "dust_measurement", tags, fields, timestamp)
+	return r.writeToInfluxDB(r.DataBaseName, "dust_measurement", tags, fields, timestamp)
 }
 
 /*WriteBatteryEntry Entry a dust Measurement Data to DataBase */
-func (r InfluxConnection) WriteBatteryEntry(
+func (r *InfluxConnection) WriteBatteryEntry(
 	devID string,
 	batteryData BatteryData,
 	positionGeo PositionGeo,
@@ -97,5 +98,5 @@ func (r InfluxConnection) WriteBatteryEntry(
 		"longitude":    positionGeo.Longitude,
 		"altitude":     positionGeo.Altitude,
 	}
-	return r.writeToInfluxDB("dmn", "sensor_state", tags, fields, timestamp)
+	return r.writeToInfluxDB(r.DataBaseName, "sensor_state", tags, fields, timestamp)
 }

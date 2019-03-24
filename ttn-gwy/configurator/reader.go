@@ -4,42 +4,31 @@ import (
 	"github.com/micro/go-config"
 )
 
-func LoadMqttConfig() HostMqtt {
-	var mqttSetting HostMqtt
-	config.Get("hosts", "mqtt").Scan(&mqttSetting)
-	return mqttSetting
+type Configurator struct {
+	mqttSetting       HostMqtt
+	timeSeriesSetting TimeSeries
 }
 
-func LoadTimeseriesConfig() (TimeSeries, error) {
-	var timeSeriesSetting TimeSeries
-	error := config.Get("hosts", "timeSeries").Scan(&timeSeriesSetting)
-	return timeSeriesSetting, error
+func (r *Configurator) Init(configFile string) error {
+	error := config.LoadFile(configFile)
+	if error != nil {
+		return error
+	}
+	error = config.Get("hosts", "mqtt").Scan(&r.mqttSetting)
+	if error != nil {
+		return error
+	}
+	error = config.Get("hosts", "timeSeries").Scan(&r.timeSeriesSetting)
+	if error != nil {
+		return error
+	}
+	return error
 }
 
-//StartWatchMqttChanges is experimental
-func StartWatchMqttChanges() <-chan HostMqtt {
-	chanMQTT := make(chan HostMqtt)
-	go func() {
+func (r *Configurator) GetMqttConfig() HostMqtt {
+	return r.mqttSetting
+}
 
-		for {
-			w, err := config.Watch("hosts", "mqtt")
-			if err != nil {
-				continue
-			}
-
-			// wait for next value
-			v, err := w.Next()
-			if err != nil {
-				continue
-			}
-
-			var mqttSettigns HostMqtt
-
-			erro := v.Scan(&mqttSettigns)
-			if erro == nil {
-				chanMQTT <- mqttSettigns
-			}
-		}
-	}()
-	return chanMQTT
+func (r *Configurator) GetTimeseriesConfig() TimeSeries {
+	return r.timeSeriesSetting
 }

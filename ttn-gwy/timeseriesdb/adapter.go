@@ -6,8 +6,21 @@ import (
 	"../decoder"
 )
 
-type TimeSeriesDataBase struct {
-	FileWriter FileSettings
+type TimeSeriesDataBaseConfig struct {
+	Address        string
+	Username       string
+	Password       string
+	DataBaseName   string
+	LogFileName    string
+	EnableDataBase bool
+	EnableLogFile  bool
+}
+
+type timeSeriesDataBase struct {
+	fileWriter             FileSettings
+	dataBaseWriter         InfluxConnection
+	enabledWritingDatabase bool
+	enabledWritingFile     bool
 }
 
 func convertPositionGeo(inputPosition decoder.PositionGeo) PositionGeo {
@@ -33,7 +46,7 @@ func convertBatteryData(inputBatteryData decoder.BatteryStateData) BatteryData {
 	batteryData.Health = inputBatteryData.Health
 	return batteryData
 }
-func (r *TimeSeriesDataBase) writeDustMeasurementData(chanDustMeasurementState <-chan decoder.ReceivedDustMeasurement) {
+func (r *timeSeriesDataBase) writeDustMeasurementData(chanDustMeasurementState <-chan decoder.ReceivedDustMeasurement) {
 	for val := range chanDustMeasurementState {
 		var head decoder.ReceivedMessageHead
 		var data decoder.DustMeasurementData
@@ -43,13 +56,21 @@ func (r *TimeSeriesDataBase) writeDustMeasurementData(chanDustMeasurementState <
 		position := convertPositionGeo(head.Position)
 		dustData := convertDustData(data)
 
-		// read from a channel
 		fmt.Println(val)
-		r.FileWriter.WriteDustMeasurementEntry(head.DeviceID, dustData, position, head.Timestamp)
+		if r.enabledWritingFile {
+			r.fileWriter.WriteDustMeasurementEntry(head.DeviceID, dustData, position, head.Timestamp)
+		}
+		if r.enabledWritingDatabase {
+			error := r.dataBaseWriter.WriteDustMeasurementEntry(head.DeviceID, dustData, position, head.Timestamp)
+			if error != nil {
+				fmt.Println(error)
+			}
+
+		}
 	}
 }
 
-func (r *TimeSeriesDataBase) writeBatteryState(chanBatteryState <-chan decoder.ReceivedBatteryStateData) {
+func (r *timeSeriesDataBase) writeBatteryState(chanBatteryState <-chan decoder.ReceivedBatteryStateData) {
 	for val := range chanBatteryState {
 		var head decoder.ReceivedMessageHead
 		var data decoder.BatteryStateData
@@ -60,13 +81,35 @@ func (r *TimeSeriesDataBase) writeBatteryState(chanBatteryState <-chan decoder.R
 		batData := convertBatteryData(data)
 		// read from a channel
 		fmt.Println(val)
-		r.FileWriter.WriteBatteryStateEntry(head.DeviceID, batData, position, head.Timestamp)
+		if r.enabledWritingFile {
+			r.fileWriter.WriteBatteryStateEntry(head.DeviceID, batData, position, head.Timestamp)
+		}
+		if r.enabledWritingDatabase {
+			error := r.dataBaseWriter.WriteBatteryEntry(head.DeviceID, batData, position, head.Timestamp)
+			if error != nil {
+				fmt.Println(error)
+			}
+
+		}
 	}
 }
 
 //WriteData
-func (r *TimeSeriesDataBase) WriteData(receivedMassages decoder.ReceivedMessage) {
-	r.FileWriter.Initialize()
-	go r.writeBatteryState(receivedMassages.BatteryStateData)
-	go r.writeDustMeasurementData(receivedMassages.DustMeasurementData)
+func WriteData(config TimeSeriesDataBaseConfig, receivedMassages decoder.ReceivedMessage) {
+	var tsdb timeSeriesDataBase
+	tsdb.dataBaseWriter.Address = config.Address
+	tsdb.dataBaseWriter.Username = config.Username
+	tsdb.dataBaseWriter.Password = config.Password
+	tsdb.dataBaseWriter.DataBaseName = config.DataBaseName
+	tsdb.fileWriter.FileName = config.LogFileName
+	tsdb.enabledWritingDatabase = config.EnableDataBase
+	tsdb.enabledWritingFile = config.EnableLogFile
+	tsdb.fileWriter.Initialize()
+	errorConnection := tsdb.dataBaseWriter.InitializeInfluxConnection()
+	if errorConnection != nil {
+		tsdb.enabledWritingDatabase = false
+		fmt.Println(errorConnection)
+	}
+	go tsdb.writeBatteryState(receivedMassages.BatteryStateData)
+	go tsdb.writeDustMeasurementData(receivedMassages.DustMeasurementData)
 }
