@@ -11,7 +11,8 @@
 
 
 LoRaWanRxDataToStatusLedAdapter::LoRaWanRxDataToStatusLedAdapter(ToggleButton* statusLed, LoRaWanDriver* loRaWanDriver)
-: m_statusLed(statusLed)
+: ILoraWanRxDataEventAdapter()
+, m_statusLed(statusLed)
 , m_loRaWanDriver(loRaWanDriver)
 { }
 

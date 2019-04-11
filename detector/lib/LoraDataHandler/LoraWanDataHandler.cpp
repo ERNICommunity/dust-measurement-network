@@ -1,3 +1,4 @@
+#include <LoraWanPriorityQueue.h>
 #include <LoraWanDataHandler.h>
 #include "../Protobuf/dustMeasurement.pb.h"
 #include <SerialCommand.h>

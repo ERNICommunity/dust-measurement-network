@@ -45,6 +45,8 @@
 #include <MyLoRaWanConfigAdapter.h>
 #include <ToggleButton.h>
 #include <LoRaWanRxDataToStatusLedAdapter.h>
+#include <MyMeasurementDataHandlerAdapter.h>
+#include <MySystemStatusFacadeAdapter.h>
 
 LoRaWanDriver* loRaWanInterface = 0;
 
@@ -118,33 +120,15 @@ void setup()
 //  m_LoraWanInterface->setIsSingleChannel(true);
 
   loRaWanInterface->setLoraWanRxDataEventAdapter(new LoRaWanRxDataToStatusLedAdapter(statusLed, loRaWanInterface));
+  loRaWanInterface->setLoraWanTxDataEventAdapter(0);
 
   loRaWanPriorityQueue = new LoraWanPriorityQueue(loRaWanInterface);
   measurementFacade = new MeasurementFacade(loRaWanPriorityQueue);
+  measurementFacade->attachAdapter(new MyMeasurementDataHandlerAdapter(measurementFacade, pmProcess, dhtProcess));
   systemStatusFacade = new SystemStatusFacade(loRaWanPriorityQueue);
+  systemStatusFacade->assignAdapter(new MySystemStatusFacadeAdapter(battery, systemStatusFacade));
   loRaWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
   loRaWanPriorityQueue->start();
-}
-
-SystemStatusFacade::State getBatteryState()
-{
-  if (battery->isBattVoltageOk())
-  {
-    return SystemStatusFacade::State::e_OK;
-  }
-  if (battery->isBattVoltageBelowWarnThreshold())
-  {
-    return SystemStatusFacade::State::e_WARNING;
-  }
-  if (battery->isBattVoltageBelowStopThreshold())
-  {
-    return SystemStatusFacade::State::e_STOP;
-  }
-  if (battery->isBattVoltageBelowShutdownThreshold())
-  {
-    return SystemStatusFacade::State::e_SHUTDOWN;
-  }
-  return SystemStatusFacade::State::e_UNDEFINED;
 }
 
 void loop()
@@ -155,14 +139,6 @@ void loop()
   }
   pmProcess->pollSerialData();
   yield();                      // process Timers
-  float pm10 = pmProcess->getPm10Average();
-  float pm25 = pmProcess->getPm25Average();
-  float humidity = dhtProcess->getRelHumidity();
-  float temperature = dhtProcess->getTemperature();
-  float batteryVoltage = battery->getBatteryVoltage();
-
-  systemStatusFacade->setBatteryStatus(getBatteryState(), batteryVoltage);
-  measurementFacade->setNewMeasurementData(pm25, pm10, temperature, humidity);
   loRaWanInterface->loopOnce();
   loRaWanPriorityQueue->update();
 }
