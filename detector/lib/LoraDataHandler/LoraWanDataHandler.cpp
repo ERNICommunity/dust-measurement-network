@@ -4,10 +4,14 @@
 #include <SerialCommand.h>
 
 LoraWanDataHandler::LoraWanDataHandler(LoraWanPriorityQueue* a_LoraWanInterface):
-m_LoraWanInterface(a_LoraWanInterface)
-{
+m_LoraWanPriorityQueue(a_LoraWanInterface)
+{ }
 
+LoraWanPriorityQueue* LoraWanDataHandler::loRaWanPriorityQueue()
+{
+  return m_LoraWanPriorityQueue;
 }
+
 
 bool LoraWanDataHandler::encode(const void* a_Message, const pb_field_t* a_FieldType, uint8_t a_RetRawData[128], uint64_t* a_RetMessageLength)
 {

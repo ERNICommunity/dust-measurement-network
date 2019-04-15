@@ -49,9 +49,9 @@ void SystemStatusFacade::setBatteryStatus(State a_State, float a_Voltage)
 
   if (encode(&nodeMessage, protobuf_NodeMessage_fields, a_BufferRawData, &a_BufferLength))
   {
-    if (m_LoraWanInterface != NULL)
+    if (loRaWanPriorityQueue() != 0)
     {
-      m_LoraWanInterface->setHighPriorityPeriodicMessageData(a_BufferRawData, a_BufferLength);
+      loRaWanPriorityQueue()->setHighPriorityPeriodicMessageData(a_BufferRawData, a_BufferLength);
     }
   }
 }

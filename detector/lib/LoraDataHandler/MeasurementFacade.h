@@ -12,7 +12,7 @@ class IMeasurementDataAdapter;
 class PM_Process;
 class DHT_Process;
 
-class MeasurementFacade : LoraWanDataHandler
+class MeasurementFacade : public LoraWanDataHandler
 {
   public:
     MeasurementFacade(LoraWanPriorityQueue* a_LoraWanInterface, IMeasurementDataAdapter* adapter = 0);

@@ -41,9 +41,9 @@ void MeasurementFacade::setNewMeasurementData(float a_ParticularMatter2_5,
   if (encode(&nodeMessage, protobuf_NodeMessage_fields, a_BufferRawData,
       &a_BufferLength))
   {
-    if (m_LoraWanInterface != NULL)
+    if (loRaWanPriorityQueue() != 0)
     {
-      m_LoraWanInterface->setLowPriorityPeriodicMessageData(a_BufferRawData, a_BufferLength);
+      loRaWanPriorityQueue()->setLowPriorityPeriodicMessageData(a_BufferRawData, a_BufferLength);
     }
   }
 }

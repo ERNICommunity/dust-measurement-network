@@ -8,7 +8,7 @@
 
 class ISystemStatusFacadeAdapter;
 
-class SystemStatusFacade: LoraWanDataHandler
+class SystemStatusFacade : public LoraWanDataHandler
 {
 public:
   SystemStatusFacade(LoraWanPriorityQueue* a_LoraWanInterface, ISystemStatusFacadeAdapter* adapter = 0);
