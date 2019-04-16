@@ -2,7 +2,6 @@
 #include <inttypes.h>
 #include <IMeasurementFacadeAdapter.h>
 #include <MeasurementFacade.h>
-//#include <SerialCommand.h>
 #include "../Protobuf/dustMeasurement.pb.h"
 #include "../Protobuf/nodeStatus.pb.h"
 

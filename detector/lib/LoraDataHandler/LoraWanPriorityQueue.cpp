@@ -1,8 +1,4 @@
 #include <cstddef>
-//#undef max
-//#undef min
-//#include <Arduino.h>
-//#include <SerialCommand.h>
 #include <DbgTracePort.h>
 #include <DbgTraceLevel.h>
 #include <LoraWanPriorityQueue.h>
