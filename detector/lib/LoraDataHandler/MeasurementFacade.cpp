@@ -1,22 +1,22 @@
 #include <pb_encode.h>
 #include <inttypes.h>
-#include <IMeasurementDataAdapter.h>
+#include <IMeasurementFacadeAdapter.h>
 #include <MeasurementFacade.h>
 //#include <SerialCommand.h>
 #include "../Protobuf/dustMeasurement.pb.h"
 #include "../Protobuf/nodeStatus.pb.h"
 
-MeasurementFacade::MeasurementFacade(LoraWanPriorityQueue* a_LoraWanInterface, IMeasurementDataAdapter* adapter /* = 0 */)
+MeasurementFacade::MeasurementFacade(LoraWanPriorityQueue* a_LoraWanInterface, IMeasurementFacadeAdapter* adapter /* = 0 */)
 : LoraWanDataHandler(a_LoraWanInterface)
 , m_adapter(adapter)
 { }
 
-void MeasurementFacade::attachAdapter(IMeasurementDataAdapter* adapter)
+void MeasurementFacade::attachAdapter(IMeasurementFacadeAdapter* adapter)
 {
   m_adapter = adapter;
 }
 
-IMeasurementDataAdapter* MeasurementFacade::adapter()
+IMeasurementFacadeAdapter* MeasurementFacade::adapter()
 {
   return m_adapter;
 }

@@ -45,7 +45,7 @@
 #include <MyLoRaWanConfigAdapter.h>
 #include <ToggleButton.h>
 #include <LoRaWanRxDataToStatusLedAdapter.h>
-#include <MyMeasurementDataHandlerAdapter.h>
+#include <MyMeasuremenFacadeAdapter.h>
 #include <MySystemStatusFacadeAdapter.h>
 
 LoRaWanDriver* loRaWanInterface = 0;
@@ -124,7 +124,7 @@ void setup()
 
   loRaWanPriorityQueue = new LoraWanPriorityQueue(loRaWanInterface);
   measurementFacade = new MeasurementFacade(loRaWanPriorityQueue);
-  measurementFacade->attachAdapter(new MyMeasurementDataHandlerAdapter(measurementFacade, pmProcess, dhtProcess));
+  measurementFacade->attachAdapter(new MyMeasuremenFacadeAdapter(measurementFacade, pmProcess, dhtProcess));
   systemStatusFacade = new SystemStatusFacade(loRaWanPriorityQueue);
   systemStatusFacade->assignAdapter(new MySystemStatusFacadeAdapter(battery, systemStatusFacade));
   loRaWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);

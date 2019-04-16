@@ -9,19 +9,19 @@
 #include <PM_Process.h>
 #include <DHT_Process.h>
 
-#include <MyMeasurementDataHandlerAdapter.h>
+#include <MyMeasuremenFacadeAdapter.h>
 
-MyMeasurementDataHandlerAdapter::MyMeasurementDataHandlerAdapter(MeasurementFacade* measurementFacade, PM_Process* pmProcess, DHT_Process* dhtProcess)
-: IMeasurementDataAdapter()
+MyMeasuremenFacadeAdapter::MyMeasuremenFacadeAdapter(MeasurementFacade* measurementFacade, PM_Process* pmProcess, DHT_Process* dhtProcess)
+: IMeasurementFacadeAdapter()
 , m_measurementFacade(measurementFacade)
 , m_pmProcess(pmProcess)
 , m_dhtProcess(dhtProcess)
 { }
 
-MyMeasurementDataHandlerAdapter::~MyMeasurementDataHandlerAdapter()
+MyMeasuremenFacadeAdapter::~MyMeasuremenFacadeAdapter()
 { }
 
-void MyMeasurementDataHandlerAdapter::fetchMeasuremenData()
+void MyMeasuremenFacadeAdapter::fetchMeasuremenData()
 {
   if ((0 != m_measurementFacade) && (0 != m_pmProcess) && (0 != m_dhtProcess))
   {
