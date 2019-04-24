@@ -6,6 +6,10 @@
 
 class LoraWanPriorityQueue;
 
+/**
+ * LoRaWan Data Handler.
+ *
+ */
 class LoraWanDataHandler
 {
   public:

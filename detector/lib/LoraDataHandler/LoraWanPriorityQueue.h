@@ -7,16 +7,52 @@
 
 class LoRaWanDriver;
 
+/**
+ * LoRaWan Priority Queue
+ *
+ *
+ */
 class LoraWanPriorityQueue
 {
   public:
     explicit LoraWanPriorityQueue(LoRaWanDriver *a_LoraWandInterface);
     ~LoraWanPriorityQueue();
     void start();
-    void setHighPriorityPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData);
+
+    /**
+     * Set data to be send periodically with high priority
+     *
+     * @param data Pointer to the data byte stream
+     * @param sizeOfData Number of bytes to be sent
+     */
+    void setHighPriorityPeriodicMessageData(uint8_t* data, uint64_t sizeOfData);
+
+    /**
+     * Set data to be send periodically with low priority
+     *
+     * @param data Pointer to the data byte stream
+     * @param sizeOfData Number of bytes to be sent
+     */
     void setLowPriorityPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData);
+
+    /**
+     * Set response data to be send
+     *
+     * @param data Pointer to the data byte stream
+     * @param sizeOfData Number of bytes to be sent
+     */
     void setResponseMessageData(uint8_t* a_Data, uint64_t a_SizeOfData);
-    void setUpdateCycleHighPriorityPerdioc(uint64_t a_SendCycle);
+
+    /**
+     * Set the ratio between low prio and hiegh prio messages sent
+     * I.e. sendCycle = 2: 2 low prio messages followed by 1 high prio message are going out.
+     * @param sendCycle Ratio between low prio and hiegh prio messages sent
+     */
+    void setUpdateCycleHighPriorityPerdioc(uint64_t sendCycle);
+
+    /**
+     * Update
+     */
     void update();
 
   private:

@@ -36,90 +36,101 @@ LoraWanPriorityQueue::~LoraWanPriorityQueue()
 
 void LoraWanPriorityQueue::start()
 {
-    m_CurrentTypeOfeMessage = TypeOfMessage::e_PeriodicLowPrio;
-    m_ForceUpdateBuffer = true;
-    m_counterLowPriority = 0;
+  m_CurrentTypeOfeMessage = TypeOfMessage::e_PeriodicLowPrio;
+  m_ForceUpdateBuffer = true;
+  m_counterLowPriority = 0;
 }
 
 void LoraWanPriorityQueue::setResponseMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
 {
-    if(m_BufferResponse!=NULL){
-        delete m_BufferResponse;
-    }
-    m_BufferResponse = new std::vector<uint8_t>(a_Data,a_Data+a_SizeOfData);
-    setNextLoraSentMessage(TypeOfMessage::e_ResponseMessage);
+  if (m_BufferResponse != NULL)
+  {
+    delete m_BufferResponse;
+  }
+  m_BufferResponse = new std::vector<uint8_t>(a_Data, a_Data + a_SizeOfData);
+  setNextLoraSentMessage(TypeOfMessage::e_ResponseMessage);
 }
 
-void LoraWanPriorityQueue::setLowPriorityPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData){
-    if(m_BufferLowPrio!=NULL){
-        delete m_BufferLowPrio;
-    }
-    m_BufferLowPrio = new std::vector<uint8_t>(a_Data,a_Data+a_SizeOfData);
-}
-
-void LoraWanPriorityQueue::setHighPriorityPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData){
-    if(m_BufferHighPrio!=NULL){
-        delete m_BufferHighPrio;
-    }
-    m_BufferHighPrio = new std::vector<uint8_t>(a_Data,a_Data+a_SizeOfData);
-}
-
-void LoraWanPriorityQueue::setUpdateCycleHighPriorityPerdioc(uint64_t a_SendCycle)
+void LoraWanPriorityQueue::setLowPriorityPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
 {
-    if(a_SendCycle>0){
-        m_UpdateCycleHighPriority = a_SendCycle;
-    }
-    else{
-        //TODO Throw Error
-    }
+  if (m_BufferLowPrio != NULL)
+  {
+    delete m_BufferLowPrio;
+  }
+  m_BufferLowPrio = new std::vector<uint8_t>(a_Data, a_Data + a_SizeOfData);
 }
 
+void LoraWanPriorityQueue::setHighPriorityPeriodicMessageData(uint8_t* data,
+    uint64_t sizeOfData)
+{
+  if (m_BufferHighPrio != NULL)
+  {
+    delete m_BufferHighPrio;
+  }
+  m_BufferHighPrio = new std::vector<uint8_t>(data, data + sizeOfData);
+}
 
-void LoraWanPriorityQueue::update(){
- //m_SentCounterCurrentMessage = m_LoraWandInterface->getSentCounterPeriodicMessage();
-    updateLoraSentMessage();
+void LoraWanPriorityQueue::setUpdateCycleHighPriorityPerdioc(uint64_t sendCycle)
+{
+  if (sendCycle > 0)
+  {
+    m_UpdateCycleHighPriority = sendCycle;
+  }
+  else
+  {
+    //TODO Throw Error
+  }
+}
+
+void LoraWanPriorityQueue::update()
+{
+  //m_SentCounterCurrentMessage = m_LoraWandInterface->getSentCounterPeriodicMessage();
+  updateLoraSentMessage();
 }
 
 void LoraWanPriorityQueue::updateLoraSentMessage()
 {
-    TypeOfMessage nextMessage = TypeOfMessage::e_Undefined;
-    uint64_t counterCurrentMessage = m_LoraWandInterface->getSentCounterPeriodicMessage();
-    
-    if(counterCurrentMessage>0||m_ForceUpdateBuffer)
+  TypeOfMessage nextMessage = TypeOfMessage::e_Undefined;
+  uint64_t counterCurrentMessage =
+      m_LoraWandInterface->getSentCounterPeriodicMessage();
+
+  if (counterCurrentMessage > 0 || m_ForceUpdateBuffer)
+  {
+    switch (m_CurrentTypeOfeMessage)
     {
-        switch(m_CurrentTypeOfeMessage){
-            case TypeOfMessage::e_Undefined:
-            break;
-            case TypeOfMessage::e_ResponseMessage:
-                if(counterCurrentMessage>0)
-                {
-                    nextMessage = TypeOfMessage::e_PeriodicLowPrio;
-                }
-            break;
-            case TypeOfMessage::e_PeriodicHighPrio:
-                    nextMessage = TypeOfMessage::e_PeriodicLowPrio;
-            break;
-            case TypeOfMessage::e_PeriodicLowPrio:
-                if((m_counterLowPriority>=m_UpdateCycleHighPriority)&&
-                    (m_UpdateCycleHighPriority>0))
-                {
-                    nextMessage = TypeOfMessage::e_PeriodicHighPrio;
-                    m_counterLowPriority = 0;
-                }
-                else{
-                    m_counterLowPriority++;
-                    nextMessage = TypeOfMessage::e_PeriodicLowPrio;
-                }
-            break;
-            default:
-            break;
-        }
-        if(nextMessage!=TypeOfMessage::e_Undefined)
+      case TypeOfMessage::e_Undefined:
+        break;
+      case TypeOfMessage::e_ResponseMessage:
+        if (counterCurrentMessage > 0)
         {
-            m_ForceUpdateBuffer=false;
-            setNextLoraSentMessage(nextMessage);
+          nextMessage = TypeOfMessage::e_PeriodicLowPrio;
         }
+        break;
+      case TypeOfMessage::e_PeriodicHighPrio:
+        nextMessage = TypeOfMessage::e_PeriodicLowPrio;
+        break;
+      case TypeOfMessage::e_PeriodicLowPrio:
+        if ((m_counterLowPriority >= m_UpdateCycleHighPriority)
+            && (m_UpdateCycleHighPriority > 0))
+        {
+          nextMessage = TypeOfMessage::e_PeriodicHighPrio;
+          m_counterLowPriority = 0;
+        }
+        else
+        {
+          m_counterLowPriority++;
+          nextMessage = TypeOfMessage::e_PeriodicLowPrio;
+        }
+        break;
+      default:
+        break;
     }
+    if (nextMessage != TypeOfMessage::e_Undefined)
+    {
+      m_ForceUpdateBuffer = false;
+      setNextLoraSentMessage(nextMessage);
+    }
+  }
 }
 
 void LoraWanPriorityQueue::setNextLoraSentMessage(const TypeOfMessage& a_NextMessage)
@@ -146,14 +157,16 @@ void LoraWanPriorityQueue::setNextLoraSentMessage(const TypeOfMessage& a_NextMes
         if (0 != m_LoraWandInterface)
         {
           char singleBuf[5];
-          char strBuf[20*sizeOfData];
+          char strBuf[20 * sizeOfData];
           strcpy(strBuf, "");
           for (unsigned int i = 0; i < sizeOfData; i++)
           {
-            sprintf(singleBuf, "%02X%s", data[i], (i != sizeOfData - 1) ? " " : "");
+            sprintf(singleBuf, "%02X%s", data[i],
+                (i != sizeOfData - 1) ? " " : "");
             strcat(strBuf, singleBuf);
           }
-          TR_PRINTF(m_LoraWandInterface->trPort(), DbgTrace_Level::info, "PriorityQueue setNextLoraSentMessage() - HighPrio: %s", strBuf);
+          TR_PRINTF(m_LoraWandInterface->trPort(), DbgTrace_Level::info,
+              "PriorityQueue setNextLoraSentMessage() - HighPrio: %s", strBuf);
         }
       }
       break;
@@ -166,14 +179,16 @@ void LoraWanPriorityQueue::setNextLoraSentMessage(const TypeOfMessage& a_NextMes
         if (0 != m_LoraWandInterface)
         {
           char singleBuf[5];
-          char strBuf[20*sizeOfData];
+          char strBuf[20 * sizeOfData];
           strcpy(strBuf, "");
           for (unsigned int i = 0; i < sizeOfData; i++)
           {
-            sprintf(singleBuf, "%02X%s", data[i], (i != sizeOfData - 1) ? " " : "");
+            sprintf(singleBuf, "%02X%s", data[i],
+                (i != sizeOfData - 1) ? " " : "");
             strcat(strBuf, singleBuf);
           }
-          TR_PRINTF(m_LoraWandInterface->trPort(), DbgTrace_Level::info, "PriorityQueue setNextLoraSentMessage() - Low Prio: %s", strBuf);
+          TR_PRINTF(m_LoraWandInterface->trPort(), DbgTrace_Level::info,
+              "PriorityQueue setNextLoraSentMessage() - Low Prio: %s", strBuf);
         }
       }
       break;
