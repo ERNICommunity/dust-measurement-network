@@ -1,31 +1,23 @@
 #!/bin/bash
-if [ ! "$(docker network ls | grep influxdb)" ]; then
-      docker network rm influxdb
-fi
-
-if [ ! "$(docker ps -q -f name=influxdb)" ]; then
-
-if [ ! "$(docker ps -q -f name=influxdb -f status=running)" ]; then
+if [ "$(docker ps -q -f name=influxdb)" ]; then
+if [ "$(docker ps -q -f name=influxdb -f status=running)" ]; then
       # stop
       docker stop influxdb
 fi
-
-
-      # stop
+      # rm
       docker rm influxdb
 fi
 
-if [ ! "$(docker ps -q -f name=chronograf)" ]; then
-
-if [ ! "$(docker ps -q -f name=chronograf -f status=running)" ]; then
+if [ "$(docker ps -q -f name=chronograf)" ]; then
+if [ "$(docker ps -q -f name=chronograf -f status=running)" ]; then
       # stop
       docker stop chronograf
 fi
-      # stop
+      # rm
       docker rm chronograf
 fi
 
-docker network create influxdb &&
+docker network create influxdb || true &&
 
 docker run -p 8086:8086 \
       -v $PWD/influxdb.conf:/etc/influxdb/influxdb.conf:ro \
