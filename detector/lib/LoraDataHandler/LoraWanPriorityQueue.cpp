@@ -8,7 +8,6 @@
 LoraWanPriorityQueue::LoraWanPriorityQueue(LoRaWanDriver* a_LoraWandInterface)
 : m_LoraWandInterface(a_LoraWandInterface)
 , m_CurrentTypeOfeMessage(TypeOfMessage::e_Undefined)
-, m_SentCounterCurrentMessage(0)
 , m_UpdateCycleHighPriority(0)
 , m_BufferResponse(0)
 , m_BufferHighPrio(0)

@@ -65,7 +65,6 @@ class LoraWanPriorityQueue
       e_ResponseMessage
     };
     TypeOfMessage m_CurrentTypeOfeMessage;
-    uint8_t m_SentCounterCurrentMessage;
     uint64_t m_UpdateCycleHighPriority;
     std::vector<uint8_t> *m_BufferResponse;
     std::vector<uint8_t> *m_BufferHighPrio;
