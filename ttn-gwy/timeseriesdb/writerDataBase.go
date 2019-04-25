@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/influxdata/influxdb/tree/1.7/client/v2"
+	"github.com/influxdata/influxdb1-client/v2"
 )
 
 type InfluxConnection struct {
