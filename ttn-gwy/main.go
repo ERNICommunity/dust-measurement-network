@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
-	"runtime"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"./configurator"
 	"./decoder"
@@ -40,15 +42,26 @@ func Init() error {
 func main() {
 	error := Init()
 	if error == nil {
+		//Init Turn-Off criteria
+		var gracefulStop = make(chan os.Signal)
+		signal.Notify(gracefulStop, syscall.SIGTERM)
+		signal.Notify(gracefulStop, syscall.SIGINT)
+
+		//Write incoming data from the things network to influx db
 		var ttnConnection ttnconnector.TTNConnection
 		ttnMessages, error := ttnConnection.Subscribe(mqttConfig, "erni-dmn")
-		//defer ttnConnection.Unsubscribe()
 		if error != nil {
 			fmt.Println(error)
 		}
+		defer ttnConnection.Unsubscribe()
 		decodedMessages := decoder.Decode(ttnMessages)
 		timeseriesdb.WriteData(timeSeriesDBConfig, decodedMessages)
-		runtime.Goexit()
+
+		//runtime.NumActiveGoroutine()
+		//Wait till gracefulStop gets a signal in channel
+		sig := <-gracefulStop
+		fmt.Println("--- Turn off app ---")
+		fmt.Printf("caught sig: %+v", sig)
 	}
 
 }

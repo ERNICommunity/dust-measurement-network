@@ -12,5 +12,5 @@ RUN go get -d -v github.com/golang/protobuf/proto
 RUN go get -d -v github.com/influxdata/influxdb/client/v2
 RUN go get -d -v github.com/influxdata/platform
 
-RUN go build -o ttn_gateway_app TTN_Interface.go
+RUN go build -o ttn_gateway_app main.go
 CMD ["./ttn_gateway_app"]
