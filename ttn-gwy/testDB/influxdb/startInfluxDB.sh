@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ "$(docker network ls | grep influxdb)" ]; then
+if [ ! "$(docker network ls | grep influxdb)" ]; then
       docker network rm influxdb
 fi
 
