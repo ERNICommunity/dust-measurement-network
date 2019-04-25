@@ -1,8 +1,6 @@
 #!/bin/bash
 if [ "$(docker network ls | grep influxdb)" ]; then
       docker network rm influxdb
-else
-      docker network create influxdb
 fi
 
 if [ ! "$(docker ps -q -f name=influxdb)" ]; then
@@ -23,11 +21,11 @@ if [ ! "$(docker ps -q -f name=chronograf -f status=running)" ]; then
       # stop
       docker stop chronograf
 fi
-
-
       # stop
       docker rm chronograf
 fi
+
+docker network create influxdb &&
 
 docker run -p 8086:8086 \
       -v $PWD/influxdb.conf:/etc/influxdb/influxdb.conf:ro \
