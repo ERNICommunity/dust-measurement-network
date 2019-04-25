@@ -1,4 +1,31 @@
 #!/bin/bash
+if [ ! "$(docker network ls | grep influxdb)" ]; then
+      docker network rm influxdb
+else
+      docker network create influxdb
+fi
+
+if [ ! "$(docker ps -q -f name=influxdb -f status=running)" ]; then
+      # stop
+      docker stop influxdb
+fi
+
+if [ ! "$(docker ps -q -f name=influxdb)" ]; then
+      # stop
+      docker rm influxdb
+fi
+
+
+if [ ! "$(docker ps -q -f name=chronograf -f status=running)" ]; then
+      # stop
+      docker stop chronograf
+fi
+
+if [ ! "$(docker ps -q -f name=chronograf)" ]; then
+      # stop
+      docker rm chronograf
+fi
+
 docker run -p 8086:8086 \
       -v $PWD/influxdb.conf:/etc/influxdb/influxdb.conf:ro \
       -e INFLUXDB_DB=db0 -e INFLUXDB_ADMIN_ENABLED=true \
@@ -6,4 +33,9 @@ docker run -p 8086:8086 \
       -e INFLUXDB_USER=telegraf -e INFLUXDB_USER_PASSWORD=secretpassword \
       -d --name=influxdb \
       --net=influxdb \
-      influxdb -config /etc/influxdb/influxdb.conf /init-influxdb.sh
+      influxdb -config /etc/influxdb/influxdb.conf /init-influxdb.sh &
+
+docker run -p 8888:8888 \
+      -d --name=chronograf \
+      --net=influxdb \
+      chronograf --influxdb-url=http://influxdb:8086 &
