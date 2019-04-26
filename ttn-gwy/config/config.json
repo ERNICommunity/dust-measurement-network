@@ -8,7 +8,7 @@
         },
         "timeSeries":{
             "database":{
-                "address":     "http://localhost:8086",
+                "address":     "http://influxdb:8086",
 		        "username":     "telegraf",
                 "password":     "secretpassword",
                 "enable":       true,
