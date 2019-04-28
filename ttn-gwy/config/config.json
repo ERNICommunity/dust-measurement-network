@@ -1,0 +1,25 @@
+{
+    "hosts": {
+        "mqtt" : {
+            "id": "ttnctl",
+            "username": "erni-dmn",
+            "password": "ttn-account-v2.qcc_E-maVc_P1uFLeP4KRgBBaE3EF3-Or6u9BU6STac",
+            "broker": "eu.thethings.network:1883"
+        },
+        "timeSeries":{
+            "database":{
+                "address":     "http://influxdb:8086",
+		        "username":     "telegraf",
+                "password":     "secretpassword",
+                "enable":       true,
+                "name":         "db0"
+            },
+            "logFile":{
+                "path":"timeDB.txt",
+                "enable":true,
+                "maxSizeByte":0
+            }
+
+        }
+    }
+}

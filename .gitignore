@@ -24,3 +24,4 @@ detector/\.vscode/
 \.vscode/
 
 __pycache__/
+ttn-gwy/*.txt
