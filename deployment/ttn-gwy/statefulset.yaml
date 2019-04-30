@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:  
+  name: ttn-gwy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ttn-gwy  
+  template:
+    metadata:
+      labels:
+        app: ttn-gwy
+    spec:
+      containers:
+      - name: predictionservice
+        image: mar3ek/ech-hh-predictionservice:latest
+      

@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:  
+  name: predictionservice
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: predictionservice
+  serviceName: predictionservice  
+  template:
+    metadata:
+      labels:
+        app: predictionservice
+    spec:
+      containers:     
+      - name: predictionservice
+        image: mar3ek/ech-hh-predictionservice:latest        
+        ports:
+        - containerPort: 80
+          name: api
+          protocol: TCP
+      

@@ -62,9 +62,15 @@ spec:
         - name: INFLUXDB_HTTP_AUTH_ENABLED
           value: "true"
         - name: INFLUXDB_ADMIN_USER
-          value: admin
+          valueFrom:
+            secretKeyRef:
+              name: influxdb-user-pass
+              key: username
         - name: INFLUXDB_ADMIN_PASSWORD
-          value: hnh2018
+          valueFrom:
+            secretKeyRef:
+              name: influxdb-user-pass
+              key: password
         ports:
         - name: api
           containerPort: 8086        
