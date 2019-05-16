@@ -45,6 +45,7 @@
 #include <MyLoRaWanConfigAdapter.h>
 #include <ToggleButton.h>
 #include <LoRaWanRxDataToStatusLedAdapter.h>
+#include <MyLoRaWanTxDataEventAdapter.h>
 #include <MyMeasuremenFacadeAdapter.h>
 #include <MySystemStatusFacadeAdapter.h>
 
@@ -119,14 +120,13 @@ void setup()
   // #TODO nid: remove this again (this is just used when working with single channel gateway)
 //  m_LoraWanInterface->setIsSingleChannel(true);
 
-  loRaWanInterface->setLoraWanRxDataEventAdapter(new LoRaWanRxDataToStatusLedAdapter(statusLed, loRaWanInterface));
-  loRaWanInterface->setLoraWanTxDataEventAdapter(0);
-
   loRaWanPriorityQueue = new LoraWanPriorityQueue(loRaWanInterface);
   measurementFacade = new MeasurementFacade(loRaWanPriorityQueue);
   measurementFacade->attachAdapter(new MyMeasuremenFacadeAdapter(measurementFacade, pmProcess, dhtProcess));
   systemStatusFacade = new SystemStatusFacade(loRaWanPriorityQueue);
   systemStatusFacade->assignAdapter(new MySystemStatusFacadeAdapter(battery, systemStatusFacade));
+  loRaWanInterface->setLoraWanRxDataEventAdapter(new LoRaWanRxDataToStatusLedAdapter(statusLed, loRaWanInterface));
+  loRaWanInterface->setLoraWanTxDataEventAdapter(new MyLoRaWanTxDataEventAdapter(systemStatusFacade, measurementFacade));
   loRaWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
   loRaWanPriorityQueue->start();
 }
