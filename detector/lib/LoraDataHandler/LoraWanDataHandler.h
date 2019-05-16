@@ -21,6 +21,6 @@ class LoraWanDataHandler
     LoraWanPriorityQueue* loRaWanPriorityQueue();
 
   private:
-    LoraWanPriorityQueue* m_LoraWanPriorityQueue;
+    LoraWanPriorityQueue* m_priorityQueue;
 };
 #endif
