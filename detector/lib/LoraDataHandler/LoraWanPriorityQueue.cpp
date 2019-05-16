@@ -7,7 +7,7 @@
 
 LoraWanPriorityQueue::LoraWanPriorityQueue(LoRaWanDriver* a_LoraWandInterface)
 : m_LoraWandInterface(a_LoraWandInterface)
-, m_CurrentTypeOfeMessage(TypeOfMessage::e_Undefined)
+, m_CurrentTypeOfMessage(TypeOfMessage::e_Undefined)
 , m_UpdateCycleHighPriority(0)
 , m_BufferResponse(0)
 , m_BufferHighPrio(0)
@@ -22,27 +22,30 @@ LoraWanPriorityQueue::~LoraWanPriorityQueue()
   if (m_BufferResponse != 0)
   {
     delete m_BufferResponse;
+    m_BufferResponse = 0;
   }
   if (m_BufferHighPrio != 0)
   {
     delete m_BufferHighPrio;
+    m_BufferHighPrio = 0;
   }
   if (m_BufferLowPrio != 0)
   {
     delete m_BufferLowPrio;
+    m_BufferLowPrio = 0;
   }
 }
 
 void LoraWanPriorityQueue::start()
 {
-  m_CurrentTypeOfeMessage = TypeOfMessage::e_PeriodicLowPrio;
+  m_CurrentTypeOfMessage = TypeOfMessage::e_PeriodicLowPrio;
   m_ForceUpdateBuffer = true;
   m_counterLowPriority = 0;
 }
 
 void LoraWanPriorityQueue::setResponseMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
 {
-  if (m_BufferResponse != NULL)
+  if (m_BufferResponse != 0)
   {
     delete m_BufferResponse;
   }
@@ -52,17 +55,17 @@ void LoraWanPriorityQueue::setResponseMessageData(uint8_t* a_Data, uint64_t a_Si
 
 void LoraWanPriorityQueue::setLowPriorityPeriodicMessageData(uint8_t* a_Data, uint64_t a_SizeOfData)
 {
-  if (m_BufferLowPrio != NULL)
+  if (m_BufferLowPrio != 0)
   {
     delete m_BufferLowPrio;
+    m_BufferLowPrio = 0;
   }
   m_BufferLowPrio = new std::vector<uint8_t>(a_Data, a_Data + a_SizeOfData);
 }
 
-void LoraWanPriorityQueue::setHighPriorityPeriodicMessageData(uint8_t* data,
-    uint64_t sizeOfData)
+void LoraWanPriorityQueue::setHighPriorityPeriodicMessageData(uint8_t* data, uint64_t sizeOfData)
 {
-  if (m_BufferHighPrio != NULL)
+  if (m_BufferHighPrio != 0)
   {
     delete m_BufferHighPrio;
   }
@@ -90,12 +93,11 @@ void LoraWanPriorityQueue::update()
 void LoraWanPriorityQueue::updateLoraSentMessage()
 {
   TypeOfMessage nextMessage = TypeOfMessage::e_Undefined;
-  uint64_t counterCurrentMessage =
-      m_LoraWandInterface->getSentCounterPeriodicMessage();
+  uint64_t counterCurrentMessage = m_LoraWandInterface->getSentCounterPeriodicMessage();
 
   if (counterCurrentMessage > 0 || m_ForceUpdateBuffer)
   {
-    switch (m_CurrentTypeOfeMessage)
+    switch (m_CurrentTypeOfMessage)
     {
       case TypeOfMessage::e_Undefined:
         break;
