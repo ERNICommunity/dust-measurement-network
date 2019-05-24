@@ -115,20 +115,22 @@ void setup()
   // LoRaWan
   //-----------------------------------------------------------------------------
   loRaWanInterface = new LoraWanAbp(new MyLoRaWanConfigAdapter(assets));
-  loRaWanInterface->configure(true);
 
   // #TODO nid: remove this again (this is just used when working with single channel gateway)
-//  m_LoraWanInterface->setIsSingleChannel(true);
+//  loRaWanInterface->setIsSingleChannel(true);
 
   loRaWanPriorityQueue = new LoraWanPriorityQueue(loRaWanInterface);
+
   measurementFacade = new MeasurementFacade(loRaWanPriorityQueue);
   measurementFacade->attachAdapter(new MyMeasuremenFacadeAdapter(measurementFacade, pmProcess, dhtProcess));
+
   systemStatusFacade = new SystemStatusFacade(loRaWanPriorityQueue);
   systemStatusFacade->assignAdapter(new MySystemStatusFacadeAdapter(battery, systemStatusFacade));
-  loRaWanInterface->setLoraWanRxDataEventAdapter(new LoRaWanRxDataToStatusLedAdapter(statusLed, loRaWanInterface));
-  loRaWanInterface->setLoraWanTxDataEventAdapter(new MyLoRaWanTxDataEventAdapter(systemStatusFacade, measurementFacade));
+
   loRaWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
   loRaWanPriorityQueue->start();
+
+  loRaWanInterface->setLoraWanRxDataEventAdapter(new LoRaWanRxDataToStatusLedAdapter(statusLed, loRaWanInterface));
 }
 
 void loop()
@@ -137,8 +139,15 @@ void loop()
   {
     sCmd->readSerial();         // process serial commands
   }
+
   pmProcess->pollSerialData();
-  yield();                      // process Timers
-  loRaWanInterface->loopOnce();
+
+  systemStatusFacade->updateSystemStatus();
+  measurementFacade->updateMeasurementData();
+
   loRaWanPriorityQueue->update();
+
+  yield();                      // process Timers
+
+  loRaWanInterface->loopOnce();
 }
