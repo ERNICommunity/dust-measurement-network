@@ -1,0 +1,45 @@
+version: '3.3'
+
+services:
+  ttngtwy:
+    build: .
+    image: ttngtwy
+    networks:
+       - influxdb
+
+  influxdb:
+    image: influxdb
+    restart: always
+    volumes:
+      - ./testDB/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro
+    ports:
+      - "8086:8086"
+    links:
+      - ttngtwy
+    networks:
+       - influxdb
+    environment:
+      INFLUXDB_DB: "db0"
+      INFLUXDB_ADMIN_ENABLED: "true"
+      INFLUXDB_ADMIN_USER: "admin"
+      INFLUXDB_ADMIN_PASSWORD: "supersecretpassword"
+      INFLUXDB_USER: "telegraf"
+      INFLUXDB_USER_PASSWORD: "secretpassword"
+      INFLUXDB_CONFIG_PATH: "/etc/influxdb/influxdb.conf"
+
+  chronograf:
+    image: chronograf
+    restart: always
+    networks:
+       - influxdb
+    ports:
+      - "8888:8888"
+    links:
+      - influxdb
+    environment:
+      INFLUXDB_URL: "http://influxdb:8086"
+      INFLUXDB_USERNAME: "admin"
+      INFLUXDB_PASSWORD: "supersecretpassword"
+
+networks:
+  influxdb:

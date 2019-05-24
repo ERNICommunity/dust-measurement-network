@@ -22,7 +22,7 @@ unsigned int MyBatteryAdapter::readRawBattSenseValue()
 #if defined (ARDUINO_ARCH_SAMD) && defined (__SAMD21G18A__) // Adafruit Feather M0
   #define VBATPIN A7
 #else
-  #define VBATPIN A0
+  #define VBATPIN A5
 #endif
 
   unsigned int rawBattSenseValue = analogRead(VBATPIN);

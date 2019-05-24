@@ -6,8 +6,6 @@
  */
 
 #include <Arduino.h>
-#undef max
-#undef min
 
 // PlatformIO libraries
 #include <SerialCommand.h>    // pio lib install 173, lib details see https://github.com/kroimon/Arduino-SerialCommand
@@ -37,22 +35,34 @@
 #include <MyPM_ProcessAdapter.h>
 #include <DHT_Process.h>
 #include <MyDHT_ProcessAdapter.h>
-#include <LoraWanAbp.hpp>
-#include <LoRaWanDriver.hpp>
-#include <MyLoRaWanConfigAdapter.h>
-#include <LoraWanPriorityQueue.hpp>
-#include <MeasurementFacade.hpp>
-#include <SystemStatusFacade.hpp>
 #include <pb_encode.h>
 #include <pb_decode.h>
-#include <SerialCommand.h>
+#include <LoraWanPriorityQueue.h>
+#include <MeasurementFacade.h>
+#include <SystemStatusFacade.h>
+#include <LoraWanAbp.h>
+#include <LoRaWanDriver.h>
+#include <MyLoRaWanConfigAdapter.h>
+#include <ToggleButton.h>
+#include <LoRaWanRxDataToStatusLedAdapter.h>
+#include <MyLoRaWanTxDataEventAdapter.h>
+#include <MyMeasuremenFacadeAdapter.h>
+#include <MySystemStatusFacadeAdapter.h>
 
-/* This is the buffer where we will store our message. */
-bool setMessageOnce = true;
-LoRaWanDriver* m_LoraWanInterface;
-LoraWanPriorityQueue* m_LoraWanPriorityQueue;
-MeasurementFacade* m_MeasurementFacade;
-SystemStatusFacade* m_SystemStatusFacade;
+LoRaWanDriver* loRaWanInterface = 0;
+
+// Pin mapping
+//#if defined(ARDUINO_SAMD_FEATHER_M0)
+const lmic_pinmap lmic_pins = LmicPinMap_AdafruitFeatherM0();
+//#elif defined (__arm__) && defined (__SAM3X8E__)              // Arduino Due => Dragino Shield
+//const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
+//#elif defined (__avr__)                                       // Arduino Uno or Mega 2560 => Dragino Shield
+//const lmic_pinmap lmic_pins = LmicPinMap_DraginoShield();
+//#endif
+
+LoraWanPriorityQueue* loRaWanPriorityQueue = 0;
+MeasurementFacade* measurementFacade = 0;
+SystemStatusFacade* systemStatusFacade = 0;
 
 #ifndef BUILTIN_LED
 #define BUILTIN_LED 13
@@ -63,11 +73,14 @@ PM_Process* pmProcess = 0;
 DHT_Process* dhtProcess = 0;
 Assets* assets = 0;
 Battery* battery = 0;
+ToggleButton* statusLed = 0;
 
 void setup()
 {
   pinMode(BUILTIN_LED, OUTPUT);
   digitalWrite(BUILTIN_LED, 0);
+
+  delay(5000);
 
   setupProdDebugEnv();
 
@@ -86,6 +99,11 @@ void setup()
                                     };
   battery = new Battery(new MyBatteryAdapter(), battCfg);
 
+  //---------------------------------------------------------------------------
+  // Status LED (ToggleButton)
+  //---------------------------------------------------------------------------
+  statusLed = new ToggleButton(ToggleButton::BTN_NC, BUILTIN_LED);
+
   //-----------------------------------------------------------------------------
   // Sensors
   //-----------------------------------------------------------------------------
@@ -96,33 +114,23 @@ void setup()
   //-----------------------------------------------------------------------------
   // LoRaWan
   //-----------------------------------------------------------------------------
-  m_LoraWanInterface = new LoraWanAbp(new MyLoRaWanConfigAdapter(assets));
-  m_LoraWanPriorityQueue = new LoraWanPriorityQueue(m_LoraWanInterface);
-  m_MeasurementFacade = new MeasurementFacade(m_LoraWanPriorityQueue);
-  m_SystemStatusFacade = new SystemStatusFacade(m_LoraWanPriorityQueue);
-  m_LoraWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
-  m_LoraWanPriorityQueue->start();
-}
+  loRaWanInterface = new LoraWanAbp(new MyLoRaWanConfigAdapter(assets));
 
-SystemStatusFacade::State getBatteryState()
-{
-  if (battery->isBattVoltageOk())
-  {
-    return SystemStatusFacade::State::e_OK;
-  }
-  if (battery->isBattVoltageBelowWarnThreshold())
-  {
-    return SystemStatusFacade::State::e_WARNING;
-  }
-  if (battery->isBattVoltageBelowStopThreshold())
-  {
-    return SystemStatusFacade::State::e_STOP;
-  }
-  if (battery->isBattVoltageBelowShutdownThreshold())
-  {
-    return SystemStatusFacade::State::e_SHUTDOWN;
-  }
-  return SystemStatusFacade::State::e_UNDEFINED;
+  // #TODO nid: remove this again (this is just used when working with single channel gateway)
+//  loRaWanInterface->setIsSingleChannel(true);
+
+  loRaWanPriorityQueue = new LoraWanPriorityQueue(loRaWanInterface);
+
+  measurementFacade = new MeasurementFacade(loRaWanPriorityQueue);
+  measurementFacade->attachAdapter(new MyMeasuremenFacadeAdapter(measurementFacade, pmProcess, dhtProcess));
+
+  systemStatusFacade = new SystemStatusFacade(loRaWanPriorityQueue);
+  systemStatusFacade->assignAdapter(new MySystemStatusFacadeAdapter(battery, systemStatusFacade));
+
+  loRaWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
+  loRaWanPriorityQueue->start();
+
+  loRaWanInterface->setLoraWanRxDataEventAdapter(new LoRaWanRxDataToStatusLedAdapter(statusLed, loRaWanInterface));
 }
 
 void loop()
@@ -131,16 +139,15 @@ void loop()
   {
     sCmd->readSerial();         // process serial commands
   }
-  pmProcess->pollSerialData();
-  yield();                      // process Timers
-  float pm10 = pmProcess->getPm10Average();
-  float pm25 = pmProcess->getPm25Average();
-  float humidity = dhtProcess->getRelHumidity();
-  float temperature = dhtProcess->getTemperature();
-  float batteryVoltage = battery->getBatteryVoltage();
 
-  m_SystemStatusFacade->setBatteryStatus(getBatteryState(), batteryVoltage);
-  m_MeasurementFacade->setNewMeasurementData(pm25, pm10, temperature, humidity);
-  m_LoraWanInterface->loopOnce();
-  m_LoraWanPriorityQueue->update();
+  pmProcess->pollSerialData();
+
+  systemStatusFacade->updateSystemStatus();
+  measurementFacade->updateMeasurementData();
+
+  loRaWanPriorityQueue->update();
+
+  yield();                      // process Timers
+
+  loRaWanInterface->loopOnce();
 }
