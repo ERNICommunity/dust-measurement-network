@@ -1,19 +1,23 @@
+#include <LoraWanPriorityQueue.h>
 #include <LoraWanDataHandler.h>
 #include "../Protobuf/dustMeasurement.pb.h"
 #include <SerialCommand.h>
 
 LoraWanDataHandler::LoraWanDataHandler(LoraWanPriorityQueue* a_LoraWanInterface):
-m_LoraWanInterface(a_LoraWanInterface)
-{
+m_priorityQueue(a_LoraWanInterface)
+{ }
 
+LoraWanPriorityQueue* LoraWanDataHandler::loRaWanPriorityQueue()
+{
+  return m_priorityQueue;
 }
+
 
 bool LoraWanDataHandler::encode(const void* a_Message, const pb_field_t* a_FieldType, uint8_t a_RetRawData[128], uint64_t* a_RetMessageLength)
 {
-   bool status = false;
+  bool status = false;
   
   size_t messageLength;
-
 
   /* Create a stream that will write to our buffer. */
   pb_ostream_t stream = pb_ostream_from_buffer(a_RetRawData, 128);

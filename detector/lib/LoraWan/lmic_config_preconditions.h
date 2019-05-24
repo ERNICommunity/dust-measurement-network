@@ -1,1 +1,0 @@
-#define CFG_LMIC_REGION_MASK 1

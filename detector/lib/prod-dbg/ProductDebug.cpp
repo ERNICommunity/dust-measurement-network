@@ -37,9 +37,9 @@ void setupProdDebugEnv()
   setupDebugEnv();
 
   Serial.println();
-  Serial.println("-----------------------------------------------------------------");
-  Serial.println("Hello from Dust Measurement Network Detector Firmware Controller!");
-  Serial.println("-----------------------------------------------------------------");
+  Serial.println("-------------------------------------------------------");
+  Serial.println("Hello from Dust Measurement Network Detector Firmware !");
+  Serial.println("-------------------------------------------------------");
   Serial.println();
 }
 
