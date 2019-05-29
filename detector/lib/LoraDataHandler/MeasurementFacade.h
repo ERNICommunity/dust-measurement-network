@@ -1,16 +1,13 @@
 #ifndef _LoraDataHandler_MeasurementFacade_h_
 #define _LoraDataHandler_MeasurementFacade_h_
 
-#include <inttypes.h>
+//#include <inttypes.h>
 #include <LoraWanPriorityQueue.h>
 #include <LoraWanDataHandler.h>
 
 
-class IMesurementAdapter;
 class LoraWanPriorityQueue;
 class IMeasurementFacadeAdapter;
-class PM_Process;
-class DHT_Process;
 
 class MeasurementFacade : public LoraWanDataHandler
 {

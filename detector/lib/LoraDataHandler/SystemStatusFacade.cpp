@@ -12,7 +12,7 @@ SystemStatusFacade::SystemStatusFacade(LoraWanPriorityQueue* a_LoraWanInterface,
 , m_adapter(adapter)
 { }
 
-void SystemStatusFacade::assignAdapter(ISystemStatusFacadeAdapter* adapter)
+void SystemStatusFacade::attachAdapter(ISystemStatusFacadeAdapter* adapter)
 {
   m_adapter = adapter;
 }
