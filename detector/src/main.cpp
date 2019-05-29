@@ -125,7 +125,7 @@ void setup()
   measurementFacade->attachAdapter(new MyMeasuremenFacadeAdapter(measurementFacade, pmProcess, dhtProcess));
 
   systemStatusFacade = new SystemStatusFacade(loRaWanPriorityQueue);
-  systemStatusFacade->assignAdapter(new MySystemStatusFacadeAdapter(battery, systemStatusFacade));
+  systemStatusFacade->attachAdapter(new MySystemStatusFacadeAdapter(battery, systemStatusFacade));
 
   loRaWanPriorityQueue->setUpdateCycleHighPriorityPerdioc(2);
   loRaWanPriorityQueue->start();

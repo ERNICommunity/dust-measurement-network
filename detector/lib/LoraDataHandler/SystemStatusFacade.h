@@ -1,11 +1,13 @@
-
 #ifndef _LoraDataHandler_SystemStatusFacade_h_
 #define _LoraDataHandler_SystemStatusFacade_h_
-#include <inttypes.h>
+
+//#include <inttypes.h>
+#include <LoraWanPriorityQueue.h>
 #include <LoraWanDataHandler.h>
 #include "../Protobuf/batteryState.pb.h"
 #include <map>
 
+class LoraWanPriorityQueue;
 class ISystemStatusFacadeAdapter;
 
 class SystemStatusFacade : public LoraWanDataHandler
@@ -20,7 +22,7 @@ public:
 
   void setBatteryStatus(State a_State, float a_Voltage);
 
-  void assignAdapter(ISystemStatusFacadeAdapter* adapter);
+  void attachAdapter(ISystemStatusFacadeAdapter* adapter);
   ISystemStatusFacadeAdapter* adapter();
 
   void updateSystemStatus();
