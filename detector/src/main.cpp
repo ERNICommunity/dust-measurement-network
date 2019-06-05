@@ -6,6 +6,7 @@
  */
 
 #include <Arduino.h>
+#include <Wire.h>
 
 // PlatformIO libraries
 #include <SerialCommand.h>    // pio lib install 173, lib details see https://github.com/kroimon/Arduino-SerialCommand
@@ -13,6 +14,7 @@
 #include <Adafruit_Sensor.h>  // pio lib 19, 31, lib details see https://github.com/adafruit/DHT-sensor-library
 #include <DHT.h>
 #include <DHT_U.h>
+#include <Adafruit_FRAM_I2C.h> // pio lib 658, lib details see https://github.com/adafruit/Adafruit_FRAM_I2C
 
 // private libraries
 #include <DbgCliNode.h>
@@ -49,6 +51,7 @@
 #include <MyMeasuremenFacadeAdapter.h>
 #include <MySystemStatusFacadeAdapter.h>
 
+
 LoRaWanDriver* loRaWanInterface = 0;
 
 // Pin mapping
@@ -75,6 +78,8 @@ Assets* assets = 0;
 Battery* battery = 0;
 ToggleButton* statusLed = 0;
 
+Adafruit_FRAM_I2C* fram = 0;
+
 void setup()
 {
   pinMode(BUILTIN_LED, OUTPUT);
@@ -83,6 +88,51 @@ void setup()
   delay(5000);
 
   setupProdDebugEnv();
+
+  //-----------------------------------------------------------------------------
+  // FRAM Test
+  //-----------------------------------------------------------------------------
+  fram = new Adafruit_FRAM_I2C();
+  if (0 != fram)
+  {
+    if (fram->begin())
+    {  // you can stick the new i2c addr in here, e.g. begin(0x51);
+      Serial.println("Found I2C FRAM");
+    }
+    else
+    {
+      Serial.println("No I2C FRAM found ... check your connections\r\n");
+      fram = 0;
+    }
+  }
+  if (0 != fram)
+  {
+    // Read the first byte
+    uint8_t test = fram->read8(0x0);
+    Serial.print("Restarted ");
+    Serial.print(test);
+    Serial.println(" times");
+    // Test write ++
+    fram->write8(0x0, test + 1);
+
+    // dump the entire 32K of memory!
+    uint8_t value;
+    for (uint16_t a = 0; a < 32768; a++)
+    {
+      value = fram->read8(a);
+      if ((a % 32) == 0)
+      {
+        Serial.print("\n 0x");
+        Serial.print(a, HEX);
+        Serial.print(": ");
+      }
+      Serial.print("0x");
+      if (value < 0x1)
+        Serial.print('0');
+      Serial.print(value, HEX);
+      Serial.print(" ");
+    }
+  }
 
   //-----------------------------------------------------------------------------
   // Assets (inventory and persistent data)
