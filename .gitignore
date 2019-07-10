@@ -25,3 +25,4 @@ detector/\.vscode/
 
 __pycache__/
 ttn-gwy/*.txt
+/detector/.pio
