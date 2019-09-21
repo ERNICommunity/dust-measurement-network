@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 
 import { LoadingBarModule } from '@ngx-loading-bar/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ChartistModule } from 'ng-chartist';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -39,6 +40,7 @@ import { LegendComponent } from './legend/legend.component';
       { path: 'about', component: AboutComponent}
     ]),
     LoadingBarModule,
+    ChartistModule,
     NgbModule
   ],
   providers: [
