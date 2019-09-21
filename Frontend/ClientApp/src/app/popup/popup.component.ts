@@ -8,7 +8,7 @@ import { SensorDto } from '../service/SensorDto';
   styleUrls: ['./popup.component.css']
 })
 export class PopupComponent {
-  @ViewChild('content') private _content;
+  @ViewChild('content', {static: false}) private _content;
 
   id: number;
   name: string;
