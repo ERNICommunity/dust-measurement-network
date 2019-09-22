@@ -56,7 +56,7 @@ export class HistoryChartComponent implements OnInit {
         labels: results.map(x => new Date(x.timestamp)),
         series: [
           results.map(x => x.particulateMatter25),
-          results.map(x => x.particulateMatter25)
+          results.map(x => x.particulateMatter100)
         ]
       },
       err => console.error(err)
