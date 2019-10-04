@@ -7,9 +7,23 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}"
+                "${workspaceFolder}/hh-dust-fe-be.sln"
             ],
             "problemMatcher": "$msCompile"
-        }
+        },
+        {
+            "label": "publish frontend",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "-c",
+                "Release",
+                "${workspaceFolder}/Frontend/Frontend.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
     ]
 }

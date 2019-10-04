@@ -5,28 +5,17 @@
    "version": "0.2.0",
    "configurations": [
         {
-            "name": ".NET Core Launch (frontend)",
+            "name": ".NET Core Launch (web frontend)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/Frontend/bin/Debug/netcoreapp2.2/Frontend.dll",
+            "program": "${workspaceFolder}/Frontend/bin/Debug/netcoreapp3.0/Frontend.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Frontend",
             "stopAtEntry": false,
-            "internalConsoleOptions": "openOnSessionStart",
-            "launchBrowser": {
-                "enabled": true,
-                "args": "${auto-detect-url}",
-                "windows": {
-                    "command": "cmd.exe",
-                    "args": "/C start ${auto-detect-url}"
-                },
-                "osx": {
-                    "command": "open"
-                },
-                "linux": {
-                    "command": "xdg-open"
-                }
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
             },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
@@ -40,11 +29,11 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/DataSyncService/bin/Debug/netcoreapp2.2/DataSyncService.dll",
+            "program": "${workspaceFolder}/DataSyncService/bin/Debug/netcoreapp3.0/DataSyncService.dll",
             "args": [],
             "cwd": "${workspaceFolder}/DataSyncService",
             "stopAtEntry": false,
-            "console": "externalTerminal"
+            "console": "internalConsole"
         },
         {
             "name": ".NET Core Attach",
