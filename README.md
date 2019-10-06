@@ -1,6 +1,6 @@
 # ERNI Hack&amp;Hike - Dust Measurement Network: Frontend + DataSync
 
-This repo contains 2 main projects: Frontend (Angular 7 application with ASP.NET Core backend) and DataSyncService (.NET Core console app). There is also shared Model project (EF Core model).
+This repo contains 2 main projects: Frontend (Angular 8 application with ASP.NET Core 3.0 backend) and DataSyncService (.NET Core 3.0 console app). There is also shared Model project (EF Core model).
 
 ## Frontend
 
@@ -24,12 +24,11 @@ This is a [.NET Core](https://www.microsoft.com/net/download) console applicatio
 
 The project is developed in [Visual Studio Code](https://code.visualstudio.com/) so if you use this IDE, your life is simpler, because VS Code project settings are already part of the repo. To launch a project, just hit F5 (pick what project you want to run in VS Code's Debug tab).
 
-Few usefull VS Code extensions:
+Few useful VS Code extensions:
 - C# by Microsoft (mandatory for running/debugging .NET code)
 - Angular Language Service by Angular
 - TSlint by Microsoft
 - EditorConfig for VS Code by EditorConfig
-- vscode-icons by Roberto Huertas
 
 Remember that **whenever you pull new version, it's a good idea to reinstall backend and frontend dependencies**, as someone might have changed them.
 
