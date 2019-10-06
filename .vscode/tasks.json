@@ -7,7 +7,9 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/hh-dust-fe-be.sln"
+                "${workspaceFolder}/hh-dust-fe-be.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile",
             "group": {
