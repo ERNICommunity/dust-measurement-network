@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { LoadingBarModule } from '@ngx-loading-bar/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ChartistModule } from 'ng-chartist';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -41,7 +42,8 @@ import { LegendComponent } from './legend/legend.component';
     ]),
     LoadingBarModule,
     ChartistModule,
-    NgbModule
+    NgbModule,
+    FontAwesomeModule
   ],
   providers: [
     DustService,

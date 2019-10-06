@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { faMapMarkedAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
 @Component({
   selector: 'app-nav-menu',
@@ -7,6 +9,9 @@ import { Component } from '@angular/core';
 })
 export class NavMenuComponent {
   isExpanded = false;
+  mapIcon = faMapMarkedAlt;
+  aboutIcon = faInfoCircle;
+  githubIcon = faGithub;
 
   collapse() {
     this.isExpanded = false;
