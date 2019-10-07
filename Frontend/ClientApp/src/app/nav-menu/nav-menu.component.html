@@ -1,11 +1,11 @@
 <nav class='navbar navbar-expand-md fixed-top navbar-dark bg-dark'>
   <a class='navbar-brand' [routerLink]='["/"]'>ERNI Dust Measurement</a>
 
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" (click)="toggle()">
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent" [ngClass]='{ "in": isExpanded }'>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent" [ngbCollapse]="isCollapsed">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item" routerLinkActive='active' [routerLinkActiveOptions]='{ exact: true }'>
         <a class="nav-link" routerLink='/' (click)='collapse()'>

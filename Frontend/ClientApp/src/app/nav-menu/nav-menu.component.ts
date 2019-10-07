@@ -8,16 +8,16 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons';
   styleUrls: ['./nav-menu.component.css']
 })
 export class NavMenuComponent {
-  isExpanded = false;
+  isCollapsed = true;
   mapIcon = faMapMarkedAlt;
   aboutIcon = faInfoCircle;
   githubIcon = faGithub;
 
-  collapse() {
-    this.isExpanded = false;
+  toggle() {
+    this.isCollapsed = !this.isCollapsed;
   }
 
-  toggle() {
-    this.isExpanded = !this.isExpanded;
+  collapse() {
+    this.isCollapsed = true;
   }
 }
