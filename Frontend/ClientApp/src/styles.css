@@ -22,6 +22,9 @@ div.user-location.ol-control {
   bottom: 2.5em;
   right: .5em;
 }
+div.user-location span {
+  vertical-align: 4px;
+}
 
 .ct-series-a .ct-line, .ct-series-a .ct-point {
   stroke: blue;
