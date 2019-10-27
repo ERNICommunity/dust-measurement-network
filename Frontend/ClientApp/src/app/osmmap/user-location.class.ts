@@ -15,7 +15,7 @@ export class UserLocation extends Control {
     element.appendChild(button);
 
     super({
-      element: element
+      element
     });
 
     button.addEventListener('click', () => clickCallback(super.getMap()), false);

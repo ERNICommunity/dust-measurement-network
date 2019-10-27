@@ -152,11 +152,11 @@ export class OsmMapComponent implements OnInit, OnDestroy {
 
   private drawMarkers(markers: SensorDto[]) {
     this._vectorSource.clear();
-    for (let i = 0; i < markers.length; i++) {
+    for (const marker of markers) {
       const iconFeature = new Feature({
-        geometry: new Point(fromLonLat([markers[i].longitude, markers[i].latitude])),
-        name: markers[i].name,
-        data: markers[i]
+        geometry: new Point(fromLonLat([marker.longitude, marker.latitude])),
+        name: marker.name,
+        data: marker
       });
       this._vectorSource.addFeature(iconFeature);
     }
