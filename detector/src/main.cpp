@@ -10,22 +10,9 @@
 // PlatformIO libraries
 #include <SerialCommand.h>    // pio lib install 173, lib details see https://github.com/kroimon/Arduino-SerialCommand
 #include <Timer.h>            // pio lib install 1699, lib details see https://github.com/dniklaus/wiring-timer
-#include <Adafruit_Sensor.h>  // pio lib 19, 31, lib details see https://github.com/adafruit/DHT-sensor-library
-#include <DHT.h>
-#include <DHT_U.h>
 
 // private libraries
-#include <DbgCliNode.h>
-#include <DbgCliTopic.h>
-#include <DbgCliCommand.h>
-#include <DbgTracePort.h>
-#include <DbgTraceContext.h>
-#include <DbgTraceOut.h>
-#include <DbgPrintConsole.h>
-#include <DbgTraceLevel.h>
-#include <AppDebug.h>
 #include <ProductDebug.h>
-#include <RamUtils.h>
 #include <Assets.h>
 #include <MyDeviceSerialNrAdapter.h>
 #include <DetectorFakePersDataMemory.h>
@@ -35,8 +22,6 @@
 #include <MyPM_ProcessAdapter.h>
 #include <DHT_Process.h>
 #include <MyDHT_ProcessAdapter.h>
-#include <pb_encode.h>
-#include <pb_decode.h>
 #include <LoraWanPriorityQueue.h>
 #include <MeasurementFacade.h>
 #include <SystemStatusFacade.h>
@@ -45,7 +30,7 @@
 #include <MyLoRaWanConfigAdapter.h>
 #include <ToggleButton.h>
 #include <LoRaWanRxDataToStatusLedAdapter.h>
-#include <MyLoRaWanTxDataEventAdapter.h>
+//#include <MyLoRaWanTxDataEventAdapter.h>   // TODO: implementation not used up to now!
 #include <MyMeasuremenFacadeAdapter.h>
 #include <MySystemStatusFacadeAdapter.h>
 
@@ -68,12 +53,12 @@ SystemStatusFacade* systemStatusFacade = 0;
 #define BUILTIN_LED 13
 #endif
 
-SerialCommand* sCmd = 0;
-PM_Process* pmProcess = 0;
-DHT_Process* dhtProcess = 0;
-Assets* assets = 0;
-Battery* battery = 0;
-ToggleButton* statusLed = 0;
+SerialCommand*  sCmd = 0;
+PM_Process*     pmProcess = 0;
+DHT_Process*    dhtProcess = 0;
+Assets*         assets = 0;
+Battery*        battery = 0;
+ToggleButton*   statusLed = 0;
 
 void setup()
 {
@@ -147,7 +132,7 @@ void loop()
 
   loRaWanPriorityQueue->update();
 
-  yield();                      // process Timers
+  scheduleTimers();             // process Timers
 
   loRaWanInterface->loopOnce();
 }
