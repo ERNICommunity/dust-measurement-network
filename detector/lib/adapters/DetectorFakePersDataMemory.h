@@ -23,18 +23,7 @@ public:
   void setDeviceSerialNr(unsigned long int deviceSerialNr);
 
 
-public:
-  typedef enum
-  {
-    KT_devId   = 0,
-    KT_devAddr = 1,
-    KT_nwkSKey = 2,
-    KT_appSKey = 3,
-    KT_NumKeys
-  } KeyType;
-
   static const unsigned int s_numDevices;
-  static const unsigned int s_numMaxChars;
 
 private:
   unsigned int sizeOfDeviceKeyStorage();
