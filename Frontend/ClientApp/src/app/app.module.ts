@@ -38,7 +38,7 @@ import { LegendComponent } from './legend/legend.component';
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: OsmMapComponent, pathMatch: 'full' },
-      { path: 'about', component: AboutComponent}
+      { path: 'about', component: AboutComponent }
     ]),
     LoadingBarModule,
     ChartistModule,
