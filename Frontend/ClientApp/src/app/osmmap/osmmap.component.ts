@@ -166,7 +166,9 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     navigator.geolocation.getCurrentPosition(pos => {
       const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
       m.getView().animate({center: coords, zoom: 13});
-    });
+    },
+    err => console.error('geolocation error', err),
+    { enableHighAccuracy: true, timeout: 2000 });
   }
 
   private getColor25(matterDensity: number) {
