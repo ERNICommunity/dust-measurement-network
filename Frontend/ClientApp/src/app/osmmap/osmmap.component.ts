@@ -30,7 +30,7 @@ import { UserLocation } from './user-location.class';
 export class OsmMapComponent implements OnInit, OnDestroy {
   private _vectorSource = new VectorSource();
   private _mapMoveSubscription: Subscription;
-  @ViewChild(PopupComponent, {static: false}) private _popup: PopupComponent;
+  @ViewChild(PopupComponent) private _popup: PopupComponent;
 
   constructor(private _dustService: DustService) {}
 

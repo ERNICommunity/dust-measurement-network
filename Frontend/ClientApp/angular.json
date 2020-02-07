@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "hh_fe": {
+    "hh-fe": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -18,7 +18,7 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "aot": false,
+            "aot": true,
             "progress": true,
             "assets": [
               "src/assets"
@@ -44,7 +44,6 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -53,6 +52,10 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
                 }
               ]
             }
@@ -61,18 +64,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "hh_fe:build"
+            "browserTarget": "hh-fe:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "hh_fe:build:production"
+              "browserTarget": "hh-fe:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "hh_fe:build"
+            "browserTarget": "hh-fe:build"
           }
         },
         "test": {
@@ -109,15 +112,15 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "hh_fe:serve"
+            "devServerTarget": "hh-fe:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "hh_fe:serve:production"
+              "devServerTarget": "hh-fe:serve:production"
             }
           }
         }
       }
     }},
-  "defaultProject": "hh_fe"
+  "defaultProject": "hh-fe"
 }
