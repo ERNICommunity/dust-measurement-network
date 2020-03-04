@@ -14,7 +14,7 @@ import Point from 'ol/geom/Point';
 import MapEvent from 'ol/MapEvent';
 import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
 
-import { Subscription, fromEvent } from 'rxjs';
+import { Subscription, fromEvent, timer } from 'rxjs';
 import { debounceTime, map, switchMap, retry } from 'rxjs/operators';
 
 import { SensorDto } from '../service/SensorDto';
@@ -72,6 +72,9 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     this._mapMoveSubscription = fromEvent(osmMap, 'moveend').pipe(
       debounceTime(1000),
       map((evt: MapEvent) => transformExtent(evt.frameState.extent, evt.map.getView().getProjection(), 'EPSG:4326')),
+      switchMap(extent => timer(0, 5000).pipe( // emit immediatelly, then every 5s
+        map(_ => extent)
+      )),
       switchMap(extent => this._dustService.getSensors(extent[0], extent[1], extent[2], extent[3])),
       retry() // resubscribe to original observable again if getting sensors fails
     ).subscribe(
