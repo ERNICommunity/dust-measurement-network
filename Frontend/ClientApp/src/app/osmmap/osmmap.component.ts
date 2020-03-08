@@ -14,8 +14,8 @@ import Point from 'ol/geom/Point';
 import MapEvent from 'ol/MapEvent';
 import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
 
-import { Subscription, fromEvent, timer } from 'rxjs';
-import { debounceTime, map, switchMap, retry } from 'rxjs/operators';
+import { Subscription, fromEvent, timer, empty } from 'rxjs';
+import { debounceTime, map, switchMap, catchError } from 'rxjs/operators';
 
 import { SensorDto } from '../service/SensorDto';
 import { DustService } from '../service/dust.service';
@@ -75,8 +75,12 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       switchMap(extent => timer(0, 5000).pipe( // emit immediatelly, then every 5s
         map(_ => extent)
       )),
-      switchMap(extent => this._dustService.getSensors(extent[0], extent[1], extent[2], extent[3])),
-      retry() // resubscribe to original observable again if getting sensors fails
+      switchMap(extent => this._dustService.getSensors(extent[0], extent[1], extent[2], extent[3]).pipe(
+        catchError(e => {
+          console.warn('getting sensors failed', e);
+          return empty(); // if call to server fails just ignore it
+        })
+      )),
     ).subscribe(
       result => this.drawMarkers(result),
       err => console.error('mapMoveSubscription fail', err)
@@ -86,7 +90,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-   this._mapMoveSubscription.unsubscribe();
+    this._mapMoveSubscription.unsubscribe();
   }
 
   private getStyle(feature: Feature) {
