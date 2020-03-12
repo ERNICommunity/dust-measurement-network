@@ -27,7 +27,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.27",
     "@fortawesome/free-brands-svg-icons": "^5.12.1",
     "@fortawesome/free-solid-svg-icons": "^5.12.1",
-    "@ng-bootstrap/ng-bootstrap": "^5.3.0",
+    "@ng-bootstrap/ng-bootstrap": "^6.0.0",
     "@nguniversal/module-map-ngfactory-loader": "^8.2.6",
     "@ngx-loading-bar/core": "^4.2.0",
     "aspnet-prerendering": "^3.0.1",
@@ -37,7 +37,7 @@
     "ng-chartist": "^4.1.0",
     "ol": "^6.2.1",
     "rxjs": "^6.5.4",
-    "tslib": "^1.10.0",
+    "tslib": "^1.11.1",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
@@ -46,9 +46,9 @@
     "@angular/compiler-cli": "^9.0.6",
     "@angular/language-service": "^9.0.6",
     "@types/chartist": "~0.9.47",
-    "@types/jasmine": "^3.5.4",
+    "@types/jasmine": "^3.5.9",
     "@types/jasminewd2": "~2.0.8",
-    "@types/node": "^13.7.1",
+    "@types/node": "^13.9.0",
     "codelyzer": "^5.1.2",
     "jasmine-core": "^3.5.0",
     "jasmine-spec-reporter": "^4.2.1",
@@ -59,7 +59,7 @@
     "karma-jasmine-html-reporter": "^1.5.2",
     "protractor": "^5.4.3",
     "ts-node": "^8.6.2",
-    "tslint": "^6.0.0",
+    "tslint": "^6.1.0",
     "typescript": "^3.7.5",
     "typescript-tslint-plugin": "^0.5.5"
   }
