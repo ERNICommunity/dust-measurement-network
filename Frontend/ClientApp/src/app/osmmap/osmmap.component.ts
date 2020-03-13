@@ -14,7 +14,7 @@ import Point from 'ol/geom/Point';
 import MapEvent from 'ol/MapEvent';
 import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
 
-import { Subscription, fromEvent, timer, empty } from 'rxjs';
+import { Subscription, fromEvent, timer, EMPTY } from 'rxjs';
 import { debounceTime, map, switchMap, catchError } from 'rxjs/operators';
 
 import { SensorDto } from '../service/SensorDto';
@@ -78,7 +78,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       switchMap(extent => this._dustService.getSensors(extent[0], extent[1], extent[2], extent[3]).pipe(
         catchError(e => {
           console.warn('getting sensors failed', e);
-          return empty(); // if call to server fails just ignore it
+          return EMPTY; // if call to server fails just ignore it
         })
       )),
     ).subscribe(

@@ -6,18 +6,21 @@
     </small>
   </div>
   <div class="modal-body">
-    <ngb-tabset>
-      <ngb-tab title="History">
-        <ng-template ngbTabContent>
+    <ul ngbNav #nav="ngbNav" class="nav-tabs">
+      <li ngbNavItem>
+        <a ngbNavLink>History</a>
+        <ng-template ngbNavContent>
           <app-history-chart [id]="id"></app-history-chart>
         </ng-template>
-      </ngb-tab>
-      <ngb-tab title="Prediction">
-        <ng-template ngbTabContent>
+      </li>
+      <li ngbNavItem>
+        <a ngbNavLink>Prediction</a>
+        <ng-template ngbNavContent>
           <app-prediction-chart [id]="id"></app-prediction-chart>
         </ng-template>
-      </ngb-tab>
-    </ngb-tabset>
+      </li>
+    </ul>
+    <div [ngbNavOutlet]="nav"></div>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Close</button>
