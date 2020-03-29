@@ -43,7 +43,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         }),
         new VectorLayer({
           source: new Cluster({
-            attributions: '© Dust data by <a href="https://www.betterask.erni/">ERNI</a> Community',
+            attributions: '© Dust data by <a href="https://www.betterask.erni/" target="_blank">ERNI</a> Community',
             source: this._vectorSource,
             distance: 30
           }),
