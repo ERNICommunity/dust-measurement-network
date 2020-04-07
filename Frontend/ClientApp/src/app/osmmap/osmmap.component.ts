@@ -12,6 +12,7 @@ import { fromLonLat, transformExtent } from 'ol/proj';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import MapEvent from 'ol/MapEvent';
+import MapBrowserEvent from 'ol/MapBrowserEvent';
 import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
 
 import { Subscription, fromEvent, timer, EMPTY } from 'rxjs';
@@ -62,7 +63,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       ])
     });
 
-    osmMap.on('click', evt => {
+    osmMap.on('click', (evt: MapBrowserEvent) => {
       const features = evt.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
       if (features && features.get('features').length === 1) {
         this._popup.open(features.get('features')[0].get('data'));
