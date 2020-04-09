@@ -7,7 +7,7 @@ using Model;
 namespace Frontend.Controllers
 {
     [Route("api/[controller]")]
-    public class SensorsController : Controller
+    public class SensorsController : ControllerBase
     {
         private readonly DustContext _ctx;
 
