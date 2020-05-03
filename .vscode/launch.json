@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (web frontend)",
+            "name": ".NET Core Launch (web backend+frontend)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -42,18 +42,18 @@
             "processId": "${command:pickProcess}"
         },
         {
-            "name": "Launch Firefox",
+            "name": "Launch frontend - Firefox",
             "type": "firefox",
             "request": "launch",
-            "reAttach": true,
-            "url": "http://localhost:5001",
-            "webRoot": "${workspaceFolder}",
-            "pathMappings": [
-                {
-                    "url": "webpack:///src",
-                    "path": "${workspaceFolder}/Frontend/ClientApp/src"
-                }
-            ]
-        }
+            "url": "https://localhost:5001",
+            "webRoot": "${workspaceFolder}/Frontend/ClientApp/"
+        },
+        {
+            "name": "Launch frontend - Chrome",
+            "type": "chrome",
+            "request": "launch",
+            "url": "https://localhost:5001",
+            "webRoot": "${workspaceFolder}/Frontend/ClientApp/"
+        },
     ]
 }
