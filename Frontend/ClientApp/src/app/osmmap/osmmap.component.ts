@@ -10,6 +10,7 @@ import Cluster from 'ol/source/Cluster';
 import { defaults as defaultControls, OverviewMap, Attribution, ScaleLine } from 'ol/control';
 import { fromLonLat, transformExtent } from 'ol/proj';
 import Feature from 'ol/Feature';
+import Geolocation from 'ol/Geolocation';
 import Point from 'ol/geom/Point';
 import MapEvent from 'ol/MapEvent';
 import MapBrowserEvent from 'ol/MapBrowserEvent';
@@ -29,7 +30,8 @@ import { UserLocation } from './user-location.class';
   styleUrls: ['./osmmap.component.css']
 })
 export class OsmMapComponent implements OnInit, OnDestroy {
-  private _vectorSource = new VectorSource();
+  private _sensorsVectorSource = new VectorSource();
+  private _positionFeature = new Feature();
   private _mapMoveSubscription: Subscription;
   @ViewChild(PopupComponent) private _popup: PopupComponent;
 
@@ -43,9 +45,14 @@ export class OsmMapComponent implements OnInit, OnDestroy {
           source: new OSM()
         }),
         new VectorLayer({
+          source: new VectorSource({
+            features: [this._positionFeature]
+          })
+        }),
+        new VectorLayer({
           source: new Cluster({
             attributions: '© Dust data by <a href="https://www.betterask.erni/" target="_blank">ERNI</a> Community',
-            source: this._vectorSource,
+            source: this._sensorsVectorSource,
             distance: 30
           }),
           style: f => this.getStyle(f)
@@ -59,9 +66,18 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         new Attribution({collapsible: true}),
         new ScaleLine(),
         new OverviewMap(),
-        new UserLocation(this.navigateMapToUsersPosition)
+        new UserLocation(m =>  this.navigateMapToUsersPosition(m))
       ])
     });
+
+    const geolocation = new Geolocation({
+      tracking: true,
+      trackingOptions: { enableHighAccuracy: true, timeout: 2000 },
+      projection: osmMap.getView().getProjection()
+    });
+    geolocation.on('error', err => console.error('geolocation error', err));
+    geolocation.on('change', evt => this._positionFeature.setGeometry(evt.target.getAccuracyGeometry()));
+    geolocation.once('change', evt => osmMap.getView().animate({center: evt.target.getPosition(), zoom: 10}));
 
     osmMap.on('click', (evt: MapBrowserEvent) => {
       const features = evt.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
@@ -86,8 +102,6 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       result => this.drawMarkers(result),
       err => console.error('mapMoveSubscription fail', err)
     );
-
-    this.navigateMapToUsersPosition(osmMap);
   }
 
   ngOnDestroy(): void {
@@ -155,25 +169,20 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     }
   }
 
-  private drawMarkers(markers: SensorDto[]) {
-    this._vectorSource.clear();
-    for (const marker of markers) {
-      const iconFeature = new Feature({
-        geometry: new Point(fromLonLat([marker.longitude, marker.latitude])),
-        name: marker.name,
-        data: marker
+  private drawMarkers(dtos: SensorDto[]) {
+    this._sensorsVectorSource.clear();
+    for (const dto of dtos) {
+      const sensorFeature = new Feature({
+        geometry: new Point(fromLonLat([dto.longitude, dto.latitude])),
+        name: dto.name,
+        data: dto
       });
-      this._vectorSource.addFeature(iconFeature);
+      this._sensorsVectorSource.addFeature(sensorFeature);
     }
   }
 
   private navigateMapToUsersPosition(m: Map) {
-    navigator.geolocation.getCurrentPosition(pos => {
-      const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
-      m.getView().animate({center: coords, zoom: 13});
-    },
-    err => console.error('geolocation error', err),
-    { enableHighAccuracy: true, timeout: 2000 });
+    m.getView().fit(this._positionFeature.getGeometry(), { duration: 1000 });
   }
 
   private getColor25(matterDensity: number) {
