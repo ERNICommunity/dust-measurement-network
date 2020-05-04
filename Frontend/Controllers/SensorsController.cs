@@ -24,7 +24,7 @@ namespace Frontend.Controllers
         public IEnumerable<SensorDto> Index([FromQuery]double minLon, [FromQuery]double minLat, [FromQuery]double maxLon, [FromQuery]double maxLat)
         {
             return (from s in _ctx.Sensors
-            where s.Longitude >= minLon && s.Longitude <= maxLon 
+            where minLon < maxLon ? (s.Longitude >= minLon && s.Longitude <= maxLon) : ((s.Longitude >= minLon && s.Longitude <= 180) || (s.Longitude >= -180 && s.Longitude <= maxLon)) 
             where s.Latitude >= minLat && s.Latitude <= maxLat 
             let lastData = s.SensorDatas.OrderByDescending(x => x.Timestamp).FirstOrDefault()
             select new SensorDto {

@@ -8,7 +8,8 @@ import OSM from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
 import Cluster from 'ol/source/Cluster';
 import { defaults as defaultControls, OverviewMap, Attribution, ScaleLine } from 'ol/control';
-import { fromLonLat, transformExtent } from 'ol/proj';
+import { fromLonLat, toLonLat } from 'ol/proj';
+import { getBottomLeft, getTopRight } from 'ol/extent';
 import Feature from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
 import Point from 'ol/geom/Point';
@@ -59,8 +60,9 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         })
       ],
       view: new View({
-        center: [0, 0],
-        zoom: 0
+        center: fromLonLat([19.696058, 48.6737532]),
+        minZoom: 3,
+        zoom: 4
       }),
       controls: defaultControls({attribution: false}).extend([
         new Attribution({collapsible: true}),
@@ -88,11 +90,11 @@ export class OsmMapComponent implements OnInit, OnDestroy {
 
     this._mapMoveSubscription = fromEvent(osmMap, 'moveend').pipe(
       debounceTime(1000),
-      map((evt: MapEvent) => transformExtent(evt.frameState.extent, evt.map.getView().getProjection(), 'EPSG:4326')),
+      map((evt: MapEvent) => [toLonLat(getBottomLeft(evt.frameState.extent)), toLonLat(getTopRight(evt.frameState.extent))]),
       switchMap(extent => timer(0, 5000).pipe( // emit immediatelly, then every 5s
         map(_ => extent)
       )),
-      switchMap(extent => this._dustService.getSensors(extent[0], extent[1], extent[2], extent[3]).pipe(
+      switchMap(extent => this._dustService.getSensors(extent[0][0], extent[0][1], extent[1][0], extent[1][1]).pipe(
         catchError(e => {
           console.warn('getting sensors failed', e);
           return EMPTY; // if call to server fails just ignore it
