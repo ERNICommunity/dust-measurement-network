@@ -35,13 +35,14 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   private _sensorsVectorSource = new VectorSource();
   private _positionFeature = new Feature();
   private _mapMoveSubscription: Subscription;
+  private _resizeSubscription: Subscription;
   @ViewChild(PopupComponent) private _popup: PopupComponent;
 
   constructor(private _dustService: DustService, private _configService: ConfigService) {}
 
   ngOnInit() {
     const osmMap = new Map({
-      target: 'osmmap',
+      target: 'osm-map',
       layers: [
         new TileLayer({
           source: new OSM()
@@ -62,8 +63,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       ],
       view: new View({
         center: fromLonLat([19.696058, 48.6737532]),
-        minZoom: 3,
-        zoom: 4
+        zoom: 0
       }),
       controls: defaultControls({attribution: false}).extend([
         new Attribution({collapsible: true}),
@@ -72,6 +72,9 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         new UserLocation(m =>  this.navigateMapToUsersPosition(m))
       ])
     });
+    const minZoom = this.calculateMinZoom(osmMap.getTargetElement());
+    osmMap.getView().setMinZoom(minZoom);
+    osmMap.getView().setZoom(minZoom + 2);
 
     const geolocation = new Geolocation({
       tracking: true,
@@ -80,7 +83,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     });
     geolocation.on('error', err => console.error('geolocation error', err));
     geolocation.on('change', evt => this._positionFeature.setGeometry(evt.target.getAccuracyGeometry()));
-    geolocation.once('change', evt => osmMap.getView().animate({center: evt.target.getPosition(), zoom: 10}));
+    geolocation.once('change', evt => osmMap.getView().animate({center: evt.target.getPosition()}));
 
     osmMap.on('click', (evt: MapBrowserEvent) => {
       const features = evt.map.forEachFeatureAtPixel(evt.pixel, (ft, layer) => ft);
@@ -105,6 +108,14 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       result => this.drawMarkers(result),
       err => console.error('mapMoveSubscription fail', err)
     );
+
+    this._resizeSubscription = fromEvent(osmMap, 'change:size').pipe(
+      debounceTime(100),
+      map((evt: any) => this.calculateMinZoom(evt.target.getTargetElement()))
+    ).subscribe(
+      zoom => osmMap.getView().setMinZoom(zoom),
+      err => console.error('resizeSubscription fail', err)
+    );
   }
 
   private drawMarkers(dtos: SensorDto[]) {
@@ -123,8 +134,15 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     m.getView().fit(this._positionFeature.getGeometry(), { duration: 1000 });
   }
 
+  // calculate minimal zoom level that allows to see only one world at given map size
+  private calculateMinZoom(elem: HTMLElement) {
+    const width = elem.clientWidth;
+    return Math.ceil(Math.LOG2E * Math.log(width / 256));
+  }
+
   ngOnDestroy(): void {
     this._mapMoveSubscription.unsubscribe();
+    this._resizeSubscription.unsubscribe();
   }
 
   private getStyle(feature: Feature) {
