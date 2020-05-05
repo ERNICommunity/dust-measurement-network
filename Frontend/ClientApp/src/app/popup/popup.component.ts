@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { SensorDto } from '../service/SensorDto';
+import { SensorDto } from '../service/sensor.dto';
 
 @Component({
   selector: 'app-popup',

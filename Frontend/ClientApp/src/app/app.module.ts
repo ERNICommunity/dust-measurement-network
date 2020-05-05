@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER, Injector } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { LoadingBarModule } from '@ngx-loading-bar/core';
@@ -20,6 +20,7 @@ import { LoadingInterceptor } from './service/loading.interceptor';
 import { PopupComponent } from './popup/popup.component';
 import { PredictionChartComponent } from './prediction-chart/prediction-chart.component';
 import { LegendComponent } from './legend/legend.component';
+import { ConfigService } from './service/config.service';
 
 @NgModule({
   declarations: [
@@ -47,9 +48,15 @@ import { LegendComponent } from './legend/legend.component';
   ],
   providers: [
     DustService,
-    RunningRequestService, {
+    RunningRequestService,
+    ConfigService, {
       provide: HTTP_INTERCEPTORS,
       useClass: LoadingInterceptor,
+      multi: true
+    }, {
+      provide: APP_INITIALIZER,
+      useFactory: ConfigService.factory,
+      deps: [HttpClient, Injector],
       multi: true
     }],
   bootstrap: [AppComponent]

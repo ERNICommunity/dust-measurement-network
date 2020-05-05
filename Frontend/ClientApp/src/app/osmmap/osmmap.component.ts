@@ -20,10 +20,11 @@ import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
 import { Subscription, fromEvent, timer, EMPTY } from 'rxjs';
 import { debounceTime, map, switchMap, catchError } from 'rxjs/operators';
 
-import { SensorDto } from '../service/SensorDto';
+import { SensorDto } from '../service/sensor.dto';
 import { DustService } from '../service/dust.service';
 import { PopupComponent } from '../popup/popup.component';
 import { UserLocation } from './user-location.class';
+import { ConfigService } from '../service/config.service';
 
 @Component({
   selector: 'app-osmmap',
@@ -36,7 +37,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   private _mapMoveSubscription: Subscription;
   @ViewChild(PopupComponent) private _popup: PopupComponent;
 
-  constructor(private _dustService: DustService) {}
+  constructor(private _dustService: DustService, private _configService: ConfigService) {}
 
   ngOnInit() {
     const osmMap = new Map({
@@ -91,7 +92,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     this._mapMoveSubscription = fromEvent(osmMap, 'moveend').pipe(
       debounceTime(1000),
       map((evt: MapEvent) => [toLonLat(getBottomLeft(evt.frameState.extent)), toLonLat(getTopRight(evt.frameState.extent))]),
-      switchMap(extent => timer(0, 5000).pipe( // emit immediatelly, then every 5s
+      switchMap(extent => timer(0, this._configService.autorefreshInterval).pipe( // emit immediatelly, then every configured refresh period
         map(_ => extent)
       )),
       switchMap(extent => this._dustService.getSensors(extent[0][0], extent[0][1], extent[1][0], extent[1][1]).pipe(
@@ -104,6 +105,22 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       result => this.drawMarkers(result),
       err => console.error('mapMoveSubscription fail', err)
     );
+  }
+
+  private drawMarkers(dtos: SensorDto[]) {
+    this._sensorsVectorSource.clear();
+    for (const dto of dtos) {
+      const sensorFeature = new Feature({
+        geometry: new Point(fromLonLat([dto.longitude, dto.latitude])),
+        name: dto.name,
+        data: dto
+      });
+      this._sensorsVectorSource.addFeature(sensorFeature);
+    }
+  }
+
+  private navigateMapToUsersPosition(m: Map) {
+    m.getView().fit(this._positionFeature.getGeometry(), { duration: 1000 });
   }
 
   ngOnDestroy(): void {
@@ -169,22 +186,6 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         })
       ];
     }
-  }
-
-  private drawMarkers(dtos: SensorDto[]) {
-    this._sensorsVectorSource.clear();
-    for (const dto of dtos) {
-      const sensorFeature = new Feature({
-        geometry: new Point(fromLonLat([dto.longitude, dto.latitude])),
-        name: dto.name,
-        data: dto
-      });
-      this._sensorsVectorSource.addFeature(sensorFeature);
-    }
-  }
-
-  private navigateMapToUsersPosition(m: Map) {
-    m.getView().fit(this._positionFeature.getGeometry(), { duration: 1000 });
   }
 
   private getColor25(matterDensity: number) {

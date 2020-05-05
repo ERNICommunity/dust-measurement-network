@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { SensorDto } from './SensorDto';
-import { DustDto } from './DustDto';
+import { SensorDto } from './sensor.dto';
+import { DataPointDto } from './data-point.dto';
 
 @Injectable()
 export class DustService {
@@ -16,10 +16,10 @@ export class DustService {
   }
 
   public getDustHistory(id: number, from: Date, to: Date) {
-    return this._httpClient.get<DustDto[]>(`${this._baseUrl}api/sensors/${id}/history?from=${from.getTime()}&to=${to.getTime()}`);
+    return this._httpClient.get<DataPointDto[]>(`${this._baseUrl}api/sensors/${id}/history?from=${from.getTime()}&to=${to.getTime()}`);
   }
 
   public getDustPrediction(id: number) {
-    return this._httpClient.get<DustDto[]>(`${this._baseUrl}api/sensors/${id}/prediction`);
+    return this._httpClient.get<DataPointDto[]>(`${this._baseUrl}api/sensors/${id}/prediction`);
   }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Frontend.Controllers.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Model;
 

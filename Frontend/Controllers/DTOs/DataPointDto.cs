@@ -1,6 +1,6 @@
 using System;
 
-namespace Frontend.Controllers
+namespace Frontend.Controllers.DTOs
 {
     public class DataPointDto
     {
