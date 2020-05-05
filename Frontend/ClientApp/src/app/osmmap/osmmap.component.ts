@@ -63,7 +63,8 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       ],
       view: new View({
         center: fromLonLat([19.696058, 48.6737532]),
-        zoom: 0
+        zoom: 0,
+        maxZoom: 19
       }),
       controls: defaultControls({attribution: false}).extend([
         new Attribution({collapsible: true}),
