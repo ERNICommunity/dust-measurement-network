@@ -17,6 +17,6 @@ export class ConfigService {
   }
 
   static factory(httpClient: HttpClient, injector: Injector) {
-    return () => ConfigService.initialize(httpClient, injector.get('BASE_URL'))
+    return () => ConfigService.initialize(httpClient, injector.get('BASE_URL'));
   }
 }
