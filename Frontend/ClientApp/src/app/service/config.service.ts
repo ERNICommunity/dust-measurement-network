@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ConfigDto } from './config.dto';
 
@@ -16,7 +16,7 @@ export class ConfigService {
       .then(c => this._autorefreshInterval = c.autorefreshIntervalMilisec);
   }
 
-  static factory(httpClient: HttpClient, injector: Injector) {
-    return () => ConfigService.initialize(httpClient, injector.get('BASE_URL'));
+  static factory(httpClient: HttpClient, baseUrl: string) {
+    return () => ConfigService.initialize(httpClient, baseUrl);
   }
 }

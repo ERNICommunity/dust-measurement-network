@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, APP_INITIALIZER, Injector } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
@@ -56,7 +56,7 @@ import { ConfigService } from './service/config.service';
     }, {
       provide: APP_INITIALIZER,
       useFactory: ConfigService.factory,
-      deps: [HttpClient, Injector],
+      deps: [HttpClient, 'BASE_URL'],
       multi: true
     }],
   bootstrap: [AppComponent]
