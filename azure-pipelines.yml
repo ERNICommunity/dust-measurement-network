@@ -26,4 +26,3 @@ steps:
     appType: 'webAppLinux'
     WebAppName: 'dmn'
     packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
-    RuntimeStack: 'DOTNETCORE|LTS'
