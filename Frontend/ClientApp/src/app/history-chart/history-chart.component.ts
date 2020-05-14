@@ -23,7 +23,7 @@ export class HistoryChartComponent implements OnInit {
   }
 
   set dateFrom(value: string) {
-    this._dateFrom .next(new Date(value));
+    this._dateFrom.next(new Date(value));
   }
   get dateFrom(): string {
     return this.formatForDateInput(this._dateFrom.value);
@@ -47,7 +47,7 @@ export class HistoryChartComponent implements OnInit {
       switchMap(([from, to]) => this._dustService.getDustHistory(this._id, from, to))
     )
     .subscribe(results =>
-        this.data = {
+      this.data = {
         labels: results.map(x => new Date(x.timestamp)),
         series: [
           results.map(x => x.particulateMatter25),
