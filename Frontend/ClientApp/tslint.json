@@ -116,6 +116,7 @@
         }
       ]
     },
+    "one-variable-per-declaration": false,
     "variable-name": {
       "options": [
         "ban-keywords",

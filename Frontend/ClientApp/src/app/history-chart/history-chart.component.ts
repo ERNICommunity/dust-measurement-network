@@ -3,7 +3,7 @@ import { Component, Input, OnInit, } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import {  IChartistData } from 'chartist';
+import { IChartistData } from 'chartist';
 
 import { DustService } from '../service/dust.service';
 
@@ -46,13 +46,14 @@ export class HistoryChartComponent implements OnInit {
     combineLatest([this._dateFrom, this._dateTo]).pipe(
       switchMap(([from, to]) => this._dustService.getDustHistory(this._id, from, to))
     )
-    .subscribe(results =>
-      this.data = {
-        labels: results.map(x => new Date(x.timestamp)),
-        series: [
-          results.map(x => x.particulateMatter25),
-          results.map(x => x.particulateMatter100)
-        ]
+    .subscribe(results => {
+        const labels = [], serie1 = [], serie2 = [];
+        results.forEach(r => {
+          labels.push(new Date(r.timestamp));
+          serie1.push(r.particulateMatter25);
+          serie2.push(r.particulateMatter100);
+        });
+        this.data = { labels, series: [ serie1, serie2 ] };
       },
       err => console.error(err)
     );
