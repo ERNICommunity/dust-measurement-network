@@ -20,7 +20,7 @@ namespace Frontend.Controllers
             _ctx = ctx;
         }
 
-        public ConfigDto Index([FromQuery]double minLon, [FromQuery]double minLat, [FromQuery]double maxLon, [FromQuery]double maxLat)
+        public ConfigDto Index()
         {
             return new ConfigDto 
             {
