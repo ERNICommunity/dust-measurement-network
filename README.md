@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/nej0372/ERNI%20Dust%20Measurement%20Network/_apis/build/status/ERNICommunity.hh-dust-fe-be?branchName=master)](https://dev.azure.com/nej0372/ERNI%20Dust%20Measurement%20Network/_build/latest?definitionId=1&branchName=master)
+
 # ERNI Hack&amp;Hike - Dust Measurement Network: Frontend + DataSync
 
 This repo contains 2 main projects: Frontend (Angular 8 application with ASP.NET Core 3.1 backend) and DataSyncService (.NET Core 3.1 console app). There is also shared Model project (EF Core model).
