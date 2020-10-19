@@ -79,7 +79,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
 
     const geolocation = new Geolocation({
       tracking: true,
-      trackingOptions: { enableHighAccuracy: true, timeout: 2000 },
+      trackingOptions: { enableHighAccuracy: true },
       projection: osmMap.getView().getProjection()
     });
     geolocation.on('error', err => console.error('geolocation error', err));
