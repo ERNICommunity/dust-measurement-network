@@ -14,8 +14,9 @@
             "cwd": "${workspaceFolder}/Frontend",
             "stopAtEntry": false,
             "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
+                "action": "startDebugging",
+                "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)",
+                "name": "Launch frontend - Firefox"
             },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
