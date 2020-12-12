@@ -1,14 +1,12 @@
-<div>
-  <x-chartist [type]="'Line'" [data]="data">
-  </x-chartist>
-  <div class="row">
-    <div class="col-xs-5 offset-1">
-      <label><strong>From:</strong></label>
-      <input [(ngModel)]="dateFrom" type="date" class="form-control">
-    </div>
-    <div class="col-xs-5">
-      <label><strong>To:</strong></label>
-      <input [(ngModel)]="dateTo" type="date" class="form-control">
-    </div>
+<x-chartist [type]="'Line'" [data]="data">
+</x-chartist>
+<div class="row">
+  <div class="col-xs-5 offset-1">
+    <label><strong>From:</strong></label>
+    <input [(ngModel)]="dateFrom" type="date" class="form-control">
+  </div>
+  <div class="col-xs-5">
+    <label><strong>To:</strong></label>
+    <input [(ngModel)]="dateTo" type="date" class="form-control">
   </div>
 </div>
