@@ -2,7 +2,7 @@
 
 # ERNI Hack&amp;Hike - Dust Measurement Network: Frontend + DataSync
 
-This repo contains 2 main projects: Frontend (Angular 8 application with ASP.NET Core 3.1 backend) and DataSyncService (.NET Core 3.1 console app). There is also shared Model project (EF Core model).
+This repo contains 2 main projects: Frontend (Angular 11 application with ASP.NET 5.0 backend) and DataSyncService (.NET 5.0 console app). There is also shared Model project (EF Core model).
 
 ## Frontend
 
