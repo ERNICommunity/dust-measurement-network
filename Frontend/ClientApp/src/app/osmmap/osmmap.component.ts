@@ -14,6 +14,7 @@ import Feature from 'ol/Feature';
 import Geolocation from 'ol/Geolocation';
 import Point from 'ol/geom/Point';
 import MapEvent from 'ol/MapEvent';
+import ObjectEvent from 'ol/Object';
 import MapBrowserEvent from 'ol/MapBrowserEvent';
 import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
 
@@ -93,9 +94,9 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       }
     });
 
-    this._mapMoveSubscription = fromEvent(osmMap, 'moveend').pipe(
+    this._mapMoveSubscription = fromEvent<MapEvent>(osmMap, 'moveend').pipe(
       debounceTime(1000),
-      map((evt: MapEvent) => [toLonLat(getBottomLeft(evt.frameState.extent)), toLonLat(getTopRight(evt.frameState.extent))]),
+      map(evt => [toLonLat(getBottomLeft(evt.frameState.extent)), toLonLat(getTopRight(evt.frameState.extent))]),
       switchMap(extent => timer(0, this._configService.autorefreshInterval).pipe( // emit immediatelly, then every configured refresh period
         map(_ => extent)
       )),
@@ -110,9 +111,9 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       err => console.error('mapMoveSubscription fail', err)
     );
 
-    this._resizeSubscription = fromEvent(osmMap, 'change:size').pipe(
+    this._resizeSubscription = fromEvent<ObjectEvent>(osmMap, 'change:size').pipe(
       debounceTime(100),
-      map((evt: any) => this.calculateMinZoom(evt.target.getTargetElement()))
+      map(evt => this.calculateMinZoom(evt.target.getTargetElement()))
     ).subscribe(
       zoom => osmMap.getView().setMinZoom(zoom),
       err => console.error('resizeSubscription fail', err)
