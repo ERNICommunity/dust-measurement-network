@@ -10,19 +10,19 @@
 
 #include <ILoraWanRxDataEventAdapter.h>
 
-class ToggleButton;
+class Indicator;
 class LoRaWanDriver;
 
 class LoRaWanRxDataToStatusLedAdapter: public ILoraWanRxDataEventAdapter
 {
 public:
-  LoRaWanRxDataToStatusLedAdapter(ToggleButton* statusLed, LoRaWanDriver* loRaWanDriver);
+  LoRaWanRxDataToStatusLedAdapter(Indicator* statusLed, LoRaWanDriver* loRaWanDriver);
   virtual ~LoRaWanRxDataToStatusLedAdapter();
 
   void messageReceived(unsigned char* payload, unsigned int length);
 
 private:
-  ToggleButton* m_statusLed;
+  Indicator* m_statusLed;
   LoRaWanDriver* m_loRaWanDriver;
 
 private: // forbidden default functions
