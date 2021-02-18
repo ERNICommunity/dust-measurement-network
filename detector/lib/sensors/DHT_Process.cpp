@@ -8,7 +8,7 @@
 #include <Adafruit_Sensor.h>  // pio lib 19, 31, lib details see https://github.com/adafruit/DHT-sensor-library
 #include <DHT.h>
 #include <DHT_U.h>
-#include <Timer.h>
+#include <SpinTimer.h>
 #include <DbgTracePort.h>
 #include <DbgTraceLevel.h>
 #include <DHT_Process.h>
@@ -16,7 +16,7 @@
 #define DHTPIN      12        // Pin which is connected to the DHT sensor.
 #define DHTTYPE     DHT22     // DHT 22 (AM2302)
 
-class DhtPollTimerAdapter : public TimerAdapter
+class DhtPollTimerAdapter : public SpinTimerAction
 {
 private:
   DbgTrace_Port* m_trPort;
@@ -78,7 +78,7 @@ public:
 DHT_Process::DHT_Process(DHT_ProcessAdapter* dhtProcessAdapter)
 : m_dht(new DHT_Unified(DHTPIN, DHTTYPE))
 , m_delayMs(2500)
-, m_dhtPollTimer(new Timer(new DhtPollTimerAdapter(m_dht, this), Timer::IS_RECURRING))
+, m_dhtPollTimer(new SpinTimer(0, new DhtPollTimerAdapter(m_dht, this), SpinTimer::IS_RECURRING, SpinTimer::IS_NON_AUTOSTART))
 , m_relHumidity(0.0)
 , m_temperature(0.0)
 , m_dhtProcessAdapter(dhtProcessAdapter)
@@ -89,13 +89,13 @@ DHT_Process::DHT_Process(DHT_ProcessAdapter* dhtProcessAdapter)
   sensor_t sensor;
   m_dht->temperature().getSensor(&sensor);
   m_delayMs = sensor.min_delay / 1000;
-  m_dhtPollTimer->startTimer(m_delayMs);
+  m_dhtPollTimer->start(m_delayMs);
 }
 
 DHT_Process::~DHT_Process()
 {
-  delete m_dhtPollTimer->adapter();
-  m_dhtPollTimer->attachAdapter(0);
+  delete m_dhtPollTimer->action();
+  m_dhtPollTimer->attachAction(0);
 
   delete m_dhtPollTimer;
   m_dhtPollTimer = 0;
