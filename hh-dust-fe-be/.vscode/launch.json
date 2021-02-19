@@ -1,0 +1,60 @@
+{
+    // Use IntelliSense to find out which attributes exist for C# debugging
+    // Use hover for the description of the existing attributes
+    // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (web backend+frontend)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Frontend/bin/Debug/net5.0/Frontend.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Frontend",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "startDebugging",
+                "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)",
+                "name": "Launch frontend - Firefox"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Frontend/Views"
+            }
+        },
+        {
+            "name": ".NET Core Launch (data sync service)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/DataSyncService/bin/Debug/net5.0/DataSyncService.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/DataSyncService",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        },
+        {
+            "name": "Launch frontend - Firefox",
+            "type": "firefox",
+            "request": "launch",
+            "url": "https://localhost:5001",
+            "webRoot": "${workspaceFolder}/Frontend/ClientApp/"
+        },
+        {
+            "name": "Launch frontend - Chrome",
+            "type": "chrome",
+            "request": "launch",
+            "url": "https://localhost:5001",
+            "webRoot": "${workspaceFolder}/Frontend/ClientApp/"
+        },
+    ]
+}

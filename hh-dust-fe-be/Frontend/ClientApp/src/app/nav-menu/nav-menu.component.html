@@ -1,0 +1,27 @@
+<nav class='navbar navbar-expand-md fixed-top navbar-dark bg-dark'>
+  <a class='navbar-brand' [routerLink]='["/"]'>ERNI Dust Measurement</a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" (click)="toggle()">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent" [ngbCollapse]="isCollapsed">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item" routerLinkActive='active' [routerLinkActiveOptions]='{ exact: true }'>
+        <a class="nav-link" routerLink='/' (click)='collapse()'>
+          <fa-icon [icon]='mapIcon'></fa-icon> Map
+        </a>
+      </li>
+      <li class="nav-item" routerLinkActive='active'>
+        <a class="nav-link" routerLink='/about' (click)='collapse()'>
+          <fa-icon [icon]='aboutIcon'></fa-icon> About
+        </a>
+      </li>
+    </ul>
+    <span class="navbar-text">
+      <a href="https://github.com/ERNICommunity/hh-dust-fe-be" target="_blank" title="Github repo"><fa-icon [icon]="githubIcon"></fa-icon></a>
+      &nbsp;
+      <a href="https://www.betterask.erni" target="_blank" title="ERNI site"><img class="svg-inline--fa fa-w-16" src="erni_logo.svg" alt="ERNI logo"></a>
+    </span>
+  </div>
+</nav>

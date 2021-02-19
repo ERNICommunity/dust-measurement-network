@@ -1,0 +1,20 @@
+#legend {
+    padding: 1em;
+    background: rgba(52,58,64,0.9);
+    position: absolute;
+    top: 4em;
+    right: 0.5em;
+    color: white;
+}
+
+.box-good {
+    background-color: rgba(0, 255, 0, 0.5);
+}
+
+.box-moderate {
+    background-color: rgba(255, 255, 0, 0.5);
+}
+
+.box-bad {
+    background-color: rgba(255, 0, 0, 0.5);
+}
