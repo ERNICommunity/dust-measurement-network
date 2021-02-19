@@ -9,7 +9,7 @@
 #define SRC_TEMPERATUREHUMIDITY_H_
 
 class DHT_Unified;
-class Timer;
+class SpinTimer;
 
 //-----------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ protected:
 private:
   DHT_Unified* m_dht;
   unsigned long int m_delayMs;
-  Timer* m_dhtPollTimer;
+  SpinTimer* m_dhtPollTimer;
   float m_relHumidity;
   float m_temperature;
   DHT_ProcessAdapter* m_dhtProcessAdapter;

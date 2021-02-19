@@ -8,8 +8,6 @@
 #include <DetectorFakePersDataMemory.h>
 
 const unsigned int DetectorFakePersDataMemory::s_numDevices  = 10;
-const unsigned int DetectorFakePersDataMemory::s_numMaxChars = 32;
-
 //-----------------------------------------------------------------------------
 DetectorFakePersDataMemory::DetectorFakePersDataMemory()
 : m_deviceSerialNr(0)

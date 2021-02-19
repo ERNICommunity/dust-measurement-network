@@ -10,6 +10,8 @@
 
 #include <Battery.h>
 
+class DbgTrace_Port;
+
 class MyBatteryAdapter: public BatteryAdapter
 {
 public:
@@ -17,6 +19,11 @@ public:
   virtual ~MyBatteryAdapter();
 
   unsigned int readRawBattSenseValue();
+
+  void notifyBattStateAnyChange();
+
+private:
+  DbgTrace_Port* m_trPort;
 
 private: // forbidden default functions
 	MyBatteryAdapter& operator = (const MyBatteryAdapter& src); // assignment operator

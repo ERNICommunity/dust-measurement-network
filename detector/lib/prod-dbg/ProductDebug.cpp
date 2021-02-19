@@ -5,32 +5,9 @@
  *      Author: nid
  */
 
-#include "ProductDebug.h"
-
 #include <Arduino.h>
-#include <Timer.h>
-#include <SerialCommand.h>
-#include <DbgCliNode.h>
-#include <DbgCliTopic.h>
-#include <DbgCliCommand.h>
-#include <DbgTraceContext.h>
-#include <DbgTracePort.h>
-#include <DbgTraceLevel.h>
-#include <DbgPrintConsole.h>
-#include <DbgTraceOut.h>
 #include <AppDebug.h>
-
-
-#ifdef ESP8266
-extern "C"
-{
-  #include "user_interface.h"
-}
-#else
-#include <RamUtils.h>
-#endif
-
-//-----------------------------------------------------------------------------
+#include "ProductDebug.h"
 
 void setupProdDebugEnv()
 {
@@ -42,4 +19,3 @@ void setupProdDebugEnv()
   Serial.println("-------------------------------------------------------");
   Serial.println();
 }
-
