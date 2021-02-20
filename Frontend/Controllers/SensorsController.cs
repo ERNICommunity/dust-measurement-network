@@ -4,6 +4,8 @@ using System.Linq;
 using Frontend.Controllers.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Frontend.Controllers
 {
@@ -22,9 +24,9 @@ namespace Frontend.Controllers
             _ctx = ctx;
         }
 
-        public IEnumerable<SensorDto> Index([FromQuery]double minLon, [FromQuery]double minLat, [FromQuery]double maxLon, [FromQuery]double maxLat)
+        public async Task<IEnumerable<SensorDto>> Index([FromQuery]double minLon, [FromQuery]double minLat, [FromQuery]double maxLon, [FromQuery]double maxLat)
         {
-            return (from s in _ctx.Sensors
+            return await (from s in _ctx.Sensors
             where minLon < maxLon ? (s.Longitude >= minLon && s.Longitude <= maxLon) : ((s.Longitude >= minLon && s.Longitude <= 180) || (s.Longitude >= -180 && s.Longitude <= maxLon)) 
             where s.Latitude >= minLat && s.Latitude <= maxLat 
             let lastData = s.SensorDatas.OrderByDescending(x => x.Timestamp).FirstOrDefault()
@@ -36,13 +38,13 @@ namespace Frontend.Controllers
                 Timestamp = lastData == null ? (DateTimeOffset?)null : lastData.Timestamp,
                 ParticulateMatter25 = lastData == null ? (double?)null : lastData.ParticulateMatter25,
                 ParticulateMatter100 = lastData == null ? (double?)null : lastData.ParticulateMatter100
-            }).ToArray();
+            }).ToArrayAsync();
         }
 
         [Route("{id:int}/history")]
-        public IEnumerable<DataPointDto> History(int id, [FromQuery]long from, [FromQuery]long to)
+        public async Task<IEnumerable<DataPointDto>> History(int id, [FromQuery]long from, [FromQuery]long to)
         {
-            return _ctx.SensorDatas.Where(x => x.SensorId == id)
+            return await _ctx.SensorDatas.Where(x => x.SensorId == id)
             .Where(x => x.Timestamp >= DateTimeOffset.FromUnixTimeMilliseconds(from))
             .Where(x => x.Timestamp < DateTimeOffset.FromUnixTimeMilliseconds(to))
             .OrderBy(x => x.Timestamp)
@@ -51,7 +53,7 @@ namespace Frontend.Controllers
                  Timestamp = x.Timestamp,
                  ParticulateMatter25 = x.ParticulateMatter25,
                  ParticulateMatter100 = x.ParticulateMatter100
-             }).ToArray();
+             }).ToArrayAsync();
         }
 
         [Route("{id:int}/prediction")]
