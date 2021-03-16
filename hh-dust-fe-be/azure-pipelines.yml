@@ -22,7 +22,7 @@ steps:
 - task: AzureRmWebAppDeployment@4
   inputs:
     ConnectionType: 'AzureRM'
-    azureSubscription: 'Visual Studio Enterprise(3abb542a-a0e8-4225-b8b2-41d0904490d1)'
+    azureSubscription: 'ERNI ECH Dust Measurement Network Dev(8206e919-694c-4e32-86cc-df7f175806d4)'
     appType: 'webAppLinux'
     WebAppName: 'dmn'
     packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
