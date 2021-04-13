@@ -10,6 +10,7 @@
 // PlatformIO libraries
 #include <SerialCommand.h>    // pio lib install 173, lib details see https://github.com/kroimon/Arduino-SerialCommand
 #include <SpinTimer.h>        // pio lib install 11599, lib details see https://github.com/dniklaus/spin-timer
+#include <Adafruit_FRAM_I2C.h>
 
 // private libraries
 #include <ProductDebug.h>
@@ -50,12 +51,13 @@ LoraWanPriorityQueue* loRaWanPriorityQueue = 0;
 MeasurementFacade* measurementFacade = 0;
 SystemStatusFacade* systemStatusFacade = 0;
 
-SerialCommand*  sCmd = 0;
-PM_Process*     pmProcess = 0;
-DHT_Process*    dhtProcess = 0;
-Assets*         assets = 0;
-Battery*        battery = 0;
-Indicator*      statusLed  = 0;   // indicator implementation for built in LED
+SerialCommand*      sCmd = 0;
+PM_Process*         pmProcess = 0;
+DHT_Process*        dhtProcess = 0;
+Adafruit_FRAM_I2C*  fram = 0;
+Assets*             assets = 0;
+Battery*            battery = 0;
+Indicator*          statusLed  = 0;   // indicator implementation for built in LED
 
 void setup()
 {
@@ -66,7 +68,9 @@ void setup()
   //-----------------------------------------------------------------------------
   // Assets (inventory and persistent data)
   //-----------------------------------------------------------------------------
-  assets = new Assets(new MyDeviceSerialNrAdapter(), new DetectorFakePersDataMemory());
+  fram = new Adafruit_FRAM_I2C();
+  DetectorFakePersDataMemory* detectorPersDataMemory = new DetectorFakePersDataMemory(fram);
+  assets = new Assets(new MyDeviceSerialNrAdapter(), detectorPersDataMemory);
 
   //-----------------------------------------------------------------------------
   // Battery Voltage Surveillance
@@ -95,6 +99,7 @@ void setup()
   // LoRaWan
   //-----------------------------------------------------------------------------
   loRaWanInterface = new LoraWanAbp(new MyLoRaWanConfigAdapter(assets));
+  detectorPersDataMemory->assignLoRaWanDriver(loRaWanInterface);
 
   // #TODO nid: remove this again (this is just used when working with single channel gateway)
   //  loRaWanInterface->setIsSingleChannel(true);
