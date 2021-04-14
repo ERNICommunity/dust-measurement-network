@@ -33,6 +33,7 @@
 //#include <MyLoRaWanTxDataEventAdapter.h>   // TODO: implementation not used up to now!
 #include <MyMeasuremenFacadeAdapter.h>
 #include <MySystemStatusFacadeAdapter.h>
+#include <FramDeviceSerialNrAdapter.h>
 
 LoRaWanDriver* loRaWanInterface = 0;
 
@@ -72,7 +73,7 @@ void setup()
   //-----------------------------------------------------------------------------
   // Assets (inventory and persistent data)
   //-----------------------------------------------------------------------------
-  assets = new Assets(new MyDeviceSerialNrAdapter(), new DetectorFakePersDataMemory());
+  assets = new Assets(new FramDeviceSerialNrAdapter(), new DetectorFakePersDataMemory());
 
   //-----------------------------------------------------------------------------
   // Battery Voltage Surveillance
