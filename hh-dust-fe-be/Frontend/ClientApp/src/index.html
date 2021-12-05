@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>H&amp;H Frontend</title>
+  <base href="/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      background: rgb(52,58,64);
+    }
+    #loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #loader::before {
+        content: "";
+        border: 10px solid rgb(52,58,64);
+        border-top-color: white;
+        border-bottom-color: white;
+        border-radius: 50%;
+        box-sizing: border-box;
+        width: 100px;
+        height: 100px;
+        animation: spin 2s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <app-root>
+    <div id="loader"></div>
+  </app-root>
+</body>
+</html>

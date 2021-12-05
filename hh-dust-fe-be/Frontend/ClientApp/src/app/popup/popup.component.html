@@ -1,0 +1,28 @@
+<ng-template #content let-modal>
+  <div class="modal-header bg-dark text-white">
+    <h4 class="modal-title">{{name}}</h4>
+    <small>
+        {{latitude}}, {{longitude}}
+    </small>
+  </div>
+  <div class="modal-body">
+    <ul ngbNav #nav="ngbNav" class="nav-tabs">
+      <li ngbNavItem>
+        <a ngbNavLink>History</a>
+        <ng-template ngbNavContent>
+          <app-history-chart [id]="id"></app-history-chart>
+        </ng-template>
+      </li>
+      <li ngbNavItem>
+        <a ngbNavLink>Prediction</a>
+        <ng-template ngbNavContent>
+          <app-prediction-chart [id]="id"></app-prediction-chart>
+        </ng-template>
+      </li>
+    </ul>
+    <div [ngbNavOutlet]="nav"></div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>

@@ -1,6 +1,9 @@
 ---
 name: Use Case
 about: Use Case
+title: ''
+labels: ''
+assignees: ''
 
 ---
 

@@ -1,0 +1,8 @@
+{
+    "typescript.tsdk": "./Frontend/ClientApp/node_modules/typescript/lib",
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/bin": true,
+        "**/obj": true
+    }
+}

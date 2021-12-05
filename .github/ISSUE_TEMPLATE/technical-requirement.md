@@ -1,6 +1,9 @@
 ---
 name: Technical Requirement
 about: Technical Requirement
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
